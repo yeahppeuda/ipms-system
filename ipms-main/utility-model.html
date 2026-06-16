@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Utility Model Registry | IP Management System</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: '#0058be',
+          surface: { DEFAULT: '#f4f6fb', container: '#ffffff', dim: '#d8d9e3' },
+          'on-surface': '#191b23',
+          'on-surface-variant': '#424754',
+          outline: '#727785',
+          'outline-variant': '#e2e5ef',
+        },
+        fontFamily: { sans: ['Inter', 'sans-serif'] },
+      }
+    }
+  }
+</script>
+<style>
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; padding: 11px 12px;
+    border-radius: 8px; cursor: pointer; transition: background 0.15s, color 0.15s, transform 0.15s;
+    text-decoration: none; color: #424754; font-size: 13.5px; font-weight: 400; width: 100%;
+  }
+  .nav-item:hover { background-color: #f1f5f9; color: #191b23; transform: translateX(4px); }
+  .nav-item.active { background-color: #e8f0fd; color: #0058be; font-weight: 500; transform: none; }
+  .nav-item.active i { color: #0058be; }
+  .nav-item i { font-size: 18px; width: 20px; text-align: center; flex-shrink: 0; }
+
+  .nav-section-label {
+    font-size: 10px; font-weight: 600; color: #727785;
+    text-transform: uppercase; letter-spacing: 0.08em; padding: 0 12px; margin: 12px 0 4px;
+  }
+
+  .stat-card { transition: box-shadow 0.2s, transform 0.2s; }
+  .stat-card:hover { transform: translateY(-2px); }
+  tbody tr { transition: background 0.12s; }
+
+  .page-btn {
+    width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+    border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer;
+    transition: background 0.15s, color 0.15s; color: #424754;
+  }
+  .page-btn:hover:not(.active):not(:disabled) { background: #f1f5f9; }
+  .page-btn.active { background: #0058be; color: #fff; font-weight: 700; }
+  .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .modal-field:not(:disabled) {
+    background: #ffffff !important;
+    border-color: #93c5fd !important;
+    cursor: text !important;
+  }
+  .modal-field-select:not(:disabled) {
+    background: #ffffff !important;
+    border-color: #93c5fd !important;
+    cursor: pointer !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 0.75rem center !important;
+    background-size: 1.25em 1.25em !important;
+    padding-right: 2.5rem !important;
+  }
+
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px 4px 8px; border-radius: 20px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.01em;
+    border-width: 1px; border-style: solid; white-space: nowrap;
+  }
+  .badge-submitted { background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); color: #1e40af; border-color: #bfdbfe; }
+  .badge-esoa      { background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); color: #4338ca; border-color: #c4b5fd; }
+  .badge-paid      { background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); color: #065f46; border-color: #6ee7b7; }
+  .badge-approved  { background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); color: #92400e; border-color: #fcd34d; }
+  .badge-default   { background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); color: #475569; border-color: #cbd5e1; }
+
+  .btn-view {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 12px 5px 10px; border-radius: 8px;
+    font-size: 12px; font-weight: 600; color: #0058be;
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    border: 1px solid #bfdbfe; cursor: pointer;
+    transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.15s, box-shadow 0.18s;
+    position: relative; overflow: hidden;
+  }
+  .btn-view::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, #0058be 0%, #1d4ed8 100%);
+    opacity: 0; transition: opacity 0.18s; border-radius: inherit;
+  }
+  .btn-view:hover::before { opacity: 1; }
+  .btn-view:hover { color: #fff; border-color: #0058be; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,88,190,0.25); }
+  .btn-view:active { transform: translateY(0); box-shadow: none; }
+  .btn-view i, .btn-view span { position: relative; z-index: 1; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .page-fade { animation: fadeIn 0.4s ease both; }
+
+  @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body class="bg-surface text-on-surface font-sans antialiased flex min-h-screen">
+
+<!-- SIDEBAR -->
+<aside class="w-[260px] h-screen fixed left-0 top-0 border-r border-outline-variant bg-white flex flex-col z-50">
+  <div class="flex items-center gap-3 px-5 py-5 border-b border-outline-variant">
+    <div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white flex-shrink-0">
+      <i class="ti ti-building-bank" style="font-size:18px;"></i>
+    </div>
+    <div>
+      <h1 class="text-sm font-semibold leading-tight text-on-surface">IP Management</h1>
+      <p class="text-[10px] text-on-surface-variant font-semibold tracking-widest uppercase">System</p>
+    </div>
+  </div>
+  <nav class="flex-1 overflow-y-auto px-3 pt-3 pb-2 space-y-2" aria-label="Primary navigation">
+    <a class="nav-item" href="dashboard.html"><i class="ti ti-layout-dashboard"></i><span>Dashboard</span></a>
+    <div class="nav-section-label">IP Modules</div>
+    <a class="nav-item" href="copyright.html"><i class="ti ti-copyright"></i><span>Copyright</span></a>
+    <a class="nav-item" href="patent.html"><i class="ti ti-file-description"></i><span>Patent</span></a>
+    <a class="nav-item" href="trademark.html"><i class="ti ti-shield-check"></i><span>Trademark</span></a>
+    <a class="nav-item active" href="utility-model.html"><i class="ti ti-settings-2"></i><span>Utility Model</span></a>
+    <a class="nav-item" href="industrial-design.html"><i class="ti ti-vector-bezier-2"></i><span>Industrial Design</span></a>
+    <div class="border-t border-slate-100 my-5"></div>
+    <div class="nav-section-label">General</div>
+    <a class="nav-item" href="event.html"><i class="ti ti-calendar-event"></i><span>Event</span></a>
+  </nav>
+  <div class="p-4 border-t border-outline-variant">
+    <button onclick="window.location.href='index.html'"
+      class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant text-sm font-semibold hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all duration-200">
+      <i class="ti ti-logout" style="font-size:16px;"></i><span>Log Out</span>
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="flex-1 ml-[260px] min-h-screen flex flex-col bg-surface page-fade">
+
+  <header class="h-[60px] flex items-center justify-end px-8 sticky top-0 bg-white/80 backdrop-blur-md z-40 border-b border-outline-variant">
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2">
+        <i class="ti ti-clock text-outline" style="font-size:14px;"></i>
+        <span id="live-time" class="text-[13px] font-semibold text-on-surface tabular-nums tracking-tight"></span>
+        <span id="live-ampm" class="text-[10px] font-bold text-outline uppercase"></span>
+      </div>
+      <div class="h-6 w-px bg-outline-variant"></div>
+      <div class="flex items-center gap-2.5 cursor-pointer group">
+        <div class="text-right">
+          <p class="text-[13px] font-semibold text-on-surface leading-tight">Admin User</p>
+          <p class="text-[10px] text-outline font-semibold uppercase tracking-wider">Administrator</p>
+        </div>
+        <div class="w-8 h-8 rounded-full overflow-hidden border-2 border-outline-variant group-hover:border-primary transition-colors">
+          <img alt="Admin" class="w-full h-full object-cover"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDx_bTPkrRdfc88O-w03s2pnSwCgF7LgPrt2lE5zgClCgisqvjKap7jQtLQo5JfHmYYfYN_S1tls3bcQZm33u3_Zf3QUAC1Wiiqlkcmn2TPb_vUXoOL2pZk6vUZRwHiG4PeWqazSdhKyh7u9j1nGFRumZDUUsxqGVyoH7MlxUuof1YELsx_tRgynz5FeHpag_Fm_Tsi10ZsJfLPARtHOfqdTzKYdtwyZ5Nc4_YvnlmExHVdCrLOfjE3N43zOmlQJJ7MpuFfE7Gcrg"/>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="p-8 space-y-7 flex-1">
+    <div><h2 class="text-2xl font-bold text-on-surface">Utility Model Registry</h2></div>
+
+    <!-- Stat Cards -->
+    <section class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+      <div class="stat-card bg-white rounded-2xl border border-outline-variant p-5 flex items-center gap-4 shadow-sm">
+        <div class="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+          <i class="ti ti-settings-2 text-blue-600" style="font-size:20px;"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-[10px] font-bold text-outline uppercase tracking-widest">Total Submitted</p>
+          <p class="text-3xl font-bold text-on-surface mt-0.5 leading-none" id="stat-total">—</p>
+          <p class="text-[11px] text-outline font-medium mt-1">All records</p>
+        </div>
+      </div>
+      <div class="stat-card bg-white rounded-2xl border border-outline-variant p-5 flex items-center gap-4 shadow-sm">
+        <div class="w-11 h-11 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0">
+          <i class="ti ti-circle-check text-amber-500" style="font-size:20px;"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-[10px] font-bold text-outline uppercase tracking-widest">Total Approved</p>
+          <p class="text-3xl font-bold text-on-surface mt-0.5 leading-none" id="stat-approved">—</p>
+          <p class="text-[11px] text-outline font-medium mt-1">Status: Approved</p>
+        </div>
+      </div>
+      <div class="stat-card bg-white rounded-2xl border border-outline-variant p-5 flex items-center gap-4 shadow-sm">
+        <div class="w-11 h-11 rounded-xl bg-orange-50 flex items-center justify-center flex-shrink-0">
+          <i class="ti ti-clock-pause text-orange-500" style="font-size:20px;"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-[10px] font-bold text-outline uppercase tracking-widest">Total Pending</p>
+          <p class="text-3xl font-bold text-on-surface mt-0.5 leading-none" id="stat-pending">—</p>
+          <p class="text-[11px] text-orange-500 font-semibold mt-1 flex items-center gap-1">
+            <i class="ti ti-clock" style="font-size:12px;"></i>Awaiting review
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Table Section -->
+    <section class="bg-white rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
+      <div class="px-6 py-4 border-b border-outline-variant flex items-center gap-3">
+        <div class="relative flex-1">
+          <i class="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-outline" style="font-size:15px;"></i>
+          <input id="search-input"
+            class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 pl-9 pr-3 text-[13px] focus:ring-1 focus:ring-primary focus:bg-white focus:border-primary transition-all outline-none placeholder:text-outline"
+            placeholder="Search by title, creator, reference no., department, or status…"
+            type="text" oninput="filterAndRender()"/>
+        </div>
+        <div class="relative shrink-0" id="filter-wrapper">
+          <button id="filter-btn" onclick="toggleFilterMenu()"
+            class="flex items-center gap-1.5 px-3 py-2 bg-slate-50 border border-slate-200 text-on-surface-variant rounded-lg text-[13px] font-medium hover:bg-slate-100 transition-colors whitespace-nowrap">
+            <i class="ti ti-filter" style="font-size:14px;"></i>
+            <span id="filter-label">All Status</span>
+            <i class="ti ti-chevron-down text-outline" id="filter-chevron" style="font-size:12px; transition:transform 0.15s;"></i>
+          </button>
+          <div id="filter-menu" class="hidden absolute right-0 mt-1 w-48 bg-white rounded-xl border border-slate-200 shadow-lg z-50 py-1.5 overflow-hidden">
+            <div class="px-3 py-1.5 text-[10px] font-bold text-outline uppercase tracking-widest">Filter by Status</div>
+            <button onclick="applyStatusFilter('All')"              class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="All">All<i class="ti ti-check text-primary" style="font-size:13px;"></i></button>
+            <button onclick="applyStatusFilter('Submitted to IPO')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Submitted to IPO">Submitted to IPO<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
+            <button onclick="applyStatusFilter('Received E-SOA')"   class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Received E-SOA">Received E-SOA<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
+            <button onclick="applyStatusFilter('Paid')"             class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Paid">Paid<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
+            <button onclick="applyStatusFilter('Approved')"         class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Approved">Approved<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
+          </div>
+        </div>
+        <button title="Export" class="w-9 h-9 flex items-center justify-center bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors shrink-0">
+          <i class="ti ti-download" style="font-size:16px;"></i>
+        </button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-50">
+              <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant whitespace-nowrap">Reference No.</th>
+              <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant">Title</th>
+              <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant whitespace-nowrap">Creator</th>
+              <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant whitespace-nowrap">College / Department</th>
+              <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant whitespace-nowrap">Status</th>
+              <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant whitespace-nowrap">Date Applied</th>
+              <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant text-center whitespace-nowrap">Action</th>
+            </tr>
+          </thead>
+          <tbody id="table-body" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
+
+      <div id="empty-state" class="hidden flex flex-col items-center justify-center py-16 text-center">
+        <i class="ti ti-search-off text-slate-300" style="font-size:40px;"></i>
+        <p class="mt-3 text-[13px] text-outline font-medium">No records match your search.</p>
+      </div>
+
+      <div class="px-6 py-4 border-t border-outline-variant flex flex-col sm:flex-row items-center justify-between gap-3">
+        <p id="pagination-info" class="text-[12px] text-outline"></p>
+        <div id="pagination-controls" class="flex items-center gap-1"></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- VIEW/EDIT MODAL -->
+<div class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-on-surface/40 backdrop-blur-sm"
+  id="research-modal" style="display:none;">
+  <div class="bg-white w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+    <div class="px-7 py-5 border-b border-outline-variant flex items-center justify-between">
+      <div>
+        <h2 class="text-[17px] font-bold text-on-surface">Utility Model Details</h2>
+        <p class="text-[12px] text-primary font-semibold mt-0.5" id="modal-subtitle-id"></p>
+      </div>
+      <button class="p-2 hover:bg-slate-100 rounded-full transition-colors text-outline" onclick="closeModal()">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+
+    <div class="p-7 space-y-5 overflow-y-auto max-h-[75vh]">
+
+      <!-- Status Hero -->
+      <div>
+        <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Registration Status</label>
+        <select id="field-status" disabled onchange="updateStatusStyle(this)"
+          class="w-full text-[15px] font-bold rounded-xl py-3.5 px-4 border-2 outline-none transition-all appearance-none cursor-default"
+          style="background-image:none;">
+          <option value="Submitted to IPO">Submitted to IPO</option>
+          <option value="Received E-SOA">Received E-SOA</option>
+          <option value="Paid">Paid</option>
+          <option value="Approved">Approved</option>
+        </select>
+      </div>
+
+      <div class="border-t border-slate-100"></div>
+
+      <!-- Title -->
+      <div>
+        <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Title</label>
+        <input id="field-title" type="text" disabled
+          class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all"/>
+      </div>
+
+      <!-- Ref No + College -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Reference No.</label>
+          <input id="field-ref" type="text" disabled
+            class="w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all cursor-default"/>
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">College</label>
+          <select id="field-college" disabled onchange="updateModalDeptOptions()"
+            class="modal-field modal-field-select w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all appearance-none cursor-default">
+            <option value="">— Select College —</option>
+            <option value="College of Computer Studies">College of Computer Studies</option>
+            <option value="College of Engineering">College of Engineering</option>
+            <option value="College of Accounting">College of Accounting</option>
+            <option value="College of Business">College of Business</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Department (cascades from College) -->
+      <div id="modal-dept-wrap">
+        <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Department</label>
+        <select id="field-dept" disabled
+          class="modal-field modal-field-select w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all appearance-none cursor-default">
+        </select>
+      </div>
+
+      <!-- Creator + Date -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Creator</label>
+          <input id="field-creator" type="text" disabled
+            class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all"/>
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Date Applied</label>
+          <input id="field-date" type="date" disabled
+            class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Buttons -->
+    <div class="px-7 py-5 bg-slate-50 border-t border-outline-variant flex items-center justify-end gap-3">
+      <button id="btn-edit" onclick="enterEditMode()" type="button"
+        class="px-6 py-2.5 bg-primary text-white text-[13px] font-bold rounded-xl hover:-translate-y-0.5 transition-all flex items-center gap-2">
+        <i class="ti ti-pencil" style="font-size:15px;"></i> Edit
+      </button>
+      <button id="btn-cancel-edit" onclick="exitEditMode()" type="button"
+        class="hidden px-5 py-2.5 text-[13px] font-semibold text-on-surface-variant bg-white border border-slate-200 hover:border-slate-300 rounded-xl transition-all">
+        Cancel
+      </button>
+      <button id="btn-save" onclick="openConfirmation()" type="button"
+        class="hidden px-6 py-2.5 bg-emerald-600 text-white text-[13px] font-bold rounded-xl hover:-translate-y-0.5 transition-all flex items-center gap-2">
+        <i class="ti ti-device-floppy" style="font-size:15px;"></i> Save Changes
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-on-surface/50 backdrop-blur-sm"
+  id="confirm-modal" style="display:none;">
+  <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl p-8 text-center">
+    <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-5">
+      <span class="material-symbols-outlined text-2xl">help</span>
+    </div>
+    <h3 class="text-[16px] font-bold text-on-surface mb-2">Save Changes?</h3>
+    <p class="text-[13px] text-on-surface-variant mb-7">Are you sure you want to save the modifications made to this utility model record?</p>
+    <div class="flex items-center gap-3">
+      <button class="flex-1 py-2.5 text-[13px] font-bold text-on-surface-variant bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors" onclick="closeConfirmation()">Cancel</button>
+      <button class="flex-1 py-2.5 text-[13px] font-bold text-white bg-primary hover:bg-blue-700 rounded-xl transition-colors" id="btn-confirm-save" onclick="confirmSave()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS TOAST -->
+<div id="success-toast"
+  class="fixed bottom-8 right-8 z-[80] flex items-center gap-3 bg-white border border-emerald-200 shadow-xl rounded-2xl px-5 py-4 pointer-events-none"
+  style="opacity:0; transform:translateY(12px); transition:opacity 0.25s ease, transform 0.25s ease; min-width:260px;">
+  <div class="w-9 h-9 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
+    <i class="ti ti-check text-emerald-600" style="font-size:18px;"></i>
+  </div>
+  <div>
+    <p class="text-[13px] font-bold text-on-surface leading-tight">Changes saved successfully</p>
+    <p class="text-[11px] text-outline mt-0.5">The record has been updated.</p>
+  </div>
+  <div class="absolute bottom-0 left-0 h-[3px] bg-emerald-400 rounded-b-2xl" id="toast-bar" style="width:100%;"></div>
+</div>
+
+<script>
+const API_URL  = "http://localhost:5000/api/research";
+const CATEGORY = "utility-model";
+
+/* CLOCK */
+function updateClock() {
+  const now = new Date();
+  let h = now.getHours();
+  const m = String(now.getMinutes()).padStart(2, '0');
+  const s = String(now.getSeconds()).padStart(2, '0');
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  document.getElementById('live-time').textContent = `${String(h).padStart(2, '0')}:${m}:${s}`;
+  document.getElementById('live-ampm').textContent = ampm;
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+/* STATE */
+let ALL_RECORDS     = [];
+let filteredRecords = [];
+const ROWS_PER_PAGE = 10;
+let currentPage     = 1;
+let activeStatusFilter = 'All';
+let activeMongoId   = null;
+let activeSnapshot  = null;
+
+/* COLLEGE → DEPARTMENT MAP */
+const MODAL_COLLEGE_DEPTS = {
+  'College of Computer Studies': ['Information Technology', 'Information System', 'Computer Science'],
+  'College of Engineering':      ['Industrial Engineering', 'Electronic Engineering', 'Computer Engineering'],
+  'College of Accounting':       ['Accounting', 'Management Accounting'],
+  'College of Business':         ['Entrepreneurship'],
+};
+
+function updateModalDeptOptions() {
+  const college  = document.getElementById('field-college').value;
+  const deptSel  = document.getElementById('field-dept');
+  const deptWrap = document.getElementById('modal-dept-wrap');
+  deptSel.innerHTML = '';
+  if (college && MODAL_COLLEGE_DEPTS[college]) {
+    MODAL_COLLEGE_DEPTS[college].forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d; opt.textContent = d;
+      deptSel.appendChild(opt);
+    });
+    deptWrap.style.animation = 'fadeSlideIn 0.18s ease';
+  }
+}
+
+/* STATUS STYLES */
+const statusMeta = {
+  'Submitted to IPO': { cls: 'badge-submitted', label: 'Submitted to IPO' },
+  'Received E-SOA':   { cls: 'badge-esoa',       label: 'Received E-SOA'   },
+  'Paid':             { cls: 'badge-paid',        label: 'Paid'             },
+  'Approved':         { cls: 'badge-approved',    label: 'Approved'         },
+};
+function statusBadgeHTML(status) {
+  const m = statusMeta[status] || { cls: 'badge-default', label: status || '—' };
+  return `<span class="status-badge ${m.cls}">${m.label}</span>`;
+}
+const statusHero = {
+  'Submitted to IPO': { border:'#93c5fd', bg:'#eff6ff', color:'#1d4ed8' },
+  'Received E-SOA':   { border:'#a5b4fc', bg:'#eef2ff', color:'#4338ca' },
+  'Paid':             { border:'#6ee7b7', bg:'#ecfdf5', color:'#065f46' },
+  'Approved':         { border:'#fcd34d', bg:'#fffbeb', color:'#92400e' },
+};
+function updateStatusStyle(sel) {
+  const s = statusHero[sel.value] || { border:'#e2e8f0', bg:'#f8fafc', color:'#334155' };
+  sel.style.borderColor     = s.border;
+  sel.style.backgroundColor = s.bg;
+  sel.style.color           = s.color;
+}
+
+/* STAT CARDS */
+function updateStats() {
+  document.getElementById('stat-total').textContent    = ALL_RECORDS.length;
+  document.getElementById('stat-approved').textContent = ALL_RECORDS.filter(r => r.status === 'Approved').length;
+  document.getElementById('stat-pending').textContent  = ALL_RECORDS.filter(r => r.status !== 'Approved').length;
+}
+
+/* FILTER DROPDOWN */
+function toggleFilterMenu() {
+  const menu    = document.getElementById('filter-menu');
+  const chevron = document.getElementById('filter-chevron');
+  const isOpen  = !menu.classList.contains('hidden');
+  menu.classList.toggle('hidden', isOpen);
+  chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+}
+function applyStatusFilter(val) {
+  activeStatusFilter = val;
+  document.querySelectorAll('.filter-val').forEach(btn =>
+    btn.querySelector('i').classList.toggle('hidden', btn.dataset.val !== val));
+  document.getElementById('filter-label').textContent = val === 'All' ? 'All Status' : val;
+  document.getElementById('filter-menu').classList.add('hidden');
+  document.getElementById('filter-chevron').style.transform = '';
+  filterAndRender();
+}
+document.addEventListener('click', e => {
+  const w = document.getElementById('filter-wrapper');
+  if (w && !w.contains(e.target)) document.getElementById('filter-menu').classList.add('hidden');
+});
+
+/* SEARCH + FILTER */
+function filterAndRender() {
+  const q = document.getElementById('search-input').value.toLowerCase().trim();
+  filteredRecords = ALL_RECORDS.filter(r => {
+    const matchStatus = activeStatusFilter === 'All' || r.status === activeStatusFilter;
+    const matchSearch = !q ||
+      (r.referenceNo || '').toLowerCase().includes(q) ||
+      (r.title       || '').toLowerCase().includes(q) ||
+      (r.creator     || '').toLowerCase().includes(q) ||
+      (r.dept        || '').toLowerCase().includes(q) ||
+      (r.status      || '').toLowerCase().includes(q);
+    return matchStatus && matchSearch;
+  });
+  currentPage = 1;
+  render();
+}
+
+/* RENDER TABLE */
+function render() {
+  const tbody      = document.getElementById('table-body');
+  const emptyEl    = document.getElementById('empty-state');
+  const total      = filteredRecords.length;
+  const totalPages = Math.max(1, Math.ceil(total / ROWS_PER_PAGE));
+  if (currentPage > totalPages) currentPage = totalPages;
+  const start = (currentPage - 1) * ROWS_PER_PAGE;
+  const page  = filteredRecords.slice(start, start + ROWS_PER_PAGE);
+
+  if (total === 0) {
+    tbody.innerHTML = '';
+    emptyEl.classList.remove('hidden');
+  } else {
+    emptyEl.classList.add('hidden');
+    tbody.innerHTML = page.map(r => `
+      <tr class="hover:bg-slate-50/70 transition-colors">
+        <td class="px-5 py-4 text-[12px] font-bold text-on-surface tracking-wide">${r.referenceNo || '—'}</td>
+        <td class="px-5 py-4 text-[13px] text-on-surface font-medium max-w-[200px] truncate">${r.title || ''}</td>
+        <td class="px-5 py-4 text-[12px] text-on-surface-variant">${r.creator || ''}</td>
+        <td class="px-5 py-4">
+          <div class="text-[13px] font-semibold text-on-surface leading-tight">${r.dept ? r.dept.split(' — ')[1] || r.dept : '—'}</div>
+          <div class="text-[11px] text-on-surface-variant mt-0.5">${r.dept ? r.dept.split(' — ')[0] : ''}</div>
+        </td>
+        <td class="px-5 py-4">${statusBadgeHTML(r.status)}</td>
+        <td class="px-5 py-4 text-[12px] text-on-surface-variant tabular-nums">${r.dateApplied || ''}</td>
+        <td class="px-5 py-4 text-center">
+          <button onclick="openResearchModal('${r._id}')" class="btn-view">
+            <i class="ti ti-eye" style="font-size:13px;"></i><span>View</span>
+          </button>
+        </td>
+      </tr>`).join('');
+  }
+
+  document.getElementById('pagination-info').textContent =
+    `Showing ${total === 0 ? 0 : start + 1}–${Math.min(start + ROWS_PER_PAGE, total)} of ${total}`;
+  renderPagination(totalPages);
+}
+
+/* PAGINATION */
+function renderPagination(totalPages) {
+  const ctrl = document.getElementById('pagination-controls');
+  ctrl.innerHTML = '';
+  const makeBtn = (labelOrIcon, targetPage, disabled, active, isIcon) => {
+    const b = document.createElement('button');
+    b.className = `page-btn ${active ? 'active' : ''}`;
+    b.disabled = disabled;
+    b.innerHTML = isIcon ? `<span class="material-symbols-outlined" style="font-size:16px;">${labelOrIcon}</span>` : labelOrIcon;
+    if (!disabled && !active) b.onclick = () => { currentPage = targetPage; render(); };
+    ctrl.appendChild(b);
+  };
+  makeBtn('chevron_left',  currentPage - 1, currentPage === 1,          false, true);
+  for (let i = 1; i <= totalPages; i++) makeBtn(i, i, false, i === currentPage, false);
+  makeBtn('chevron_right', currentPage + 1, currentPage === totalPages, false, true);
+}
+
+/* MAP RAW API ITEM */
+function mapRecord(item) {
+  const title =
+    (item.researchTitle && item.researchTitle.trim()) ||
+    (item.title         && item.title.trim())         || 'No Title';
+
+  let creator = 'Unknown';
+  if (Array.isArray(item.authors) && item.authors.length > 0) creator = item.authors.join(', ');
+  else if (typeof item.author === 'string' && item.author.trim()) creator = item.author.trim();
+
+  const dept = item.department || item.dept || 'N/A';
+
+  let dateApplied = '';
+  if (item.date)             dateApplied = item.date.split('T')[0];
+  else if (item.dateApplied) dateApplied = item.dateApplied.split('T')[0];
+  else if (item.createdAt)   dateApplied = item.createdAt.split('T')[0];
+
+  const referenceNo = item.referenceId || item.referenceNo || item.refNo || null;
+
+  return {
+    _id: String(item._id),
+    referenceNo: referenceNo || String(item._id),
+    title, creator, dept,
+    status: item.status || 'Submitted to IPO',
+    dateApplied,
+  };
+}
+
+/* FETCH DATA */
+async function fetchUtilityModels() {
+  try {
+    const res  = await fetch(`${API_URL}?category=${encodeURIComponent(CATEGORY)}`);
+    const data = await res.json();
+    const records = Array.isArray(data) ? data : (data.data ?? []);
+    const filtered = records.filter(item =>
+      (item.category || '').trim().toLowerCase() === CATEGORY
+    );
+    ALL_RECORDS     = filtered.map(mapRecord);
+    filteredRecords = [...ALL_RECORDS];
+    updateStats();
+    render();
+  } catch (err) {
+    console.error('Failed to fetch utility models:', err);
+  }
+}
+
+/* OPEN MODAL */
+function openResearchModal(mongoId) {
+  const rec = ALL_RECORDS.find(r => r._id === String(mongoId));
+  if (!rec) return;
+  activeMongoId  = rec._id;
+  activeSnapshot = { ...rec };
+
+  document.getElementById('modal-subtitle-id').textContent = rec.referenceNo || rec._id;
+  document.getElementById('field-ref').value     = rec.referenceNo || '';
+  document.getElementById('field-title').value   = rec.title || '';
+  document.getElementById('field-creator').value = rec.creator || '';
+  document.getElementById('field-date').value    = rec.dateApplied || '';
+
+  // Parse "College — Department" stored value
+  const parts   = rec.dept ? rec.dept.split(' — ') : [];
+  const college = parts[0] || rec.dept || '';
+  const dept    = parts[1] || '';
+
+  const collegeSel = document.getElementById('field-college');
+  [...collegeSel.options].forEach(o => o.selected = o.value === college);
+  updateModalDeptOptions();
+  const deptSel = document.getElementById('field-dept');
+  [...deptSel.options].forEach(o => o.selected = o.value === dept);
+
+  const statusSel = document.getElementById('field-status');
+  [...statusSel.options].forEach(o => o.selected = o.value === rec.status);
+  updateStatusStyle(statusSel);
+
+  setViewMode();
+  document.getElementById('research-modal').style.display = 'flex';
+}
+
+/* CLOSE MODAL */
+function closeModal() {
+  document.getElementById('research-modal').style.display = 'none';
+  activeMongoId = null; activeSnapshot = null;
+}
+
+/* VIEW / EDIT MODE */
+const EDITABLE_FIELDS  = ['field-title', 'field-creator', 'field-date'];
+const EDITABLE_SELECTS = ['field-dept', 'field-status', 'field-college'];
+
+function setViewMode() {
+  EDITABLE_FIELDS.forEach(id => document.getElementById(id).disabled = true);
+  EDITABLE_SELECTS.forEach(id => {
+    const el = document.getElementById(id);
+    el.disabled = true;
+    if (id === 'field-status') {
+      updateStatusStyle(el);
+      el.style.backgroundImage    = 'none';
+      el.style.backgroundRepeat   = '';
+      el.style.backgroundPosition = '';
+      el.style.backgroundSize     = '';
+      el.style.paddingRight       = '';
+      el.style.cursor             = 'default';
+    } else {
+      el.style.backgroundImage = 'none';
+      el.style.paddingRight    = '';
+    }
+  });
+  document.getElementById('btn-edit').classList.remove('hidden');
+  document.getElementById('btn-cancel-edit').classList.add('hidden');
+  document.getElementById('btn-save').classList.add('hidden');
+}
+
+function enterEditMode() {
+  EDITABLE_FIELDS.forEach(id => document.getElementById(id).disabled = false);
+  EDITABLE_SELECTS.forEach(id => {
+    const el = document.getElementById(id);
+    el.disabled = false;
+    if (id === 'field-status') {
+      updateStatusStyle(el);
+      el.style.backgroundImage    = 'url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 fill=%27none%27 viewBox=%270 0 20 20%27%3E%3Cpath stroke=%27%23374151%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272%27 d=%27M6 8l4 4 4-4%27/%3E%3C/svg%3E")';
+      el.style.backgroundRepeat   = 'no-repeat';
+      el.style.backgroundPosition = 'right 0.9rem center';
+      el.style.backgroundSize     = '1.15em 1.15em';
+      el.style.paddingRight       = '2.5rem';
+      el.style.cursor             = 'pointer';
+    } else {
+      el.style.removeProperty('background-image');
+      el.style.removeProperty('padding-right');
+    }
+  });
+  document.getElementById('btn-edit').classList.add('hidden');
+  document.getElementById('btn-cancel-edit').classList.remove('hidden');
+  document.getElementById('btn-save').classList.remove('hidden');
+}
+
+function exitEditMode() {
+  if (activeSnapshot) {
+    document.getElementById('field-title').value   = activeSnapshot.title || '';
+    document.getElementById('field-creator').value = activeSnapshot.creator || '';
+    document.getElementById('field-date').value    = activeSnapshot.dateApplied || '';
+
+    // Restore college + dept
+    const parts   = activeSnapshot.dept ? activeSnapshot.dept.split(' — ') : [];
+    const college = parts[0] || activeSnapshot.dept || '';
+    const dept    = parts[1] || '';
+    const collegeSel = document.getElementById('field-college');
+    [...collegeSel.options].forEach(o => o.selected = o.value === college);
+    updateModalDeptOptions();
+    const deptSel = document.getElementById('field-dept');
+    [...deptSel.options].forEach(o => o.selected = o.value === dept);
+
+    const statusSel = document.getElementById('field-status');
+    [...statusSel.options].forEach(o => o.selected = o.value === activeSnapshot.status);
+    updateStatusStyle(statusSel);
+  }
+  setViewMode();
+}
+
+/* CONFIRMATION MODAL */
+function openConfirmation()  { document.getElementById('confirm-modal').style.display = 'flex'; }
+function closeConfirmation() { document.getElementById('confirm-modal').style.display = 'none'; }
+
+/* SAVE (PUT) */
+async function confirmSave() {
+  closeConfirmation();
+  if (!activeMongoId) return;
+
+  const college = document.getElementById('field-college').value;
+  const deptVal = document.getElementById('field-dept').value;
+  const department = college && deptVal ? `${college} — ${deptVal}` : college || deptVal;
+
+  const payload = {
+    researchTitle: document.getElementById('field-title').value.trim(),
+    department,
+    status:        document.getElementById('field-status').value,
+    date:          document.getElementById('field-date').value,
+    referenceId:   document.getElementById('field-ref').value.trim(),
+    authors: document.getElementById('field-creator').value
+               .split(',').map(a => a.trim()).filter(Boolean),
+  };
+
+  const confirmBtn = document.getElementById('btn-confirm-save');
+  confirmBtn.disabled    = true;
+  confirmBtn.textContent = 'Saving…';
+
+  try {
+    const res = await fetch(`${API_URL}/${activeMongoId}`, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error(`PUT ${res.status}: ${await res.text()}`);
+
+    const updated = await res.json();
+    const merged  = {
+      ...updated,
+      _id:           activeMongoId,
+      referenceId:   payload.referenceId   || updated.referenceId  || activeSnapshot.referenceNo,
+      researchTitle: payload.researchTitle || updated.researchTitle || updated.title,
+      department:    payload.department    || updated.department,
+      status:        payload.status        || updated.status,
+      date:          payload.date          || updated.date,
+      authors:       Array.isArray(updated.authors) && updated.authors.length > 0
+                       ? updated.authors : payload.authors,
+    };
+
+    const mapped = mapRecord(merged);
+    const idx    = ALL_RECORDS.findIndex(r => r._id === activeMongoId);
+    if (idx !== -1) ALL_RECORDS[idx] = mapped;
+    activeSnapshot = { ...mapped };
+
+    updateStats();
+    filterAndRender();
+    setViewMode();
+    closeModal();
+    showToast();
+  } catch (err) {
+    console.error('Save failed:', err);
+    alert('Failed to save changes. Please check the console and try again.');
+  } finally {
+    confirmBtn.disabled    = false;
+    confirmBtn.textContent = 'Confirm';
+  }
+}
+
+/* TOAST */
+function showToast() {
+  const toast = document.getElementById('success-toast');
+  const bar   = document.getElementById('toast-bar');
+  bar.style.transition = 'none';
+  bar.style.width      = '100%';
+  toast.style.opacity   = '1';
+  toast.style.transform = 'translateY(0)';
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    bar.style.transition = 'width 3s linear';
+    bar.style.width      = '0%';
+  }));
+  setTimeout(() => {
+    toast.style.opacity   = '0';
+    toast.style.transform = 'translateY(12px)';
+  }, 3300);
+}
+
+/* INIT */
+document.addEventListener('DOMContentLoaded', fetchUtilityModels);
+</script>
+</body>
+</html>

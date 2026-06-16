@@ -1,0 +1,91 @@
+<!-- Reusable Sidebar Component -->
+<aside id="sidebarTarget" class="w-[260px] h-screen fixed left-0 top-0 border-r border-outline-variant bg-surface-container-lowest flex flex-col z-50">
+
+  <!-- Brand -->
+  <div class="flex items-center gap-3 px-5 py-5 border-b border-outline-variant">
+    <div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white flex-shrink-0">
+      <i class="ti ti-building-bank" style="font-size:18px;"></i>
+    </div>
+    <div>
+      <h1 class="text-sm font-semibold leading-tight text-on-surface">IP Management</h1>
+      <p class="text-[10px] text-on-surface-variant font-semibold tracking-widest uppercase">System</p>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <nav class="flex-1 overflow-y-auto p-3 space-y-0.5" aria-label="Primary navigation">
+
+    <a class="nav-item" href="dashboard.html" data-page="dashboard">
+      <i class="ti ti-layout-dashboard"></i>
+      <span>Dashboard</span>
+    </a>
+
+    <div class="nav-section-label">IP Modules</div>
+
+    <a class="nav-item" href="copyright.html" data-page="copyright">
+      <i class="ti ti-copyright"></i>
+      <span>Copyright</span>
+    </a>
+
+    <a class="nav-item" href="patent.html" data-page="patent">
+      <i class="ti ti-file-description"></i>
+      <span>Patent</span>
+    </a>
+
+    <a class="nav-item" href="trademark.html" data-page="trademark">
+      <i class="ti ti-shield-check"></i>
+      <span>Trademark</span>
+    </a>
+
+    <a class="nav-item" href="utility-model.html" data-page="utility-model">
+      <i class="ti ti-settings-2"></i>
+      <span>Utility Model</span>
+    </a>
+
+    <a class="nav-item" href="industrial-design.html" data-page="industrial-design">
+      <i class="ti ti-vector-bezier-2"></i>
+      <span>Industrial Design</span>
+    </a>
+
+    <div class="border-t border-slate-100 my-2"></div>
+    <div class="nav-section-label">General</div>
+
+    <a class="nav-item" href="event.html" data-page="event">
+      <i class="ti ti-calendar-event"></i>
+      <span>Event</span>
+    </a>
+
+  </nav>
+
+  <!-- User row -->
+  <div class="p-3 border-t border-outline-variant">
+    <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-50 cursor-pointer transition-colors">
+      <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant flex-shrink-0">
+        <img alt="Admin User" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtS5si_PKG24Rw7q2_w4G1LPgv4qZ0IDFv16X_sDHSIjKkiAvbUb3IIhf7YLBfH-7mHmFgZxUFTm08OHMNK-fJM39n7IMRjiQC0aLPn-iu_zUj9DSGvVH0k1zRrb2-Ff38yVqqujD62M_WBdGWAnjmztqqh7JKfgo6XB2iQiIhySjsanYZ0WHfMu-51IhL-6xuSrra_gVjemHRGltkhHYPY0qF7bPm_irHwKJB7jsWNq0A9KMjRrphtmHInv9EjHoOZ_dtL46pTA"/>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-semibold text-on-surface truncate">Admin User</p>
+        <p class="text-[10px] text-on-surface-variant font-semibold uppercase tracking-wider">Administrator</p>
+      </div>
+      <i class="ti ti-dots-vertical text-on-surface-variant" style="font-size:16px;"></i>
+    </div>
+  </div>
+
+</aside>
+
+<script>
+  // Auto-highlight active nav item based on current page
+  document.addEventListener('DOMContentLoaded', () => {
+    const currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';
+    const navItems = document.querySelectorAll('.nav-item');
+    
+    navItems.forEach(item => {
+      const href = item.getAttribute('href');
+      if (href === currentPage || (currentPage === '' && href === 'dashboard.html')) {
+        item.classList.add('active');
+      } else {
+        item.classList.remove('active');
+      }
+    });
+  });
+</script>

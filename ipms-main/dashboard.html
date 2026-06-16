@@ -1,0 +1,1800 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IP Management System - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "background": "#f9f9ff","inverse-on-surface": "#eff0fa","surface-container-high": "#e6e7f2",
+          "primary": "#0058be","inverse-surface": "#2e3038","on-primary-container": "#fefcff",
+          "on-primary": "#ffffff","secondary-fixed": "#e9ddff","surface-container-low": "#f2f3fd",
+          "surface-container": "#ecedf7","outline": "#727785","surface-container-highest": "#e1e2ec",
+          "surface-variant": "#e1e2ec","surface-container-lowest": "#ffffff","secondary": "#6b38d4",
+          "on-surface": "#191b23","surface-bright": "#f9f9ff","tertiary-container": "#b75b00",
+          "primary-container": "#2170e4","tertiary": "#924700","on-tertiary": "#ffffff",
+          "on-background": "#191b23","on-surface-variant": "#424754","surface-dim": "#d8d9e3",
+          "inverse-primary": "#adc6ff","outline-variant": "#c2c6d6","surface": "#f9f9ff"
+        },
+        borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
+        fontFamily: { display: ["Inter"],"body-lg": ["Inter"],"headline-lg": ["Inter"],"body-md": ["Inter"],"headline-md": ["Inter"] },
+        fontSize: {
+          display: ["36px",{ lineHeight:"1.2",letterSpacing:"-0.02em",fontWeight:"700" }],
+          "body-lg": ["16px",{ lineHeight:"1.6",fontWeight:"400" }],
+          "headline-lg": ["28px",{ lineHeight:"1.3",fontWeight:"600" }],
+          "body-md": ["14px",{ lineHeight:"1.5",fontWeight:"400" }],
+          "headline-md": ["20px",{ lineHeight:"1.4",fontWeight:"600" }]
+        }
+      }
+    }
+  }
+</script>
+<style>
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .glass-panel { background:rgba(255,255,255,0.7); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid rgba(226,232,240,0.5); }
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:#e2e8f0; border-radius:10px; }
+  
+  /* Added Spinner Animation */
+  @keyframes spin { 100% { transform: rotate(360deg); } }
+
+  /* ── Nav ── */
+  .nav-item { display:flex; align-items:center; gap:10px; padding:11px 12px; border-radius:8px; cursor:pointer; transition:background 0.15s,color 0.15s; text-decoration:none; color:#424754; font-size:13.5px; font-weight:400; width:100%; }
+  .nav-item:hover { background-color:#f1f5f9; color:#191b23; transform:translateX(4px); }
+  .nav-item.active { background-color:#e8f0fd; color:#0058be; font-weight:500; transform:none; }
+  .nav-item.active i { color:#0058be; }
+  .nav-item i { font-size:18px; width:20px; text-align:center; flex-shrink:0; }
+  .nav-section-label { font-size:10px; font-weight:600; color:#727785; text-transform:uppercase; letter-spacing:0.08em; padding:0 12px; margin:12px 0 4px; }
+
+  /* ── Calendar ── */
+  .cal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .cal-nav-btn { background:#f2f3fd; border:1px solid #e1e2ec; border-radius:8px; width:28px; height:28px; cursor:pointer; font-size:16px; color:#424754; display:flex; align-items:center; justify-content:center; transition:background 0.15s; flex-shrink:0; }
+  .cal-nav-btn:hover { background:#e6e7f2; }
+  .cal-month-label { font-size:13px; font-weight:600; color:#191b23; cursor:pointer; display:flex; align-items:center; gap:4px; padding:3px 7px; border-radius:8px; transition:background 0.12s; user-select:none; }
+  .cal-month-label:hover { background:#f2f3fd; }
+  .cal-month-label .cal-chevron { font-size:14px; color:#727785; transition:transform 0.2s; }
+  .cal-month-label.open .cal-chevron { transform:rotate(180deg); }
+  .cal-month-picker { display:none; position:absolute; top:40px; left:50%; transform:translateX(-50%); z-index:20; width:220px; background:#ffffff; border:1px solid #e1e2ec; border-radius:14px; padding:12px; box-shadow:0 10px 36px rgba(0,0,0,0.12); animation:mpIn 0.15s ease; }
+  .cal-month-picker.open { display:block; }
+  @keyframes fadeSlideIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes mpIn { from { opacity:0; transform:translateX(-50%) translateY(-6px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+  @keyframes modalIn { from { opacity:0; transform:translateY(8px) scale(0.97); } to { opacity:1; transform:none; } }
+  .mp-year-row { display:flex; align-items:center; justify-content:space-between; padding:2px 2px 10px; margin-bottom:8px; border-bottom:1px solid #e1e2ec; }
+  .mp-year-btn { background:none; border:1px solid #e1e2ec; border-radius:8px; width:28px; height:28px; cursor:pointer; color:#424754; display:flex; align-items:center; justify-content:center; font-size:15px; transition:background 0.12s; }
+  .mp-year-btn:hover { background:#f2f3fd; color:#191b23; }
+  .mp-year-val { font-size:14px; font-weight:700; color:#191b23; }
+  .mp-months { display:grid; grid-template-columns:repeat(3,1fr); gap:4px; }
+  .mp-month-btn { background:none; border:none; border-radius:9px; padding:8px 4px; font-size:12px; cursor:pointer; color:#424754; font-family:'Inter',sans-serif; font-weight:500; transition:background 0.12s,color 0.12s; text-align:center; }
+  .mp-month-btn:hover { background:#f2f3fd; color:#191b23; }
+  .mp-month-btn.active { background:#0058be; color:#fff; font-weight:700; }
+  .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; }
+  .cal-day-label { font-size:9.5px; color:#727785; text-align:center; padding:3px 0 4px; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; }
+  .cal-day { font-size:11px; text-align:center; padding:5px 2px; border-radius:6px; cursor:pointer; color:#191b23; position:relative; transition:background 0.12s; line-height:1.2; }
+  .cal-day:hover:not(.today) { background:#f2f3fd; }
+  .cal-day.other-month { color:#c2c6d6; cursor:default; }
+  .cal-day.other-month:hover { background:none; }
+  .cal-day.today { background:#0058be; color:#fff; font-weight:700; border-radius:7px; }
+  .cal-day.has-note::after { content:''; position:absolute; bottom:2px; left:50%; transform:translateX(-50%); width:3px; height:3px; border-radius:50%; background:#6b38d4; }
+  .cal-day.today.has-note::after { background:#fff; }
+  
+  /* Added for Calendar updates */
+  .cal-day.is-holiday { color: #ef4444; font-weight: 700; background: #fef2f2; }
+  .cal-day.has-submission::before { content:''; position:absolute; top:2px; right:2px; width:4px; height:4px; border-radius:50%; background:#059669; }
+
+  /* ── Note Modal ── */
+  .note-overlay { position:fixed; inset:0; background:rgba(15,20,40,0.4); backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center; z-index:9999; }
+  .note-modal { background:#fff; border-radius:20px; border:1px solid #e2e8f0; padding:28px; width:360px; box-shadow:0 20px 60px rgba(0,0,0,0.15); animation:modalIn 0.2s ease; }
+  .note-modal-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:4px; }
+  .note-modal-title { font-size:16px; font-weight:600; color:#191b23; }
+  .note-modal-close { background:none; border:none; cursor:pointer; color:#727785; font-size:20px; line-height:1; padding:2px; border-radius:6px; }
+  .note-modal-close:hover { background:#f1f5f9; color:#191b23; }
+  .note-modal-date { font-size:12px; color:#727785; margin-bottom:16px; }
+  .note-view-wrap { background:#f2f3fd; border-radius:12px; padding:14px 16px; border-left:3px solid #6b38d4; margin-bottom:14px; }
+  .note-view-label { font-size:10px; font-weight:700; color:#6b38d4; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px; display:flex; align-items:center; gap:5px; }
+  .note-view-text { font-size:13px; color:#191b23; line-height:1.6; }
+  .note-textarea { width:100%; height:88px; resize:none; font-size:13px; padding:10px 14px; border-radius:10px; border:1px solid #e2e8f0; background:#f9f9ff; color:#191b23; font-family:'Inter',sans-serif; outline:none; transition:border-color 0.15s; }
+  .note-textarea:focus { border-color:#0058be; background:#fff; }
+  .note-modal-btns { display:flex; gap:8px; margin-top:14px; justify-content:flex-end; align-items:center; }
+  .btn-note-cancel { background:none; border:1px solid #e2e8f0; border-radius:10px; padding:8px 16px; font-size:13px; cursor:pointer; color:#424754; font-family:'Inter',sans-serif; transition:background 0.12s; }
+  .btn-note-cancel:hover { background:#f1f5f9; }
+  .btn-note-save { background:#0058be; border:none; border-radius:10px; padding:8px 16px; font-size:13px; cursor:pointer; color:#fff; font-weight:600; font-family:'Inter',sans-serif; transition:background 0.12s; }
+  .btn-note-save:hover { background:#004fa6; }
+  .btn-note-delete { background:none; border:1px solid #fca5a5; border-radius:10px; padding:8px 16px; font-size:13px; cursor:pointer; color:#ef4444; font-family:'Inter',sans-serif; transition:background 0.12s; }
+  .btn-note-delete:hover { background:#fef2f2; }
+  .btn-note-edit { background:none; border:1px solid #0058be; border-radius:10px; padding:8px 16px; font-size:13px; cursor:pointer; color:#0058be; font-weight:600; font-family:'Inter',sans-serif; transition:background 0.12s; display:flex; align-items:center; gap:5px; }
+  .btn-note-edit:hover { background:#e8f0fd; }
+
+  /* ── Charts ── */
+  .chart-filter-btn { padding:5px 14px; border-radius:8px; font-size:12px; font-weight:600; border:none; cursor:pointer; background:transparent; color:#727785; transition:background 0.12s,color 0.12s; }
+  .chart-filter-btn.active { background:#fff; color:#0058be; box-shadow:0 1px 4px rgba(0,0,0,0.1); }
+  .chart-filter-btn:hover:not(.active) { color:#191b23; }
+  .pie-legend-item { display:flex; align-items:center; gap:8px; font-size:12px; color:#191b23; }
+  .pie-legend-sq { width:10px; height:10px; border-radius:3px; flex-shrink:0; }
+  .pie-legend-pct { font-weight:600; color:#727785; font-size:11px; margin-left:auto; padding-left:12px; }
+  .line-legend-item { display:flex; align-items:center; gap:5px; font-size:11px; color:#424754; }
+  .line-legend-dot { width:10px; height:3px; border-radius:2px; flex-shrink:0; }
+
+  /* ── Author row ── */
+  .author-row { display:flex; gap:8px; align-items:center; }
+  .author-row .remove-author { flex-shrink:0; width:30px; height:30px; border-radius:8px; border:1px solid #fca5a5; background:none; cursor:pointer; color:#ef4444; display:flex; align-items:center; justify-content:center; transition:background 0.12s; font-size:14px; }
+  .author-row .remove-author:hover { background:#fef2f2; }
+
+  /* ── Category card ── */
+  .cat-card { display:flex; flex-direction:column; align-items:center; gap:13px; padding:32px 20px 28px; border-radius:18px; border:2px solid #e2e8f0; cursor:pointer; transition:all 0.18s; background:#fafafa; text-align:center; position:relative; overflow:hidden; }
+  .cat-card:hover { border-color:#0058be; background:#eff6ff; transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,88,190,0.14); }
+  .cat-card.selected { border-color:#0058be; background:#eff6ff; box-shadow:0 0 0 4px rgba(0,88,190,0.15); }
+  .cat-card .cat-icon { width:60px; height:60px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:28px; flex-shrink:0; }
+  .cat-card .cat-name { font-size:13px; font-weight:700; color:#191b23; line-height:1.35; }
+  .cat-card .cat-check { position:absolute; top:10px; right:10px; width:22px; height:22px; border-radius:50%; background:#0058be; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.15s,transform 0.15s; transform:scale(0.7); }
+  .cat-card.selected .cat-check { opacity:1; transform:scale(1); }
+
+  /* ── Review modal ── */
+  .review-row { display:flex; flex-direction:column; gap:2px; padding:10px 0; border-bottom:1px solid #f1f5f9; }
+  .review-row:last-child { border-bottom:none; }
+  .review-label { font-size:10px; font-weight:700; color:#727785; text-transform:uppercase; letter-spacing:0.08em; }
+  .review-value { font-size:13px; color:#191b23; font-weight:500; line-height:1.5; }
+  .review-badge { display:inline-flex; align-items:center; gap:5px; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:20px; padding:3px 10px; font-size:12px; font-weight:600; }
+  .cat-badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:600; }
+
+  /* ── Filter dropdown ── */
+  .filter-dropdown { position:absolute; z-index:100; background:#fff; border:1px solid #e1e2ec; border-radius:14px; padding:6px; box-shadow:0 10px 36px rgba(0,0,0,0.13); animation:filterDropIn 0.15s ease; }
+  @keyframes filterDropIn { from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none} }
+  .filter-opt { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:9px; cursor:pointer; font-size:13px; color:#424754; font-family:'Inter',sans-serif; transition:background 0.12s; border:none; background:none; width:100%; text-align:left; font-weight:500; }
+  .filter-opt:hover { background:#f2f3fd; color:#191b23; }
+  .filter-opt.active { background:#e8f0fd; color:#0058be; font-weight:700; }
+  .filter-opt .fo-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .filter-opt .fo-check { margin-left:auto; font-size:14px; color:#0058be; display:none; }
+  .filter-opt.active .fo-check { display:block; }
+  .filter-divider { height:1px; background:#f1f5f9; margin:4px 0; }
+
+  /* ── Live time display ── */
+  .live-time-badge { display:flex; align-items:center; gap:6px; background:#f2f3fd; border:1px solid #e1e2ec; border-radius:8px; padding:5px 11px; font-size:12px; font-weight:600; color:#424754; white-space:nowrap; flex-shrink:0; }
+  .live-time-badge i { color:#0058be; font-size:14px; }
+
+  /* ── Empty state ── */
+  .empty-state { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:36px 20px; text-align:center; }
+  .empty-state .es-icon { width:48px; height:48px; border-radius:14px; background:#f2f3fd; display:flex; align-items:center; justify-content:center; color:#0058be; font-size:22px; margin-bottom:2px; }
+  .empty-state h4 { font-size:14px; font-weight:600; color:#191b23; margin:0; }
+  .empty-state p { font-size:12px; color:#727785; line-height:1.5; max-width:200px; margin:0; }
+  .empty-state .es-cta { display:inline-flex; align-items:center; gap:5px; background:#0058be; color:#fff; border:none; border-radius:8px; padding:7px 14px; font-size:12px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif; transition:background 0.12s; margin-top:4px; }
+  .empty-state .es-cta:hover { background:#004fa6; }
+
+  /* ── Insight cards ── */
+  .insight-row { display:flex; flex-direction:column; gap:3px; padding:8px 0; border-bottom:1px solid #f2f3fd; }
+  .insight-row:last-child { border-bottom:none; }
+  .insight-label { font-size:10px; font-weight:700; color:#727785; text-transform:uppercase; letter-spacing:0.06em; }
+  .insight-value { font-size:13px; font-weight:600; color:#191b23; }
+  .insight-sub { font-size:11px; color:#727785; }
+
+  /* ── Loading skeleton ── */
+  .skeleton { background:linear-gradient(90deg,#f2f3fd 25%,#e6e7f2 50%,#f2f3fd 75%); background-size:200% 100%; animation:shimmer 1.5s infinite; border-radius:6px; }
+  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+  /* ── Responsive ── */
+  @media(max-width:768px){
+    aside { transform:translateX(-100%); transition:transform 0.3s; z-index:60; }
+    aside.open { transform:translateX(0); }
+    header { left:0!important; padding-left:1rem!important; }
+    main  { padding-left:1rem!important; }
+    .note-modal { width:calc(100vw - 32px); }
+  }
+</style>
+</head>
+<body class="bg-background font-body-md text-on-surface selection:bg-primary">
+
+<aside class="w-[260px] h-screen fixed left-0 top-0 border-r border-outline-variant bg-surface-container-lowest flex flex-col z-50">
+  <div class="flex items-center gap-3 px-5 py-5 border-b border-outline-variant">
+    <div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white flex-shrink-0">
+      <i class="ti ti-building-bank" style="font-size:18px;"></i>
+    </div>
+    <div>
+      <h1 class="text-sm font-semibold leading-tight text-on-surface">IP Management</h1>
+      <p class="text-[10px] text-on-surface-variant font-semibold tracking-widest uppercase">System</p>
+    </div>
+  </div>
+  <nav class="flex-1 overflow-y-auto px-3 pt-3 pb-2 space-y-2" aria-label="Primary navigation">
+    <a class="nav-item active" href="dashboard.html"><i class="ti ti-layout-dashboard"></i><span>Dashboard</span></a>
+    <div class="nav-section-label">IP Modules</div>
+    <a class="nav-item" href="copyright.html"><i class="ti ti-copyright"></i><span>Copyright</span></a>
+    <a class="nav-item" href="patent.html"><i class="ti ti-file-description"></i><span>Patent</span></a>
+    <a class="nav-item" href="trademark.html"><i class="ti ti-shield-check"></i><span>Trademark</span></a>
+    <a class="nav-item" href="utility-model.html"><i class="ti ti-settings-2"></i><span>Utility Model</span></a>
+    <a class="nav-item" href="industrial-design.html"><i class="ti ti-vector-bezier-2"></i><span>Industrial Design</span></a>
+    <div class="border-t border-slate-100 my-5"></div>
+    <div class="nav-section-label">General</div>
+    <a class="nav-item" href="event.html"><i class="ti ti-calendar-event"></i><span>Event</span></a>
+  </nav>
+</aside>
+
+<header class="fixed top-0 left-0 right-0 pl-[260px] z-40 bg-surface/80 backdrop-blur-md border-b border-outline-variant">
+  <div class="flex items-center justify-between h-[60px] w-full px-6 gap-4">
+
+    <div class="flex items-center gap-3 w-full">
+
+      <div class="relative flex-1" id="searchWrapper">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px] pointer-events-none transition-colors" id="searchIcon">search</span>
+
+        <span class="active-filter-chip" id="activeFilterChip" style="left:34px; top:50%; transform:translateY(-50%); display:none; position:absolute; align-items:center; gap:5px; background:#e8f0fd; border:1px solid #bfdbfe; border-radius:20px; padding:2px 8px 2px 6px; font-size:11px; font-weight:700; color:#0058be; pointer-events:none; white-space:nowrap; z-index:5;">
+          <span id="activeFilterChipText"></span>
+        </span>
+
+        <input id="globalSearch"
+          class="w-full h-[38px] bg-surface-container-lowest border border-outline-variant rounded-xl pl-10 pr-8 text-[13.5px] text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-on-surface-variant/60 shadow-sm"
+          placeholder="Search records, applications, or documents..."
+          type="text" autocomplete="off"/>
+
+        <button id="searchClearBtn" class="absolute right-2 top-1/2 -translate-y-1/2 bg-surface-variant hover:bg-outline-variant text-on-surface-variant rounded-full w-[20px] h-[20px] hidden items-center justify-center text-[12px] transition-colors" onclick="clearSearch()" title="Clear search">×</button>
+
+        <div id="searchDropdownMenu" class="absolute left-0 right-0 top-[calc(100%+6px)] bg-surface-container-lowest border border-outline-variant rounded-xl shadow-xl z-[100] hidden flex-col overflow-hidden max-h-[350px]">
+          <div id="searchDropdownContent" class="overflow-y-auto flex-1 p-2 space-y-1"></div>
+        </div>
+      </div>
+
+      <div class="relative shrink-0">
+        <button id="filterBtn" class="h-[38px] flex items-center gap-2 px-4 bg-surface-container-lowest border border-outline-variant rounded-xl text-[13px] font-semibold text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all shadow-sm" onclick="toggleFilterDropdown(event)" title="Filter by category">
+          <i class="ti ti-adjustments-horizontal text-[16px]"></i>
+          <span id="filterBtnLabel">All Categories</span>
+          <i class="ti ti-chevron-down text-[12px] transition-transform duration-200" id="filterChevron"></i>
+        </button>
+
+        <div class="filter-dropdown" id="filterDropdown" style="display:none; right:0; top:calc(100% + 6px); min-width:200px; position:absolute; z-index:100; background:#fff; border:1px solid #e1e2ec; border-radius:14px; padding:6px; box-shadow:0 10px 36px rgba(0,0,0,0.13); animation:filterDropIn 0.15s ease;">
+          <div style="padding:6px 10px 4px; font-size:10px; font-weight:700; color:#727785; text-transform:uppercase; letter-spacing:0.08em;">Filter by Category</div>
+          <button class="filter-opt active" data-cat="" onclick="setFilter('',this)">
+            <span class="fo-dot" style="background:#e1e2ec;"></span>All Categories<span class="material-symbols-outlined fo-check">check</span>
+          </button>
+          <div class="filter-divider"></div>
+          <button class="filter-opt" data-cat="copyright" onclick="setFilter('copyright',this)">
+            <span class="fo-dot" style="background:#0058be;"></span>Copyright<span class="material-symbols-outlined fo-check">check</span>
+          </button>
+          <button class="filter-opt" data-cat="patent" onclick="setFilter('patent',this)">
+            <span class="fo-dot" style="background:#6b38d4;"></span>Patent<span class="material-symbols-outlined fo-check">check</span>
+          </button>
+          <button class="filter-opt" data-cat="trademark" onclick="setFilter('trademark',this)">
+            <span class="fo-dot" style="background:#059669;"></span>Trademark<span class="material-symbols-outlined fo-check">check</span>
+          </button>
+          <button class="filter-opt" data-cat="utility-model" onclick="setFilter('utility-model',this)">
+            <span class="fo-dot" style="background:#924700;"></span>Utility Model<span class="material-symbols-outlined fo-check">check</span>
+          </button>
+          <button class="filter-opt" data-cat="industrial-design" onclick="setFilter('industrial-design',this)">
+            <span class="fo-dot" style="background:#dc2626;"></span>Industrial Design<span class="material-symbols-outlined fo-check">check</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4 shrink-0">
+      <div class="live-time-badge">
+        <i class="ti ti-clock"></i>
+        <span id="liveClockDisplay">--:-- --</span>
+      </div>
+      <div class="h-6 w-px bg-outline-variant"></div>
+      
+      <div class="relative shrink-0" id="profileMenuWrapper">
+        <div onclick="toggleProfileDropdown(event)" class="w-9 h-9 rounded-full bg-secondary-fixed flex items-center justify-center overflow-hidden border-2 border-surface-container-highest cursor-pointer hover:ring-2 hover:ring-primary/30 transition-all shadow-sm">
+          <img alt="User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtS5si_PKG24Rw7q2_w4G1LPgv4qZ0IDFv16X_sDHSIjKkiAvbUb3IIhf7YLBfH-7mHmFgZxUFTm08OHMNK-fJM39n7IMRjiQC0aLPn-iu_zUj9DSGvVH0k1zRrb2-Ff38yVqqujD62M_WBdGWAnjmztqqh7JKfgo6XB2iQiIhySjsanYZ0WHfMu-51IhL-6xuSrra_gVjemHRGltkhHYPY0qF7bPm_irHwKJB7jsWNq0A9KMjRrphtmHInv9EjHoOZ_dtL46pTA"/>
+        </div>
+        
+        <div id="profileDropdown" class="hidden absolute right-0 top-[calc(100%+8px)] min-w-[160px] bg-white border border-slate-200 rounded-xl p-1.5 shadow-xl z-50">
+          <button onclick="window.location.href='index.html'" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] font-semibold text-red-600 hover:bg-red-50 transition-colors text-left">
+            <i class="ti ti-logout" style="font-size:16px;"></i><span>Log Out</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</header>
+
+<main id="mainContent" class="pl-[280px] pt-[76px] min-h-screen" style="opacity:0;transition:opacity 0.6s ease-out,transform 0.6s ease-out;transform:translateY(8px)">
+  <div class="py-6 px-8 max-w-[1440px]">
+
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h2 id="dynamicGreeting" class="text-[28px] font-bold leading-tight text-on-surface tracking-tight">Good Morning, Justine!</h2>
+        <p class="text-[14px] text-on-surface-variant mt-1">Monitor your intellectual property portfolio with real-time analytics.</p>
+      </div>
+      <div class="flex gap-3 items-center">
+        <button onclick="openCategoryModal()" class="h-[40px] px-5 bg-primary text-white rounded-xl font-semibold text-[13px] flex items-center gap-2 hover:opacity-90 transition-all shadow-md shadow-primary/20">
+          <span class="material-symbols-outlined text-[18px]">add</span>Add Research
+        </button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-12 gap-6">
+
+      <div class="col-span-12 md:col-span-6 lg:col-span-3 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col" style="border-left:3px solid #0058be;">
+        <div class="flex flex-col justify-between h-full p-4 gap-2">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <div class="p-1.5 rounded-lg" style="background:#e8f0fd;"><span class="material-symbols-outlined text-[18px]" style='color:#0058be;font-variation-settings:"FILL" 1;'>copyright</span></div>
+              <span class="text-[10px] font-semibold uppercase tracking-widest text-on-surface-variant">Copyright</span>
+            </div>
+            <span id="trend-copyright" class="text-[10px] font-bold flex items-center gap-0.5" style="color:#924700;">
+              <span class="material-symbols-outlined" style="font-size:12px;">trending_flat</span><span>—</span>
+            </span>
+          </div>
+          <div>
+            <p class="text-[28px] font-bold leading-none text-on-surface tracking-tight" id="stat-copyright">
+              <span class="skeleton inline-block w-12 h-7 align-middle"></span>
+            </p>
+            <p class="text-[11px] text-on-surface-variant mt-1">Applications filed</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-span-12 md:col-span-6 lg:col-span-3 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col" style="border-left:3px solid #6b38d4;">
+        <div class="flex flex-col justify-between h-full p-4 gap-2">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <div class="p-1.5 rounded-lg" style="background:#f2edfd;"><span class="material-symbols-outlined text-[18px]" style='color:#6b38d4;font-variation-settings:"FILL" 1;'>description</span></div>
+              <span class="text-[10px] font-semibold uppercase tracking-widest text-on-surface-variant">Patent</span>
+            </div>
+            <span id="trend-patent" class="text-[10px] font-bold flex items-center gap-0.5" style="color:#924700;">
+              <span class="material-symbols-outlined" style="font-size:12px;">trending_flat</span><span>—</span>
+            </span>
+          </div>
+          <div>
+            <p class="text-[28px] font-bold leading-none text-on-surface tracking-tight" id="stat-patent">
+              <span class="skeleton inline-block w-12 h-7 align-middle"></span>
+            </p>
+            <p class="text-[11px] text-on-surface-variant mt-1">Applications filed</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-span-12 md:col-span-6 lg:col-span-3 flex flex-col gap-2.5">
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant flex items-center gap-3 px-4 py-3 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all duration-300 cursor-pointer flex-1">
+          <div class="p-1.5 rounded-lg flex-shrink-0" style="background:#d1fae5;"><span class="material-symbols-outlined text-[16px]" style="color:#059669;font-variation-settings:'FILL' 1;">verified_user</span></div>
+          <div class="flex-1 min-w-0">
+            <h3 class="text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold leading-none mb-0.5">Trademark</h3>
+            <p class="text-[20px] font-bold leading-none text-on-surface" id="stat-trademark"><span class="skeleton inline-block w-8 h-5 align-middle"></span></p>
+          </div>
+          <span id="trend-trademark" class="text-[10px] font-bold flex items-center gap-0.5 flex-shrink-0" style="color:#059669;">
+            <span class="material-symbols-outlined" style="font-size:12px;">trending_flat</span><span>—</span>
+          </span>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant flex items-center gap-3 px-4 py-3 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all duration-300 cursor-pointer flex-1">
+          <div class="p-1.5 rounded-lg flex-shrink-0" style="background:#f2edfd;"><span class="material-symbols-outlined text-[16px]" style="color:#6b38d4;font-variation-settings:'FILL' 1;">settings_applications</span></div>
+          <div class="flex-1 min-w-0">
+            <h3 class="text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold leading-none mb-0.5">Utility Model</h3>
+            <p class="text-[20px] font-bold leading-none text-on-surface" id="stat-utility"><span class="skeleton inline-block w-8 h-5 align-middle"></span></p>
+          </div>
+          <span id="trend-utility" class="text-[10px] font-bold flex items-center gap-0.5 flex-shrink-0" style="color:#924700;">
+            <span class="material-symbols-outlined" style="font-size:12px;">trending_flat</span><span>—</span>
+          </span>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant flex items-center gap-3 px-4 py-3 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all duration-300 cursor-pointer flex-1">
+          <div class="p-1.5 rounded-lg flex-shrink-0" style="background:#e8f0fd;"><span class="material-symbols-outlined text-[16px]" style="color:#0058be;font-variation-settings:'FILL' 1;">draw</span></div>
+          <div class="flex-1 min-w-0">
+            <h3 class="text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold leading-none mb-0.5">Ind. Design</h3>
+            <p class="text-[20px] font-bold leading-none text-on-surface" id="stat-design"><span class="skeleton inline-block w-8 h-5 align-middle"></span></p>
+          </div>
+          <span id="trend-design" class="text-[10px] font-bold flex items-center gap-0.5 flex-shrink-0 text-on-surface-variant/40">
+            <span class="material-symbols-outlined" style="font-size:12px;">trending_flat</span><span>—</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="col-span-12 lg:col-span-3 bg-surface-container-lowest border-2 border-outline-variant p-4 rounded-xl flex flex-col relative overflow-visible hover:-translate-y-1 hover:shadow-lg transition-all duration-300 shadow-sm">
+        <div class="relative z-10 flex flex-col h-full">
+          <div class="cal-header">
+            <button class="cal-nav-btn" id="calPrev" aria-label="Previous month">‹</button>
+            <div style="position:relative;">
+              <button class="cal-month-label" id="calMonthLabel" onclick="toggleMonthPicker(event)">
+                <span id="calMonthText"></span>
+                <span class="material-symbols-outlined cal-chevron" style="font-size:14px;">expand_more</span>
+              </button>
+              <div class="cal-month-picker" id="calMonthPicker">
+                <div class="mp-year-row">
+                  <button class="mp-year-btn" id="mpPrevYear">‹</button>
+                  <span class="mp-year-val" id="mpYearVal"></span>
+                  <button class="mp-year-btn" id="mpNextYear">›</button>
+                </div>
+                <div class="mp-months" id="mpMonths"></div>
+              </div>
+            </div>
+            <button class="cal-nav-btn" id="calNext" aria-label="Next month">›</button>
+          </div>
+          <div class="border-t border-outline-variant mb-2"></div>
+          <div class="cal-grid" id="calGrid">
+            <div class="cal-day-label">Su</div><div class="cal-day-label">Mo</div><div class="cal-day-label">Tu</div>
+            <div class="cal-day-label">We</div><div class="cal-day-label">Th</div><div class="cal-day-label">Fr</div><div class="cal-day-label">Sa</div>
+          </div>
+          <div class="mt-auto pt-3" id="calUpcoming"></div>
+        </div>
+      </div>
+
+      <div class="col-span-12 glass-panel rounded-2xl p-6 shadow-sm lg:col-span-6 hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+        <div class="flex justify-between items-start mb-3">
+          <div>
+            <h3 class="text-[16px] font-semibold text-on-surface">Submissions Over Time</h3>
+            <p class="text-[13px] text-on-surface-variant mt-0.5">Volume of IP documents filed across all categories</p>
+          </div>
+          <div class="flex bg-surface-container-high rounded-lg p-1">
+            <button class="chart-filter-btn" data-period="weekly">Weekly</button>
+            <button class="chart-filter-btn active" data-period="monthly">Monthly</button>
+            <button class="chart-filter-btn" data-period="yearly">Yearly</button>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-4 mb-4" id="lineLegend"></div>
+        <div id="lineChartLoading" style="position:relative;width:100%;height:200px;" class="flex items-center justify-center">
+          <div class="skeleton w-full h-full rounded-xl"></div>
+        </div>
+        <div id="lineChartEmpty" style="display:none;">
+          <div class="empty-state">
+            <div class="es-icon"><i class="ti ti-chart-line" style="font-size:22px;"></i></div>
+            <h4>No submission data yet</h4>
+            <p>Chart will populate as research records are added.</p>
+            <button class="es-cta" onclick="openCategoryModal()"><span class="material-symbols-outlined text-[14px]">add</span>Add Research</button>
+          </div>
+        </div>
+        <div id="lineChartError" style="display:none;">
+          <div class="empty-state">
+            <div class="es-icon" style="background:#fee2e2;color:#ef4444;"><i class="ti ti-alert-circle" style="font-size:22px;"></i></div>
+            <h4>Could not load chart</h4>
+            <p id="lineChartErrorMsg">Unable to reach the server. Check your connection.</p>
+            <button class="es-cta" style="background:#ef4444;" onclick="loadDashboardData()"><span class="material-symbols-outlined text-[14px]">refresh</span>Retry</button>
+          </div>
+        </div>
+        <div id="lineChartWrap" style="position:relative;width:100%;height:200px;display:none;"><canvas id="lineChart"></canvas></div>
+      </div>
+
+      <div class="col-span-12 lg:col-span-6 glass-panel rounded-2xl p-6 shadow-sm flex flex-col hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+        <div class="flex justify-between items-center mb-5">
+          <div>
+            <h3 class="text-[16px] font-semibold text-on-surface">Submissions by College</h3>
+            <p class="text-[13px] text-on-surface-variant mt-0.5">Distribution of IP filings per college</p>
+          </div>
+          <button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full"><span class="material-symbols-outlined text-[20px]">more_vert</span></button>
+        </div>
+        <div id="pieChartLoading" class="flex flex-1 items-center justify-center">
+          <div class="skeleton w-full rounded-xl" style="height:160px;"></div>
+        </div>
+        <div id="pieChartEmpty" style="display:none;" class="flex-1 flex items-center justify-center">
+          <div class="empty-state">
+            <div class="es-icon"><i class="ti ti-chart-pie" style="font-size:22px;"></i></div>
+            <h4>No college data yet</h4>
+            <p>Breakdown will appear once submissions are recorded.</p>
+            <button class="es-cta" onclick="openCategoryModal()"><span class="material-symbols-outlined text-[14px]">add</span>Add Research</button>
+          </div>
+        </div>
+        <div id="pieChartWrap" style="display:none;" class="flex flex-1 items-center justify-center gap-10">
+          <div style="position:relative;width:160px;height:160px;flex-shrink:0;"><canvas id="pieChart"></canvas></div>
+          <div class="flex flex-col gap-3" id="pieLegend"></div>
+        </div>
+      </div>
+
+      <div class="col-span-12 lg:col-span-4 bg-surface-container-lowest rounded-2xl p-6 border border-outline-variant shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+        <div class="flex items-center gap-2 mb-4">
+          <div class="p-1.5 rounded-lg" style="background:#e8f0fd;"><span class="material-symbols-outlined text-[18px]" style="color:#0058be;font-variation-settings:'FILL' 1;">insights</span></div>
+          <h3 class="text-[15px] font-semibold text-on-surface">Quick Insights</h3>
+        </div>
+        <div id="insightsLoading" class="space-y-3">
+          <div class="skeleton h-10 rounded-lg"></div>
+          <div class="skeleton h-10 rounded-lg"></div>
+          <div class="skeleton h-10 rounded-lg"></div>
+          <div class="skeleton h-10 rounded-lg"></div>
+        </div>
+        <div id="insightsContent" style="display:none;"></div>
+        <div id="insightsEmpty" style="display:none;">
+          <div class="empty-state" style="padding:20px 0;">
+            <div class="es-icon"><i class="ti ti-info-circle" style="font-size:22px;"></i></div>
+            <h4>No data yet</h4>
+            <p>Insights appear once records are added.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-2xl p-6 border border-outline-variant shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <div class="p-1.5 rounded-lg" style="background:#f2edfd;"><span class="material-symbols-outlined text-[18px]" style="color:#6b38d4;font-variation-settings:'FILL' 1;">history</span></div>
+            <h3 class="text-[15px] font-semibold text-on-surface">Recent Submissions</h3>
+          </div>
+          <span class="text-[11px] text-on-surface-variant" id="recentSubtitle"></span>
+        </div>
+        <div id="recentLoading" class="space-y-2">
+          <div class="skeleton h-12 rounded-lg"></div>
+          <div class="skeleton h-12 rounded-lg"></div>
+          <div class="skeleton h-12 rounded-lg"></div>
+        </div>
+        <div id="recentEmpty" style="display:none;">
+          <div class="empty-state" style="padding:20px 0;">
+            <div class="es-icon"><i class="ti ti-files" style="font-size:22px;"></i></div>
+            <h4>No submissions yet</h4>
+            <p>Your most recent records will appear here.</p>
+            <button class="es-cta" onclick="openCategoryModal()"><span class="material-symbols-outlined text-[14px]">add</span>Add Research</button>
+          </div>
+        </div>
+        <div id="recentList" style="display:none;" class="space-y-2"></div>
+      </div>
+
+    </div></div>
+</main>
+
+<div class="note-overlay" id="noteOverlay" role="dialog" aria-modal="true">
+  <div class="note-modal">
+    <div class="note-modal-header">
+      <span class="note-modal-title" id="noteTitleEl">Day Details</span>
+      <button class="note-modal-close" onclick="closeNoteModal()">×</button>
+    </div>
+    <div class="note-modal-date" id="noteDateEl"></div>
+    <div id="noteViewMode">
+      <div id="noteViewContent"></div>
+      <div id="noteEmptyMsg" class="hidden text-[13px] text-on-surface-variant text-center py-4 px-2 rounded-xl bg-slate-50 border border-dashed border-slate-200">No reminder set for this day.</div>
+      <div class="note-modal-btns" id="noteViewBtns"></div>
+    </div>
+    <div id="noteEditMode" class="hidden">
+      <textarea class="note-textarea" id="noteTextarea" placeholder="Add a reminder or note…"></textarea>
+      <div class="note-modal-btns" id="noteEditBtns">
+        <button class="btn-note-delete" id="noteDeleteBtn" onclick="deleteNote()">Delete</button>
+        <button class="btn-note-cancel" onclick="cancelEditNote()">Cancel</button>
+        <button class="btn-note-save" onclick="saveNote()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="category-modal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 bg-slate-950/40 backdrop-blur-sm">
+  <div class="relative w-full max-w-3xl rounded-2xl bg-white shadow-2xl overflow-hidden flex flex-col" style="animation:modalIn 0.22s ease;">
+    <div class="px-8 py-6 border-b border-slate-100 flex items-start justify-between gap-4">
+      <div>
+        <h2 class="text-[20px] font-bold text-on-surface">Select IP Category</h2>
+        <p class="text-[13px] text-on-surface-variant mt-1">Choose the type of intellectual property you want to register.</p>
+      </div>
+      <button onclick="closeCategoryModal()" class="p-2 hover:bg-slate-100 rounded-full transition-colors text-outline flex-shrink-0">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+    <div class="px-8 py-8">
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-5" id="catGrid"></div>
+    </div>
+    <div class="px-8 pb-7 pt-2 flex gap-3 justify-end border-t border-slate-100">
+      <button onclick="closeCategoryModal()" class="px-5 py-2.5 text-[13px] font-semibold text-on-surface-variant border border-slate-200 rounded-xl hover:bg-slate-100 transition-all">Cancel</button>
+      <button onclick="confirmCategory()" id="catNextBtn" class="px-6 py-2.5 text-[13px] font-bold text-white bg-primary rounded-xl hover:bg-blue-700 transition-all opacity-50 cursor-not-allowed" disabled>
+        Continue <span class="material-symbols-outlined text-[15px] align-middle">arrow_forward</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="research-modal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 bg-slate-950/40 backdrop-blur-sm">
+  <div class="relative w-full max-w-2xl rounded-2xl bg-white shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div class="px-7 py-5 border-b border-slate-200 flex items-start justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2 mb-3">
+          <button onclick="backToCategory()" class="text-[11px] text-primary font-semibold hover:underline flex items-center gap-1"><span class="material-symbols-outlined text-[13px]">arrow_back</span>Change Category</button>
+          <span class="text-[11px] text-outline">›</span>
+          <span id="rm-cat-badge" class="cat-badge text-[11px]"></span>
+        </div>
+        <h2 class="text-[17px] font-bold text-on-surface">New Research Submission</h2>
+        <p class="text-[12px] text-on-surface-variant mt-0.5">Fill in the details below. Status is pre-set and cannot be changed.</p>
+      </div>
+      <button onclick="hideResearchModal()" class="p-2 hover:bg-slate-100 rounded-full transition-colors text-outline flex-shrink-0">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+    <div class="p-7 overflow-y-auto space-y-5 flex-1">
+      <div>
+        <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Research Title</label>
+        <textarea id="rm-title" rows="2" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-[13px] text-on-surface resize-none focus:border-primary focus:ring-2 focus:ring-primary/10 focus:bg-white outline-none transition-all placeholder:text-outline" placeholder="Enter the full research title…"></textarea>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Reference Number</label>
+          <input id="rm-id" type="text" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-[13px] text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/10 focus:bg-white outline-none transition-all placeholder:text-outline" placeholder="e.g. 2026-12345"/>
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">College</label>
+          <select id="rm-college" onchange="updateDeptOptions()" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-[13px] text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/10 focus:bg-white outline-none transition-all appearance-none">
+            <option value="" disabled selected>Select College</option>
+            <option value="College of Computer Studies">College of Computer Studies</option>
+            <option value="College of Engineering">College of Engineering</option>
+            <option value="College of Accounting">College of Accounting</option>
+            <option value="College of Business">College of Business</option>
+            <option value="College of Education">College of Education</option>
+          </select>
+        </div>
+      </div>
+      <div id="rm-dept-wrap" class="hidden grid grid-cols-1 gap-4">
+        <div>
+          <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Department</label>
+          <select id="rm-dept" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-[13px] text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/10 focus:bg-white outline-none transition-all appearance-none"></select>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Date of Application</label>
+          <input id="rm-date" type="date" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-[13px] text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/10 focus:bg-white outline-none transition-all"/>
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Status</label>
+          <input type="text" value="Submitted to IPOPHL" readonly class="w-full rounded-xl border border-blue-100 bg-blue-50 px-4 py-2.5 text-[13px] font-semibold text-blue-700 cursor-not-allowed outline-none"/>
+        </div>
+      </div>
+      <div>
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <label class="text-[10px] font-bold text-outline uppercase tracking-widest">Authors</label>
+            <span id="rm-author-count" class="text-[10px] font-semibold text-on-surface-variant bg-surface-container-highest rounded-full px-2 py-0.5">0 / 20</span>
+          </div>
+          <button onclick="addAuthorField()" id="rm-add-author-btn" type="button" class="flex items-center gap-1 text-[11px] font-semibold text-primary hover:text-blue-700 transition-colors">
+            <span class="material-symbols-outlined text-[14px]">add</span> Add Author
+          </button>
+        </div>
+        <div id="rm-authors" class="space-y-2.5"></div>
+        <p id="rm-author-error" class="hidden text-[11px] font-semibold text-red-500 mt-2 flex items-center gap-1">
+          <span class="material-symbols-outlined text-[13px]">error</span>
+          <span id="rm-author-error-text"></span>
+        </p>
+        <p id="rm-author-hint" class="text-[11px] text-outline mt-2">Add at least one author (max 20). Paste multiple names on separate lines and they'll split automatically.</p>
+      </div>
+    </div>
+    <div class="px-7 py-5 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-3">
+      <p id="rm-error" class="text-[12px] text-red-500 hidden"></p>
+      <div class="flex gap-3 ml-auto">
+        <button onclick="hideResearchModal()" type="button" class="px-5 py-2.5 text-[13px] font-semibold text-on-surface-variant border border-slate-200 rounded-xl hover:bg-slate-100 transition-all">Cancel</button>
+        <button onclick="reviewResearchEntry()" type="button" class="px-6 py-2.5 text-[13px] font-bold text-white bg-primary rounded-xl hover:bg-blue-700 hover:-translate-y-0.5 transition-all">Review & Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="review-modal" class="fixed inset-0 z-[65] hidden items-center justify-center p-4 bg-slate-950/50 backdrop-blur-sm">
+  <div class="w-full max-w-md rounded-2xl bg-white shadow-2xl overflow-hidden flex flex-col" style="animation:modalIn 0.22s ease;">
+    <div class="px-6 pt-6 pb-4 border-b border-slate-100">
+      <div class="flex items-center gap-3 mb-1">
+        <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-[20px] text-primary" style="font-variation-settings:'FILL' 1;">fact_check</span>
+        </div>
+        <div>
+          <h3 class="text-[16px] font-bold text-on-surface">Review Submission</h3>
+          <p class="text-[11px] text-on-surface-variant">Please confirm the details before saving.</p>
+        </div>
+      </div>
+    </div>
+    <div class="px-6 py-4 overflow-y-auto max-h-[55vh]">
+      <div class="space-y-1">
+        <div class="review-row"><span class="review-label">IP Category</span><div id="rv-cat" class="mt-1"></div></div>
+        <div class="review-row"><span class="review-label">Research Title</span><span class="review-value" id="rv-title">—</span></div>
+        <div class="grid grid-cols-2">
+          <div class="review-row pr-4"><span class="review-label">Reference No.</span><span class="review-value font-mono" id="rv-id">—</span></div>
+          <div class="review-row pl-4 border-l border-slate-100"><span class="review-label">Date</span><span class="review-value" id="rv-date">—</span></div>
+        </div>
+        <div class="review-row"><span class="review-label">Department</span><span class="review-value" id="rv-dept">—</span></div>
+        <div class="review-row"><span class="review-label">Status</span><span class="review-badge"><span class="material-symbols-outlined text-[13px]">send</span>Submitted to IPOPHL</span></div>
+        <div class="review-row"><span class="review-label">Authors</span><div id="rv-authors" class="flex flex-wrap gap-1.5 mt-1"></div></div>
+      </div>
+    </div>
+    <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex gap-3 justify-end">
+      <button onclick="backToResearchFromReview()" type="button" class="px-5 py-2.5 text-[13px] font-semibold text-on-surface-variant border border-slate-200 rounded-xl hover:bg-slate-100 transition-all flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-[15px]">arrow_back</span> Back
+      </button>
+      <button onclick="confirmResearchEntry()" type="button" class="px-6 py-2.5 text-[13px] font-bold text-white bg-primary rounded-xl hover:bg-blue-700 hover:-translate-y-0.5 transition-all flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-[15px]">check</span> Confirm & Save
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="success-modal" class="fixed inset-0 z-[70] hidden items-center justify-center p-4 bg-slate-950/40 backdrop-blur-sm">
+  <div class="w-full max-w-sm rounded-2xl bg-white shadow-2xl p-8 text-center" style="animation:modalIn 0.22s ease;">
+    <div class="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+      <span class="material-symbols-outlined text-3xl" style="font-variation-settings:'FILL' 1;">check_circle</span>
+    </div>
+    <h3 class="text-[17px] font-bold text-on-surface mb-2">Research Saved!</h3>
+    <p class="text-[13px] text-on-surface-variant mb-6">Your submission was recorded successfully and can be reviewed in the registry.</p>
+    <div class="flex gap-3">
+      <button onclick="closeSuccessModal()" class="flex-1 py-2.5 text-[13px] font-semibold text-on-surface-variant border border-slate-200 rounded-xl hover:bg-slate-100 transition-colors">Close</button>
+      <button onclick="viewResearch()" class="flex-1 py-2.5 text-[13px] font-bold text-white bg-primary rounded-xl hover:bg-blue-700 transition-colors">View Research</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+/* ═══════════════════════════════════════════
+   CONFIG
+═══════════════════════════════════════════ */
+const API_BASE = 'http://localhost:5000/api';
+const CALENDAR_API = 'http://localhost:5000/api/calendar'; 
+
+const MAX_AUTHORS = 20;
+
+const PH_HOLIDAYS = {
+  '01-01': 'New Year\'s Day',
+  '04-09': 'Araw ng Kagitingan',
+  '05-01': 'Labor Day',
+  '06-12': 'Independence Day',
+  '08-21': 'Ninoy Aquino Day',
+  '08-31': 'National Heroes Day',
+  '11-01': 'All Saints\' Day',
+  '11-30': 'Bonifacio Day',
+  '12-08': 'Feast of the Immaculate Conception',
+  '12-25': 'Christmas Day',
+  '12-30': 'Rizal Day'
+};
+
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  const main = document.getElementById('mainContent');
+  setTimeout(() => { main.style.opacity='1'; main.style.transform='translateY(0)'; }, 80);
+  buildCalendar();
+  renderCategoryCards();
+  startLiveClock();
+  updateGreeting();
+  initSearch();
+  loadDashboardData(); 
+});
+
+/* ═══════════════════════════════════════════
+   LIVE CLOCK & GREETING
+═══════════════════════════════════════════ */
+function startLiveClock() {
+  function tick() {
+    const n = new Date();
+    let h = n.getHours(), m = n.getMinutes(), s = n.getSeconds();
+    const ap = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    document.getElementById('liveClockDisplay').textContent =
+      `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')} ${ap}`;
+  }
+  tick(); setInterval(tick, 1000);
+}
+
+function updateGreeting() {
+  const h = new Date().getHours();
+  let greeting = 'Good Evening';
+  if (h < 12) greeting = 'Good Morning';
+  else if (h < 18) greeting = 'Good Afternoon';
+  
+  const greetingEl = document.getElementById('dynamicGreeting');
+  if (greetingEl) greetingEl.textContent = `${greeting}, Justine!`;
+}
+
+function toggleProfileDropdown(e) {
+  e.stopPropagation();
+  const dd = document.getElementById('profileDropdown');
+  dd.classList.toggle('hidden');
+}
+
+/* ═══════════════════════════════════════════
+   SEARCH
+═══════════════════════════════════════════ */
+let _allRecords = [];   
+let _activeFilter = ''; 
+const CATEGORY_ROUTES={
+  'copyright':'copyright.html',
+  'patent':'patent.html',
+  'trademark':'trademark.html',
+  'utility-model':'utility-model.html',
+  'industrial-design':'industrial-design.html'
+};
+
+function toggleFilterDropdown(e) {
+  e.stopPropagation();
+  const dd = document.getElementById('filterDropdown');
+  const chevron = document.getElementById('filterChevron');
+  const isOpen = dd.style.display !== 'none';
+  dd.style.display = isOpen ? 'none' : 'block';
+  chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+}
+
+document.addEventListener('click', function(e) {
+  const wrapper = document.getElementById('searchWrapper');
+  const filterBtnContainer = document.getElementById('filterBtn').parentElement;
+  
+  if (filterBtnContainer && !filterBtnContainer.contains(e.target)) {
+    const dd = document.getElementById('filterDropdown');
+    if (dd) { dd.style.display = 'none'; document.getElementById('filterChevron').style.transform = ''; }
+  }
+  
+  if (wrapper && !wrapper.contains(e.target)) {
+    const searchDd = document.getElementById('searchDropdownMenu');
+    if (searchDd) { searchDd.classList.add('hidden'); searchDd.classList.remove('flex'); }
+  }
+
+  const profileWrapper = document.getElementById('profileMenuWrapper');
+  if (profileWrapper && !profileWrapper.contains(e.target)) {
+    const profileDd = document.getElementById('profileDropdown');
+    if (profileDd) { profileDd.classList.add('hidden'); }
+  }
+});
+
+const FILTER_COLORS = {
+  'copyright':         '#0058be',
+  'patent':            '#6b38d4',
+  'trademark':         '#059669',
+  'utility-model':     '#924700',
+  'industrial-design': '#dc2626',
+};
+const FILTER_LABELS = {
+  'copyright':         'Copyright',
+  'patent':            'Patent',
+  'trademark':         'Trademark',
+  'utility-model':     'Utility Model',
+  'industrial-design': 'Industrial Design',
+};
+const FILTER_SHORT = {
+  'copyright':         'Copyright',
+  'patent':            'Patent',
+  'trademark':         'Trademark',
+  'utility-model':     'Utility Model',
+  'industrial-design': 'Ind. Design',
+};
+
+function setFilter(cat, el) {
+  _activeFilter = cat;
+  document.querySelectorAll('.filter-opt').forEach(o => o.classList.toggle('active', o.dataset.cat === cat));
+  const btn      = document.getElementById('filterBtn');
+  const label    = document.getElementById('filterBtnLabel');
+  const chip     = document.getElementById('activeFilterChip');
+  const chipText = document.getElementById('activeFilterChipText');
+  const input    = document.getElementById('globalSearch');
+
+  if (cat) {
+    btn.classList.add('active', 'text-primary');
+    label.textContent = FILTER_SHORT[cat];
+    chip.style.display = 'flex';
+    chip.style.background   = FILTER_COLORS[cat] + '18';
+    chip.style.borderColor  = FILTER_COLORS[cat] + '66';
+    chip.style.color        = FILTER_COLORS[cat];
+    chipText.textContent    = FILTER_LABELS[cat];
+    input.style.paddingLeft = '130px';
+    input.placeholder       = `Search in ${FILTER_LABELS[cat]}...`;
+  } else {
+    btn.classList.remove('active', 'text-primary');
+    label.textContent       = 'All Categories';
+    chip.style.display      = 'none';
+    input.style.paddingLeft = '2.5rem'; 
+    input.placeholder       = 'Search records, applications, or documents...';
+  }
+  document.getElementById('filterDropdown').style.display = 'none';
+  document.getElementById('filterChevron').style.transform = '';
+  runSearch();
+}
+
+function initSearch() {
+  const input = document.getElementById('globalSearch');
+  input.addEventListener('input', runSearch);
+  input.addEventListener('focus', () => {
+    document.getElementById('searchIcon').style.color = '#0058be';
+    if (input.value.trim()) runSearch(); 
+  });
+  input.addEventListener('blur', () => {
+    document.getElementById('searchIcon').style.color = '';
+  });
+}
+
+function runSearch() {
+  const input = document.getElementById('globalSearch');
+  const clearBtn = document.getElementById('searchClearBtn');
+  const dropdownMenu = document.getElementById('searchDropdownMenu');
+  const dropdownContent = document.getElementById('searchDropdownContent');
+  const q = input.value.trim().toLowerCase();
+
+  clearBtn.style.display = q ? 'flex' : 'none';
+
+  let pool = _activeFilter
+    ? _allRecords.filter(r => (r.category||'').toLowerCase().replace(/\s+/g,'-') === _activeFilter)
+    : _allRecords;
+
+  if (!q) {
+    dropdownMenu.classList.add('hidden');
+    dropdownMenu.classList.remove('flex');
+    return;
+  }
+
+  const hits = pool.filter(r =>
+    (r.researchTitle||r.title||'').toLowerCase().includes(q) ||
+    (r.referenceId||'').toLowerCase().includes(q) ||
+    (r.department||'').toLowerCase().includes(q) ||
+    (r.college||'').toLowerCase().includes(q) ||
+    (r.status||'').toLowerCase().includes(q) ||
+    (Array.isArray(r.authors) ? r.authors.join(' ').toLowerCase().includes(q) : false)
+  );
+
+  dropdownMenu.classList.remove('hidden');
+  dropdownMenu.classList.add('flex');
+  dropdownContent.innerHTML = '';
+
+  if (hits.length === 0) {
+    dropdownContent.innerHTML = `<div class="px-4 py-3 text-[13px] text-on-surface-variant text-center">No records found matching "${input.value}"</div>`;
+    return;
+  }
+
+  const displayHits = hits.slice(0, 10);
+
+  displayHits.forEach(r => {
+    const title = r.researchTitle || r.title || '(Untitled)';
+    const rawCat = (r.category||'Unknown');
+    const catFormatted = rawCat.toLowerCase().trim().replace(/\s+/g,'-');
+    const catLabel = rawCat.replace(/-/g,' ').replace(/\b\w/g,l=>l.toUpperCase());
+    
+    const item = document.createElement('div');
+    item.className = 'flex flex-col px-3 py-2 hover:bg-surface-container-low rounded-lg cursor-pointer transition-colors';
+    item.innerHTML = `
+      <div class="flex justify-between items-center mb-0.5">
+        <span class="text-[13px] font-semibold text-on-surface truncate">${title}</span>
+        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-surface-container-highest text-primary whitespace-nowrap ml-2">${catLabel}</span>
+      </div>
+      <span class="text-[11px] text-on-surface-variant truncate">${r.referenceId || 'No ID'} • ${r.college||(r.department?r.department.split('—')[0].split('--')[0].trim():'')||'—'}</span>
+    `;
+    
+    item.addEventListener('click', () => {
+      dropdownMenu.classList.add('hidden');
+      sessionStorage.setItem('highlightResearchId', r.referenceId);
+      window.location.href = CATEGORY_ROUTES[catFormatted] || 'copyright.html';
+    });
+
+    dropdownContent.appendChild(item);
+  });
+
+  if (hits.length > 10) {
+    const more = document.createElement('div');
+    more.className = 'px-3 py-2 text-[11px] font-semibold text-primary text-center border-t border-outline-variant mt-1';
+    more.textContent = `+ ${hits.length - 10} more results`;
+    dropdownContent.appendChild(more);
+  }
+}
+
+function clearSearch() {
+  const input = document.getElementById('globalSearch');
+  input.value = '';
+  runSearch(); 
+}
+
+/* ═══════════════════════════════════════════
+   DB LOADER & CALENDAR FETCH
+═══════════════════════════════════════════ */
+let lineChartInstance = null;
+let pieChartInstance  = null;
+let currentPeriod     = 'monthly';
+let lastSubmittedCategory = null;
+
+// CHANGE THIS TO "let" INSTEAD OF "const" TO ALLOW DB UPDATES
+let calNotes = {}; 
+
+async function loadDashboardData() {
+  showSkeletons();
+  try {
+    // 1. Kukunin ang Calendar data
+    await loadCalendarNotes();
+
+    // 2. Kukunin ang IP records
+    const allRes = await fetch(`${API_BASE}/research`);
+    if (!allRes.ok) throw new Error(`Server returned ${allRes.status}`);
+
+    const allRaw  = await allRes.json();
+    _allRecords   = Array.isArray(allRaw) ? allRaw : (allRaw.data || allRaw.records || []);
+
+    const stats   = aggregateClientSide(_allRecords);
+    window._lastStats = stats;
+
+    const recent = [..._allRecords]
+      .sort((a,b)=>new Date(b.createdAt||b.date||0)-new Date(a.createdAt||a.date||0))
+      .slice(0, 5);
+
+    renderStatCards(stats);
+    renderLineChart(stats, currentPeriod);
+    renderPieChart(stats);
+    renderInsights(stats);
+    renderRecentList(recent);
+    
+    // Refresh calendar to show data connection points and loaded notes
+    buildCalendar();
+
+  } catch (err) {
+    console.error('Dashboard load error:', err);
+    showDashboardError(err.message);
+  }
+}
+
+// CALENDAR API FUNCTIONS
+async function loadCalendarNotes() {
+  try {
+    const response = await fetch(CALENDAR_API);
+    if (!response.ok) throw new Error('Failed to fetch calendar data');
+    
+    const data = await response.json();
+    
+    // Reset local object
+    calNotes = {};
+    
+    // Map Array from MongoDB to frontend object format
+    data.forEach(item => {
+      if (item.dateKey) {
+        calNotes[item.dateKey] = item.note;
+      }
+    });
+
+    if (typeof buildCalendar === 'function') {
+      buildCalendar();
+    }
+  } catch (error) {
+    console.error('Error loading calendar notes:', error);
+  }
+}
+
+async function saveNote() {
+  const noteTextarea = document.getElementById('noteTextarea');
+  const noteValue = noteTextarea ? noteTextarea.value.trim() : '';
+
+  if (!activeNoteKey) {
+    alert('Please select a date first.');
+    return;
+  }
+
+  if (!noteValue) {
+    alert('Please enter a note before saving.');
+    return;
+  }
+
+  try {
+    const response = await fetch(CALENDAR_API, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        dateKey: activeNoteKey,
+        date: activeNoteKey,
+        note: noteValue
+      })
+    });
+
+    if (!response.ok) throw new Error('Failed to save note to server');
+
+    calNotes[activeNoteKey] = noteValue;
+    closeNoteModal();
+    buildCalendar();
+    
+  } catch (error) {
+    console.error('Error saving calendar note:', error);
+    alert('Failed to save reminder to the database.');
+  }
+}
+
+async function deleteNote() {
+  if (!activeNoteKey) return;
+
+  if (!confirm('Are you sure you want to delete the reminder for this day?')) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`${CALENDAR_API}/${activeNoteKey}`, {
+      method: 'DELETE'
+    });
+
+    if (!response.ok) throw new Error('Failed to delete note from server');
+
+    delete calNotes[activeNoteKey];
+    closeNoteModal();
+    buildCalendar();
+    
+  } catch (error) {
+    console.error('Error deleting calendar note:', error);
+    alert('Failed to delete reminder from the database.');
+  }
+}
+
+
+function aggregateClientSide(records) {
+  const catCounts = { copyright:0, patent:0, trademark:0, 'utility-model':0, 'industrial-design':0 };
+  const collegeCounts = {};
+  
+  const now = new Date();
+  const year = now.getFullYear();
+  
+  const monthly = { copyright: new Array(12).fill(0), patent: new Array(12).fill(0), trademark: new Array(12).fill(0), 'utility-model': new Array(12).fill(0) };
+  const yearly = { copyright: new Array(6).fill(0), patent: new Array(6).fill(0), trademark: new Array(6).fill(0), 'utility-model': new Array(6).fill(0) };
+  const weekly = { copyright: new Array(12).fill(0), patent: new Array(12).fill(0), trademark: new Array(12).fill(0), 'utility-model': new Array(12).fill(0) };
+  
+  const submissionsByDate = {};
+
+  records.forEach(r => {
+    const cat = (r.category||'').toLowerCase().trim().replace(/\s+/g,'-');
+    if (catCounts[cat] !== undefined) catCounts[cat]++;
+
+    const college = (r.college||(r.department?r.department.split('—')[0].split('--')[0].trim():'')||'').trim();
+    const collegeKey = college || 'Unknown College';
+    collegeCounts[collegeKey] = (collegeCounts[collegeKey] || 0) + 1;
+
+    const rawDate = r.date || r.dateOfApplication || r.createdAt;
+    if (rawDate) {
+      const d = new Date(rawDate);
+      if (!isNaN(d)) {
+        // Calendar Grouping
+        const dateKey = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        if (!submissionsByDate[dateKey]) submissionsByDate[dateKey] = [];
+        submissionsByDate[dateKey].push(r);
+
+        // Monthly Grouping
+        if (d.getFullYear() === year && monthly[cat]) {
+          monthly[cat][d.getMonth()]++;
+        }
+        
+        // Yearly Grouping (Last 6 Years)
+        const yearDiff = year - d.getFullYear();
+        if (yearDiff >= 0 && yearDiff < 6 && yearly[cat]) {
+          yearly[cat][5 - yearDiff]++;
+        }
+
+        // Weekly Grouping (Trailing 12 weeks)
+        const diffTime = Math.abs(now - d);
+        const diffWeeks = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 7));
+        if (diffWeeks >= 0 && diffWeeks < 12 && weekly[cat]) {
+            weekly[cat][11 - diffWeeks]++;
+        }
+      }
+    }
+  });
+
+  const recentMonth = records.filter(r => {
+    const rawDate = r.date || r.dateOfApplication || r.createdAt;
+    if (!rawDate) return false;
+    const d = new Date(rawDate);
+    return !isNaN(d) && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  }).length;
+
+  return { counts: catCounts, college: collegeCounts, monthly, yearly, weekly, submissionsByDate, total: records.length, recentMonth };
+}
+
+function showSkeletons() {
+  show('lineChartLoading'); hide('lineChartEmpty'); hide('lineChartError'); hide('lineChartWrap');
+  show('pieChartLoading');  hide('pieChartEmpty');  hide('pieChartWrap');
+  show('insightsLoading');  hide('insightsContent'); hide('insightsEmpty');
+  show('recentLoading');    hide('recentEmpty');      hide('recentList');
+}
+
+/* ═══════════════════════════════════════════
+   RENDER: STAT CARDS
+═══════════════════════════════════════════ */
+function renderStatCards(stats) {
+  if (!stats || !stats.counts) return;
+  const c = stats.counts;
+  setStatCard('copyright', c.copyright          || 0);
+  setStatCard('patent',    c.patent             || 0);
+  setStatCard('trademark', c.trademark          || 0);
+  setStatCard('utility',   c['utility-model']   || 0);
+  setStatCard('design',    c['industrial-design']|| 0);
+}
+
+function setStatCard(id, value) {
+  const el = document.getElementById(`stat-${id}`);
+  if (!el) return;
+  el.innerHTML = value.toLocaleString();
+}
+
+/* ═══════════════════════════════════════════
+   RENDER: LINE CHART
+═══════════════════════════════════════════ */
+const LINE_SERIES = [
+  {label:'Copyright',   color:'#0058be', dash:[]},
+  {label:'Patent',      color:'#6b38d4', dash:[6,3]},
+  {label:'Trademark',   color:'#10b981', dash:[3,3]},
+  {label:'Utility Model',color:'#924700',dash:[8,4]}
+];
+
+function renderLineChart(stats, period) {
+  hide('lineChartLoading'); hide('lineChartError');
+
+  if (!stats || !stats.monthly) {
+    show('lineChartEmpty'); hide('lineChartWrap');
+    return;
+  }
+
+  let labels, data;
+  if (period === 'monthly') {
+    labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    data = [
+      stats.monthly.copyright    || new Array(12).fill(0),
+      stats.monthly.patent       || new Array(12).fill(0),
+      stats.monthly.trademark    || new Array(12).fill(0),
+      stats.monthly['utility-model'] || new Array(12).fill(0)
+    ];
+  } else if (period === 'weekly') {
+    labels = Array.from({length:12},(_,i)=>`Wk ${i+1}`);
+    data = (stats.weekly
+      ? [stats.weekly.copyright,stats.weekly.patent,stats.weekly.trademark,stats.weekly['utility-model']]
+      : [new Array(12).fill(0),new Array(12).fill(0),new Array(12).fill(0),new Array(12).fill(0)]);
+  } else {
+    const yr = new Date().getFullYear();
+    labels = Array.from({length:6},(_,i)=>String(yr-5+i));
+    data = (stats.yearly
+      ? [stats.yearly.copyright,stats.yearly.patent,stats.yearly.trademark,stats.yearly['utility-model']]
+      : [new Array(6).fill(0),new Array(6).fill(0),new Array(6).fill(0),new Array(6).fill(0)]);
+  }
+
+  const hasAny = data.some(arr => arr && arr.some(v=>v>0));
+  if (!hasAny) { show('lineChartEmpty'); hide('lineChartWrap'); return; }
+
+  show('lineChartWrap'); hide('lineChartEmpty');
+
+  const legendEl = document.getElementById('lineLegend');
+  legendEl.innerHTML = '';
+  LINE_SERIES.forEach(s => {
+    const span = document.createElement('span');
+    span.className = 'line-legend-item';
+    span.innerHTML = `<span class="line-legend-dot" style="background:${s.color};height:3px;"></span>${s.label}`;
+    legendEl.appendChild(span);
+  });
+
+  const datasets = LINE_SERIES.map((s,i) => ({
+    label:s.label, data:data[i]||[], borderColor:s.color, borderWidth:2,
+    borderDash:s.dash, pointBackgroundColor:s.color,
+    pointRadius:3, pointHoverRadius:6, fill:false, tension:0.38
+  }));
+
+  if (lineChartInstance) lineChartInstance.destroy();
+  lineChartInstance = new Chart(document.getElementById('lineChart'), {
+    type:'line',
+    data:{ labels, datasets },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.parsed.y}`}}},
+      scales:{
+        x:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:11},autoSkip:false,maxRotation:0}},
+        y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:11}},beginAtZero:true}
+      }
+    }
+  });
+}
+
+document.querySelectorAll('.chart-filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.chart-filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentPeriod = btn.dataset.period;
+    if (window._lastStats) renderLineChart(window._lastStats, currentPeriod);
+  });
+});
+
+/* ═══════════════════════════════════════════
+   RENDER: PIE CHART
+═══════════════════════════════════════════ */
+const PIE_COLORS = ['#0058be','#6b38d4','#924700','#10b981','#e24b4a','#f59e0b','#8b5cf6'];
+const COLLEGE_COLORS = {'College of Computer Studies':'#6b7280','College of Engineering':'#ef4444','College of Business':'#eab308','College of Accounting':'#22c55e','College of Accountancy':'#22c55e','College of Education':'#3b82f6'};
+function getPieColor(label,i){return COLLEGE_COLORS[label]||PIE_COLORS[i%PIE_COLORS.length];}
+
+function renderPieChart(stats) {
+  hide('pieChartLoading');
+  if (!stats || !stats.college || Object.keys(stats.college).length === 0) {
+    show('pieChartEmpty'); hide('pieChartWrap'); return;
+  }
+
+  const entries = Object.entries(stats.college).sort((a,b)=>b[1]-a[1]);
+  const total = entries.reduce((s,[,v])=>s+v, 0);
+
+  show('pieChartWrap'); hide('pieChartEmpty');
+
+  const legendEl = document.getElementById('pieLegend');
+  legendEl.innerHTML = '';
+  entries.forEach(([label,val],i) => {
+    const pct = total ? Math.round(val/total*100) : 0;
+    const div = document.createElement('div');
+    div.className = 'pie-legend-item';
+    div.innerHTML = `<span class="pie-legend-sq" style="background:${getPieColor(label,i)}"></span><span style="font-size:12px;">${label}</span><span class="pie-legend-pct">${pct}%</span>`;
+    legendEl.appendChild(div);
+  });
+
+  if (pieChartInstance) pieChartInstance.destroy();
+  pieChartInstance = new Chart(document.getElementById('pieChart'), {
+    type:'doughnut',
+    data:{
+      labels: entries.map(([l])=>l),
+      datasets:[{ data:entries.map(([,v])=>v), backgroundColor:entries.map(([l],i)=>getPieColor(l,i)), borderWidth:3, borderColor:'#ffffff', hoverOffset:8 }]
+    },
+    options:{ responsive:true, maintainAspectRatio:false, cutout:'62%', plugins:{ legend:{display:false}, tooltip:{callbacks:{label:ctx=>` ${ctx.label}: ${ctx.parsed}`}} } }
+  });
+}
+
+/* ═══════════════════════════════════════════
+   RENDER: INSIGHTS PANEL
+═══════════════════════════════════════════ */
+function renderInsights(stats) {
+  hide('insightsLoading');
+  if (!stats || !stats.counts) { show('insightsEmpty'); return; }
+
+  const c = stats.counts;
+  const total = Object.values(c).reduce((a,b)=>a+b,0);
+  if (total === 0) { show('insightsEmpty'); return; }
+
+  let topCollege = '—';
+  if (stats.college) {
+    const sorted = Object.entries(stats.college).sort((a,b)=>b[1]-a[1]);
+    if (sorted.length) topCollege = sorted[0][0];
+  }
+
+  const topCatEntry = Object.entries(c).sort((a,b)=>b[1]-a[1])[0];
+  const topCatName = topCatEntry ? topCatEntry[0].replace(/-/g,' ').replace(/\b\w/g, l => l.toUpperCase()) : '—';
+  const topCatValue = topCatEntry ? topCatEntry[1] : 0;
+  const topCat = topCatEntry ? `${topCatName} — ${topCatValue} Submissions` : '—';
+  
+  const thisMonth = stats.recentMonth || 0;
+
+  const rows = [
+    { label:'Total Researches',    value: total.toLocaleString(),  sub: 'Across all categories' },
+    { label:'Most Active Category',value: topCat,                  sub: 'Highest overall filings' },
+    { label:'Top College',         value: topCollege,              sub: 'Most active department' },
+    { label:'Recent Activity',     value: `${thisMonth.toLocaleString()} Added`, sub: 'New submissions this month' },
+  ];
+
+  const el = document.getElementById('insightsContent');
+  el.innerHTML = rows.map(r => `
+    <div class="insight-row">
+      <span class="insight-label">${r.label}</span>
+      <span class="insight-value">${r.value}</span>
+      <span class="insight-sub">${r.sub}</span>
+    </div>`).join('');
+  show('insightsContent');
+}
+
+/* ═══════════════════════════════════════════
+   RENDER: RECENT SUBMISSIONS LIST
+═══════════════════════════════════════════ */
+const CAT_COLORS = {
+  copyright:'#0058be', patent:'#6b38d4', trademark:'#059669',
+  'utility-model':'#924700', 'industrial-design':'#dc2626'
+};
+const CAT_BG = {
+  copyright:'#e8f0fd', patent:'#f2edfd', trademark:'#d1fae5',
+  'utility-model':'#fef3c7', 'industrial-design':'#fee2e2'
+};
+
+function renderRecentList(records) {
+  hide('recentLoading');
+  if (!records || records.length === 0) { show('recentEmpty'); return; }
+
+  document.getElementById('recentSubtitle').textContent = `${records.length} most recent`;
+  const list = document.getElementById('recentList');
+  list.innerHTML = '';
+
+  records.forEach(r => {
+    const cat   = (r.category||'').toLowerCase().trim().replace(/\s+/g,'-');
+    const color = CAT_COLORS[cat] || '#424754';
+    const bg    = CAT_BG[cat]    || '#f2f3fd';
+    const title = r.researchTitle || r.title || '(Untitled)';
+    const catLabel = (r.category||'Unknown').replace(/-/g,' ').replace(/\b\w/g,l=>l.toUpperCase());
+    const rawDate = r.date || r.dateOfApplication || r.createdAt;
+    const dateStr = rawDate
+      ? new Date(rawDate+'T00:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})
+      : '—';
+    const authors = Array.isArray(r.authors)
+      ? r.authors.slice(0,2).join(', ') + (r.authors.length > 2 ? ` +${r.authors.length-2}` : '')
+      : (r.authors || '—');
+
+    const item = document.createElement('div');
+    item.className = 'flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-container-low transition-all cursor-pointer';
+    item.innerHTML = `
+      <div class="p-1.5 rounded-lg flex-shrink-0" style="background:${bg};">
+        <span class="material-symbols-outlined text-[15px]" style="color:${color};font-variation-settings:'FILL' 1;">description</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="text-[13px] font-semibold text-on-surface truncate">${title}</p>
+        <p class="text-[11px] text-on-surface-variant truncate">${authors} · ${dateStr}</p>
+      </div>
+      <span class="text-[10px] font-bold px-2 py-1 rounded-full flex-shrink-0 whitespace-nowrap" style="background:${bg};color:${color};">${catLabel}</span>`;
+    
+    item.addEventListener('click', () => {
+      sessionStorage.setItem('highlightResearchId', r.referenceId);
+      window.location.href = CATEGORY_ROUTES[cat] || 'copyright.html';
+    });
+      
+    list.appendChild(item);
+  });
+
+  show('recentList');
+}
+
+/* ═══════════════════════════════════════════
+   ERROR STATE
+═══════════════════════════════════════════ */
+function showDashboardError(msg) {
+  hide('lineChartLoading'); hide('lineChartEmpty'); hide('lineChartWrap');
+  show('lineChartError');
+  const msgEl = document.getElementById('lineChartErrorMsg');
+  if (msgEl) msgEl.textContent = msg || 'Unable to reach the server.';
+  ['copyright','patent','trademark','utility','design'].forEach(id => {
+    const el = document.getElementById(`stat-${id}`);
+    if (el) el.textContent = '—';
+  });
+  hide('pieChartLoading'); show('pieChartEmpty');
+  hide('insightsLoading'); show('insightsEmpty');
+  hide('recentLoading');   show('recentEmpty');
+}
+
+/* ═══════════════════════════════════════════
+   CALENDAR LOGIC
+═══════════════════════════════════════════ */
+const today = new Date();
+let calYear=today.getFullYear(), calMonth=today.getMonth(), pickerYear=calYear, pickerOpen=false;
+const MONTH_NAMES=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MONTH_SHORT=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function dateKey(y,m,d){return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;}
+
+function buildCalendar(){
+  const grid=document.getElementById('calGrid');
+  document.getElementById('calMonthText').textContent=MONTH_NAMES[calMonth]+' '+calYear;
+  grid.querySelectorAll('.cal-day').forEach(d=>d.remove());
+  const firstDay=new Date(calYear,calMonth,1).getDay();
+  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  const prevDays=new Date(calYear,calMonth,0).getDate();
+  const cells=[];
+  for(let i=0;i<firstDay;i++) cells.push({day:prevDays-firstDay+1+i,type:'prev'});
+  for(let d=1;d<=daysInMonth;d++) cells.push({day:d,type:'current'});
+  let next=1; while(cells.length<42) cells.push({day:next++,type:'next'});
+  cells.forEach(({day,type})=>{
+    const el=document.createElement('div'); el.className='cal-day'; el.textContent=day;
+    if(type!=='current'){
+      el.classList.add('other-month');
+    } else {
+      const key=dateKey(calYear,calMonth,day);
+      const mmdd = `${String(calMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+      
+      if(today.getFullYear()===calYear&&today.getMonth()===calMonth&&today.getDate()===day) el.classList.add('today');
+      if(calNotes[key]) el.classList.add('has-note');
+      
+      // Holiday Check
+      if(PH_HOLIDAYS[mmdd]) el.classList.add('is-holiday');
+      
+      // Data Connection Check
+      if(window._lastStats && window._lastStats.submissionsByDate && window._lastStats.submissionsByDate[key]) {
+          el.classList.add('has-submission');
+      }
+
+      el.addEventListener('click',()=>openNoteModal(calYear,calMonth,day));
+    }
+    grid.appendChild(el);
+  });
+  renderUpcoming();
+  if(pickerOpen) renderMonthPicker();
+}
+
+function renderUpcoming(){
+  const el=document.getElementById('calUpcoming');
+  const upcoming=Object.entries(calNotes).filter(([k])=>k>=dateKey(today.getFullYear(),today.getMonth(),today.getDate())).sort(([a],[b])=>a.localeCompare(b))[0];
+  if(upcoming){const[,note]=upcoming;el.innerHTML=`<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 10px;background:#f2f3fd;border-radius:10px;border:1px solid #e1e2ec;"><div style="width:5px;height:5px;border-radius:50%;background:#6b38d4;flex-shrink:0;margin-top:4px;"></div><div style="font-size:11px;color:#424754;line-height:1.4;">${note.length>55?note.slice(0,52)+'…':note}</div></div>`;}
+  else el.innerHTML='';
+}
+
+function toggleMonthPicker(e){e.stopPropagation();pickerOpen=!pickerOpen;if(pickerOpen)pickerYear=calYear;const picker=document.getElementById('calMonthPicker'),label=document.getElementById('calMonthLabel');if(pickerOpen){picker.classList.add('open');label.classList.add('open');renderMonthPicker();}else{picker.classList.remove('open');label.classList.remove('open');}}
+function closeMonthPicker(){pickerOpen=false;document.getElementById('calMonthPicker').classList.remove('open');document.getElementById('calMonthLabel').classList.remove('open');}
+function renderMonthPicker(){
+  document.getElementById('mpYearVal').textContent=pickerYear;
+  const container=document.getElementById('mpMonths'); container.innerHTML='';
+  MONTH_SHORT.forEach((m,i)=>{const btn=document.createElement('button');btn.className='mp-month-btn';btn.textContent=m;if(i===calMonth&&pickerYear===calYear)btn.classList.add('active');btn.onclick=()=>{calMonth=i;calYear=pickerYear;closeMonthPicker();buildCalendar();};container.appendChild(btn);});
+}
+
+document.getElementById('mpPrevYear').addEventListener('click',e=>{e.stopPropagation();pickerYear--;renderMonthPicker();});
+document.getElementById('mpNextYear').addEventListener('click',e=>{e.stopPropagation();pickerYear++;renderMonthPicker();});
+document.addEventListener('click',e=>{if(pickerOpen&&!document.getElementById('calMonthPicker').contains(e.target))closeMonthPicker();});
+document.getElementById('calPrev').addEventListener('click',()=>{calMonth--;if(calMonth<0){calMonth=11;calYear--;}buildCalendar();});
+document.getElementById('calNext').addEventListener('click',()=>{calMonth++;if(calMonth>11){calMonth=0;calYear++;}buildCalendar();});
+
+let activeNoteKey=null;
+function openNoteModal(y,m,d){activeNoteKey=dateKey(y,m,d);document.getElementById('noteDateEl').textContent=new Date(y,m,d).toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});showNoteViewMode(calNotes[activeNoteKey]);document.getElementById('noteOverlay').style.display='flex';}
+
+function showNoteViewMode(noteText){
+  document.getElementById('noteViewMode').classList.remove('hidden');
+  document.getElementById('noteEditMode').classList.add('hidden');
+  
+  const viewContent=document.getElementById('noteViewContent');
+  const emptyMsg=document.getElementById('noteEmptyMsg');
+  const viewBtns=document.getElementById('noteViewBtns');
+  
+  viewContent.innerHTML = '';
+  let contentAdded = false;
+
+  const mmdd = activeNoteKey.substring(5);
+  if(PH_HOLIDAYS[mmdd]) {
+      viewContent.innerHTML += `<div class="note-view-wrap" style="border-left-color:#ef4444; background:#fef2f2;"><div class="note-view-label" style="color:#ef4444;"><span class="material-symbols-outlined" style="font-size:12px;">event</span>Official Holiday</div><div class="note-view-text text-red-800 font-semibold">${PH_HOLIDAYS[mmdd]}</div></div>`;
+      contentAdded = true;
+  }
+
+  if(window._lastStats && window._lastStats.submissionsByDate && window._lastStats.submissionsByDate[activeNoteKey]) {
+      const subs = window._lastStats.submissionsByDate[activeNoteKey];
+      let subHTML = `<div class="note-view-wrap" style="border-left-color:#059669; background:#d1fae5;"><div class="note-view-label" style="color:#059669;"><span class="material-symbols-outlined" style="font-size:12px;">fact_check</span>Submissions (${subs.length})</div><div class="space-y-1 mt-1">`;
+      subs.forEach(s => {
+         const title = s.researchTitle || s.title || '(Untitled)';
+         subHTML += `<div class="text-[12px] font-medium text-emerald-900 border-b border-emerald-200 pb-1 mb-1 last:border-0 last:pb-0 last:mb-0">${title} <span class="text-[10px] text-emerald-700 ml-1">(${s.category})</span></div>`;
+      });
+      subHTML += `</div></div>`;
+      viewContent.innerHTML += subHTML;
+      contentAdded = true;
+  }
+
+  if(noteText){
+      document.getElementById('noteTitleEl').textContent='Day Details';
+      viewContent.innerHTML += `<div class="note-view-wrap"><div class="note-view-label"><span class="material-symbols-outlined" style="font-size:12px;font-variation-settings:'FILL' 1;">bookmark</span>Saved Note</div><div class="note-view-text">${noteText}</div></div>`;
+      contentAdded = true;
+      viewBtns.innerHTML='';
+      const editBtn=document.createElement('button');
+      editBtn.className='btn-note-edit';
+      editBtn.innerHTML='<span class="material-symbols-outlined" style="font-size:14px;">edit</span> Edit Note';
+      editBtn.onclick=()=>showNoteEditMode(noteText);
+      viewBtns.appendChild(editBtn);
+  } else {
+      document.getElementById('noteTitleEl').textContent= contentAdded ? 'Day Details' : 'Add Reminder';
+      viewBtns.innerHTML='';
+      if(!contentAdded) {
+          emptyMsg.classList.remove('hidden');
+          showNoteEditMode('');
+      } else {
+          emptyMsg.classList.add('hidden');
+          const addBtn=document.createElement('button');
+          addBtn.className='btn-note-edit';
+          addBtn.innerHTML='<span class="material-symbols-outlined" style="font-size:14px;">add</span> Add Note';
+          addBtn.onclick=()=>showNoteEditMode('');
+          viewBtns.appendChild(addBtn);
+      }
+  }
+  
+  if (contentAdded) emptyMsg.classList.add('hidden');
+}
+
+function showNoteEditMode(existingText){
+  document.getElementById('noteViewMode').classList.add('hidden');
+  document.getElementById('noteEditMode').classList.remove('hidden');
+  document.getElementById('noteTitleEl').textContent=existingText?'Edit Reminder':'Add Reminder';
+  const ta=document.getElementById('noteTextarea');
+  ta.value=existingText||'';
+  ta.placeholder=existingText?'Edit your reminder…':'Add a reminder or note…';
+  document.getElementById('noteDeleteBtn').style.display=existingText?'inline-flex':'none';
+  setTimeout(()=>ta.focus(),60);
+}
+
+function cancelEditNote(){
+  const existing=calNotes[activeNoteKey];
+  existing?showNoteViewMode(existing):closeNoteModal();
+}
+
+function closeNoteModal(){
+  document.getElementById('noteOverlay').style.display='none';
+}
+
+document.getElementById('noteOverlay').addEventListener('click',function(e){if(e.target===this)closeNoteModal();});
+
+/* ═══════════════════════════════════════════
+   CATEGORY MODAL
+═══════════════════════════════════════════ */
+const CATEGORIES=[
+  {id:'copyright',        label:'Copyright',        icon:'ti ti-copyright',        color:'#0058be',bg:'#e8f0fd'},
+  {id:'patent',           label:'Patent',           icon:'ti ti-file-description', color:'#6b38d4',bg:'#f2edfd'},
+  {id:'trademark',        label:'Trademark',        icon:'ti ti-shield-check',     color:'#059669',bg:'#d1fae5'},
+  {id:'utility-model',    label:'Utility Model',    icon:'ti ti-settings-2',       color:'#924700',bg:'#fef3c7'},
+  {id:'industrial-design',label:'Industrial Design',icon:'ti ti-vector-bezier-2',  color:'#dc2626',bg:'#fee2e2'},
+];
+let selectedCategory=null;
+
+function renderCategoryCards(){
+  const grid=document.getElementById('catGrid'); grid.innerHTML='';
+  CATEGORIES.forEach(cat=>{
+    const card=document.createElement('div');
+    card.className='cat-card'+(selectedCategory===cat.id?' selected':'');
+    card.dataset.id=cat.id;
+    card.innerHTML=`<div class="cat-check"><span class="material-symbols-outlined text-white" style="font-size:12px;font-variation-settings:'FILL' 1;">check</span></div><div class="cat-icon" style="background:${cat.bg};"><i class="${cat.icon}" style="color:${cat.color};font-size:28px;"></i></div><span class="cat-name">${cat.label}</span>`;
+    card.addEventListener('click',()=>selectCategory(cat.id));
+    grid.appendChild(card);
+  });
+}
+function selectCategory(id){selectedCategory=id;document.querySelectorAll('.cat-card').forEach(c=>c.classList.toggle('selected',c.dataset.id===id));const btn=document.getElementById('catNextBtn');btn.disabled=false;btn.classList.remove('opacity-50','cursor-not-allowed');}
+function openCategoryModal(){selectedCategory=null;renderCategoryCards();const btn=document.getElementById('catNextBtn');btn.disabled=true;btn.classList.add('opacity-50','cursor-not-allowed');const m=document.getElementById('category-modal');m.classList.remove('hidden');m.classList.add('flex');}
+function closeCategoryModal(){const m=document.getElementById('category-modal');m.classList.add('hidden');m.classList.remove('flex');}
+function confirmCategory(){if(!selectedCategory)return;closeCategoryModal();openResearchFormFresh();}
+function backToCategory(){hideResearchModal();openCategoryModal();}
+
+/* ═══════════════════════════════════════════
+   RESEARCH FORM
+═══════════════════════════════════════════ */
+let pendingSubmission=null;
+
+function hideResearchModal(){
+  const m=document.getElementById('research-modal');
+  m.classList.add('hidden'); m.classList.remove('flex');
+}
+
+function showResearchModal(){
+  const m=document.getElementById('research-modal');
+  m.classList.remove('hidden'); m.classList.add('flex');
+}
+
+function openResearchFormFresh(){
+  const cat=CATEGORIES.find(c=>c.id===selectedCategory);
+  const badge=document.getElementById('rm-cat-badge');
+  badge.style.cssText=`background:${cat.bg};color:${cat.color};border:1px solid ${cat.color}33;`;
+  badge.innerHTML=`<i class="${cat.icon}" style="font-size:12px;"></i>${cat.label}`;
+  document.getElementById('rm-title').value='';
+  document.getElementById('rm-id').value='';
+  document.getElementById('rm-date').value='';
+  document.getElementById('rm-college').value='';
+  document.getElementById('rm-dept-wrap').classList.add('hidden');
+  document.getElementById('rm-dept').innerHTML='';
+  document.getElementById('rm-error').classList.add('hidden');
+  document.getElementById('rm-authors').innerHTML='';
+  clearAuthorError();
+  addAuthorField();
+  pendingSubmission=null;
+  showResearchModal();
+}
+
+function closeAllResearchModals(){
+  closeCategoryModal();
+  hideResearchModal();
+  document.getElementById('review-modal').classList.add('hidden');
+  document.getElementById('review-modal').classList.remove('flex');
+  pendingSubmission=null;
+}
+
+function currentAuthorCount(){return document.getElementById('rm-authors').querySelectorAll('.author-row').length;}
+function updateAuthorUI(){
+  const count=currentAuthorCount();
+  const counterEl=document.getElementById('rm-author-count'),addBtn=document.getElementById('rm-add-author-btn');
+  if(counterEl){counterEl.textContent=`${count} / ${MAX_AUTHORS}`;counterEl.className=count>=MAX_AUTHORS?'text-[10px] font-semibold text-red-500 bg-red-50 border border-red-200 rounded-full px-2 py-0.5':'text-[10px] font-semibold text-on-surface-variant bg-surface-container-highest rounded-full px-2 py-0.5';}
+  if(addBtn){addBtn.disabled=count>=MAX_AUTHORS;addBtn.className=count>=MAX_AUTHORS?'flex items-center gap-1 text-[11px] font-semibold text-outline cursor-not-allowed opacity-50 transition-colors':'flex items-center gap-1 text-[11px] font-semibold text-primary hover:text-blue-700 transition-colors';}
+}
+function showAuthorError(msg){const errEl=document.getElementById('rm-author-error'),errTxt=document.getElementById('rm-author-error-text'),hint=document.getElementById('rm-author-hint');if(errEl&&errTxt){errTxt.textContent=msg;errEl.classList.remove('hidden');errEl.style.display='flex';if(hint)hint.classList.add('hidden');clearTimeout(errEl._timer);errEl._timer=setTimeout(()=>{errEl.classList.add('hidden');errEl.style.display='';if(hint)hint.classList.remove('hidden');},4000);}}
+function clearAuthorError(){const errEl=document.getElementById('rm-author-error'),hint=document.getElementById('rm-author-hint');if(errEl){errEl.classList.add('hidden');errEl.style.display='';clearTimeout(errEl._timer);}if(hint)hint.classList.remove('hidden');}
+function addAuthorField(value='',skipFocus=false){
+  if(currentAuthorCount()>=MAX_AUTHORS){showAuthorError(`Maximum ${MAX_AUTHORS} authors allowed.`);return false;}
+  const container=document.getElementById('rm-authors'),row=document.createElement('div');row.className='author-row';
+  const input=document.createElement('input');input.type='text';input.value=value;input.placeholder='Author name';
+  input.className='flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-[13px] text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/10 focus:bg-white outline-none transition-all placeholder:text-outline';
+  input.addEventListener('paste',e=>{const text=(e.clipboardData||window.clipboardData).getData('text');const lines=text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);if(lines.length<=1)return;e.preventDefault();clearAuthorError();const slotsLeft=MAX_AUTHORS-currentAuthorCount();if(slotsLeft<=0){showAuthorError(`Maximum ${MAX_AUTHORS} authors already reached.`);return;}const accepted=lines.slice(0,slotsLeft);const rejected=lines.length-accepted.length;input.value=accepted[0];accepted.slice(1).forEach(name=>addAuthorField(name,true));updateAuthorUI();if(rejected>0)showAuthorError(`Only ${accepted.length} of ${lines.length} names were added — max is ${MAX_AUTHORS}.`);});
+  const removeBtn=document.createElement('button');removeBtn.type='button';removeBtn.className='remove-author';removeBtn.innerHTML='<i class="ti ti-x"></i>';removeBtn.title='Remove';removeBtn.onclick=()=>{if(currentAuthorCount()>1){row.remove();clearAuthorError();updateAuthorUI();}};
+  row.appendChild(input);row.appendChild(removeBtn);container.appendChild(row);updateAuthorUI();if(!skipFocus)input.focus();return true;
+}
+function getAuthorValues(){return Array.from(document.querySelectorAll('#rm-authors input')).map(i=>i.value.trim()).filter(Boolean);}
+
+function reviewResearchEntry(){
+  const title=document.getElementById('rm-title').value.trim();
+  const id=document.getElementById('rm-id').value.trim();
+  const college=document.getElementById('rm-college').value;
+  const deptSel=document.getElementById('rm-dept').value;
+  const dept=college&&deptSel?college+' — '+deptSel:college||deptSel;
+  const date=document.getElementById('rm-date').value;
+  const authors=getAuthorValues();
+  const errorEl=document.getElementById('rm-error');
+  if(!title||!id||!date||!authors.length||!college){errorEl.textContent='Please fill in all required fields (including College) and add at least one author.';errorEl.classList.remove('hidden');return;}
+  if(authors.length>MAX_AUTHORS){errorEl.textContent='Too many authors.';errorEl.classList.remove('hidden');return;}
+  errorEl.classList.add('hidden');
+  pendingSubmission={title,id,department:dept,college,date,authors,category:selectedCategory,status:'Submitted to IPOPHL'};
+  const cat=CATEGORIES.find(c=>c.id===selectedCategory);
+  document.getElementById('rv-cat').innerHTML=`<span class="cat-badge" style="background:${cat.bg};color:${cat.color};border:1px solid ${cat.color}33;font-size:12px;"><i class="${cat.icon}" style="font-size:13px;"></i>${cat.label}</span>`;
+  document.getElementById('rv-title').textContent=title;
+  document.getElementById('rv-id').textContent=id;
+  document.getElementById('rv-dept').textContent=dept;
+  const[yr,mo,dy]=date.split('-');
+  document.getElementById('rv-date').textContent=new Date(yr,mo-1,dy).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+  const authorsEl=document.getElementById('rv-authors');authorsEl.innerHTML='';
+  authors.forEach(a=>{const chip=document.createElement('span');chip.style.cssText='display:inline-flex;align-items:center;gap:4px;background:#f2f3fd;color:#191b23;border:1px solid #e1e2ec;border-radius:20px;padding:3px 10px;font-size:12px;font-weight:500;margin-right:4px;margin-bottom:4px;';chip.innerHTML=`<span class="material-symbols-outlined" style="font-size:12px;color:#6b38d4;font-variation-settings:'FILL' 1;">person</span>${a}`;authorsEl.appendChild(chip);});
+  hideResearchModal();
+  const rm=document.getElementById('review-modal');rm.classList.remove('hidden');rm.classList.add('flex');
+}
+
+function backToResearchFromReview(){
+  document.getElementById('review-modal').classList.add('hidden');
+  document.getElementById('review-modal').classList.remove('flex');
+  showResearchModal();  
+}
+
+function backToResearchModal(){backToResearchFromReview();}
+
+let isSubmitting = false;
+
+async function confirmResearchEntry(){
+  if(!pendingSubmission || isSubmitting) return; 
+  
+  isSubmitting = true;
+  const confirmBtn = document.querySelector('#review-modal button[onclick="confirmResearchEntry()"]');
+  const originalBtnContent = confirmBtn.innerHTML;
+  
+  confirmBtn.disabled = true;
+  confirmBtn.classList.add('opacity-50', 'cursor-not-allowed');
+  confirmBtn.innerHTML = `<span class="material-symbols-outlined text-[15px] animate-spin" style="animation: spin 1s linear infinite;">progress_activity</span> Saving...`;
+
+  lastSubmittedCategory=pendingSubmission.category;
+  try{
+    const response=await fetch(`${API_BASE}/research`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        category:      pendingSubmission.category,
+        researchTitle: pendingSubmission.title,      
+        referenceId:   pendingSubmission.id,         
+        college:       pendingSubmission.college,
+        department:    pendingSubmission.department,
+        authors:       pendingSubmission.authors,
+        date:          pendingSubmission.date,
+        status:        pendingSubmission.status
+      })
+    });
+    if(!response.ok) throw new Error(`Server error ${response.status}`);
+    const data=await response.json();
+    console.log('Saved:',data);
+
+    document.getElementById('review-modal').classList.add('hidden');
+    document.getElementById('review-modal').classList.remove('flex');
+    const sm=document.getElementById('success-modal');
+    sm.classList.remove('hidden'); sm.classList.add('flex');
+    window._successTimer=setTimeout(closeSuccessModal,4000);
+    pendingSubmission=null;
+
+    loadDashboardData();
+
+  }catch(error){
+    console.error('Save error:',error);
+    const errDiv = document.getElementById('review-modal').querySelector('.bg-slate-50');
+    if(errDiv){
+      let errMsg = errDiv.querySelector('#save-error-msg');
+      if(!errMsg){ errMsg=document.createElement('p'); errMsg.id='save-error-msg'; errMsg.className='text-[12px] text-red-500 font-semibold mr-auto flex items-center gap-1'; errDiv.prepend(errMsg); }
+      errMsg.innerHTML=`<span class="material-symbols-outlined text-[14px]">error</span>Failed to save. Check your connection and retry.`;
+    }
+  } finally {
+    isSubmitting = false;
+    if (confirmBtn) {
+      confirmBtn.disabled = false;
+      confirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      confirmBtn.innerHTML = originalBtnContent;
+    }
+  }
+}
+
+function closeSuccessModal(){clearTimeout(window._successTimer);const sm=document.getElementById('success-modal');sm.classList.add('hidden');sm.classList.remove('flex');}
+function viewResearch(){const page=CATEGORY_ROUTES[lastSubmittedCategory]||'copyright.html';sessionStorage.setItem(lastSubmittedCategory+'JustAdded','true');window.location.href=page;}
+
+/* ═══════════════════════════════════════════
+   COLLEGE → DEPARTMENT CASCADE
+═══════════════════════════════════════════ */
+const COLLEGE_DEPTS={
+  'College of Computer Studies':['Information Technology','Information System','Computer Science'],
+  'College of Engineering':['Industrial Engineering','Electronic Engineering','Computer Engineering'],
+  'College of Accounting':['Accounting','Management Accounting'],
+  'College of Business':['Entrepreneurship'],
+  'College of Education':['Elementary Education','Secondary Education','Special Education','Early Childhood Education'],
+};
+function updateDeptOptions(){
+  const college=document.getElementById('rm-college').value;
+  const deptWrap=document.getElementById('rm-dept-wrap'),deptSel=document.getElementById('rm-dept');
+  deptSel.innerHTML='';
+  if(college&&COLLEGE_DEPTS[college]){
+    COLLEGE_DEPTS[college].forEach(d=>{const opt=document.createElement('option');opt.value=d;opt.textContent=d;deptSel.appendChild(opt);});
+    deptWrap.classList.remove('hidden');deptWrap.style.cssText='animation:fadeSlideIn 0.18s ease;';
+  }else{deptWrap.classList.add('hidden');deptWrap.style.cssText='';}
+}
+
+/* ═══════════════════════════════════════════
+   ESC KEY 
+═══════════════════════════════════════════ */
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape')return;
+  if(!document.getElementById('success-modal').classList.contains('hidden')){closeSuccessModal();return;}
+  if(!document.getElementById('review-modal').classList.contains('hidden')){backToResearchFromReview();return;}
+  if(!document.getElementById('research-modal').classList.contains('hidden')){hideResearchModal();return;}
+  if(!document.getElementById('category-modal').classList.contains('hidden')){closeCategoryModal();return;}
+  if(document.getElementById('noteOverlay').style.display==='flex'){closeNoteModal();return;}
+});
+
+/* ═══════════════════════════════════════════
+   HELPERS`
+═══════════════════════════════════════════ */
+function show(id){const el=document.getElementById(id);if(el)el.style.display='';}
+function hide(id){const el=document.getElementById(id);if(el)el.style.display='none';}
+</script>
+</body>
+</html>

@@ -1,0 +1,361 @@
+﻿<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Login | IP Management & Monitoring System</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "on-secondary-fixed": "#23005c","on-primary": "#ffffff","on-secondary": "#ffffff","outline": "#727785","error": "#ba1a1a","surface-tint": "#005ac2","primary-container": "#2170e4","on-primary-fixed": "#001a42","surface-container": "#ecedf7","background": "#f9f9ff","surface-bright": "#f9f9ff","on-secondary-fixed-variant": "#5516be","surface-dim": "#d8d9e3","on-surface-variant": "#424754","surface-container-low": "#f2f3fd","error-container": "#ffdad6","primary-fixed": "#d8e2ff","on-error-container": "#93000a","inverse-on-surface": "#eff0fa","on-surface": "#191b23","tertiary-container": "#b75b00","on-tertiary": "#ffffff","primary-fixed-dim": "#adc6ff","tertiary-fixed": "#ffdcc6","surface-container-high": "#e6e7f2","secondary": "#6b38d4","tertiary-fixed-dim": "#ffb786","surface-variant": "#e1e2ec","surface": "#f9f9ff","secondary-fixed": "#e9ddff","secondary-fixed-dim": "#d0bcff","inverse-primary": "#adc6ff","on-primary-fixed-variant": "#004395","on-primary-container": "#fefcff","surface-container-highest": "#e1e2ec","surface-container-lowest": "#ffffff","on-tertiary-fixed-variant": "#723600","on-background": "#191b23","primary": "#0058be","on-error": "#ffffff","inverse-surface": "#2e3038","tertiary": "#924700","on-tertiary-fixed": "#311400","outline-variant": "#c2c6d6","on-tertiary-container": "#fffbff","secondary-container": "#8455ef","on-secondary-container": "#fffbff",
+          brand: { light: '#f8fafc', accent: '#6366f1', dark: '#0f172a' }
+        },
+        borderRadius: { "DEFAULT": "0.25rem","lg": "0.5rem","xl": "0.75rem","4xl": "2.5rem","5xl": "4rem","full": "9999px" },
+        spacing: { "lg": "32px","base": "4px","md": "24px","xs": "8px","xl": "48px","sm": "16px","gutter": "24px","container-max": "1440px" },
+        fontFamily: { "sans": ["Inter", "sans-serif"] },
+        fontSize: {
+          "body-md": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+          "display": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+          "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+          "headline-lg-mobile": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+          "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+          "headline-md": ["20px", {"lineHeight": "1.4", "fontWeight": "600"}],
+          "headline-lg": ["28px", {"lineHeight": "1.3", "fontWeight": "600"}]
+        }
+      }
+    }
+  }
+</script>
+<style>
+  * { box-sizing: border-box; }
+  body { background-color: #f9f9ff; overflow-x: hidden; margin: 0; }
+
+  /* Subtle dot-grid background */
+  .dot-bg {
+    position: fixed; inset: 0; z-index: 0;
+    background-image: radial-gradient(circle, rgba(99,102,241,0.12) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+  }
+
+  /* Soft ambient orbs */
+  .orb {
+    position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
+    filter: blur(80px);
+  }
+  .orb-1 { width: 500px; height: 500px; top: -180px; left: -120px; background: rgba(99,102,241,0.07); }
+  .orb-2 { width: 400px; height: 400px; bottom: -100px; right: -80px; background: rgba(124,58,237,0.06); }
+
+  /* Floating divider line on left panel */
+  .accent-rule { width: 40px; height: 3px; background: #6366f1; border-radius: 9999px; }
+
+  /* Card — original glass panel style */
+  .glass-panel {
+    background: #ffffff;
+    border: 1px solid #c2c6d6;
+    box-shadow: 0 40px 80px -20px rgba(0,0,0,0.1), 0 20px 40px -30px rgba(0,0,0,0.05);
+  }
+  input:focus { box-shadow: 0 0 0 2px rgba(99,102,241,0.1); }
+
+  /* IP type badges */
+  .ip-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 9999px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    background: rgba(99,102,241,0.08); color: #6366f1;
+    border: 1px solid rgba(99,102,241,0.15);
+  }
+  .ip-badge .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+
+  /* Error banner */
+  .error-banner {
+    display: none; padding: 12px 16px; border-radius: 12px;
+    background: #fff0f0; border: 1px solid #fecaca;
+    color: #dc2626; font-size: 13px; font-weight: 500;
+    align-items: center; gap: 8px;
+  }
+  .error-banner.show { display: flex; }
+
+  /* Shake */
+  @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 60%{transform:translateX(6px)} 80%{transform:translateX(-3px)} }
+  .shake { animation: shake 0.4s ease; }
+
+  /* Spin */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spin { animation: spin 0.8s linear infinite; }
+
+  /* Fade-in on load */
+  @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+  .fade-up { animation: fadeUp 0.55s ease both; }
+  .fade-up-1 { animation-delay: 0.05s; }
+  .fade-up-2 { animation-delay: 0.13s; }
+  .fade-up-3 { animation-delay: 0.21s; }
+  .fade-up-4 { animation-delay: 0.29s; }
+</style>
+</head>
+<body class="font-sans antialiased min-h-screen">
+
+<!-- Background layers -->
+<div class="dot-bg"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<div class="relative z-10 min-h-screen flex flex-col">
+
+  <main class="flex-grow flex items-center justify-center px-6 py-10">
+    <div class="w-full max-w-7xl flex flex-col lg:flex-row items-center gap-16 lg:gap-20">
+
+      <!-- ── LEFT: Institutional Branding ── -->
+      <div class="w-full lg:w-[52%] text-center lg:text-left fade-up fade-up-1">
+
+        <!-- University branding -->
+        <div class="inline-flex items-center gap-3 mb-7">
+          <div class="w-8 h-8 rounded-full flex-shrink-0" style="background:linear-gradient(135deg,#6366f1,#818cf8);display:flex;align-items:center;justify-content:center;">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <div class="text-left">
+            <p class="text-[11px] font-bold uppercase tracking-[0.15em] text-[#6366f1] leading-none">Quezon City University</p>
+          </div>
+        </div>
+
+        <!-- Main headline -->
+        <h1 class="text-[2.8rem] md:text-[3.8rem] font-bold leading-[1.08] tracking-tight text-[#191b23] mb-6">
+          Intellectual Property<br/>
+          <span style="color:#6366f1">Management &amp;<br/>Monitoring System</span>
+        </h1>
+
+        <!-- Divider rule -->
+        <div class="accent-rule mb-6 mx-auto lg:mx-0"></div>
+
+        <!-- Description -->
+        <p class="text-[15px] md:text-base text-[#424754] max-w-md leading-relaxed font-normal mb-10 mx-auto lg:mx-0">
+          A unified institutional platform for tracking research outputs, IP disclosures, patent filings, trademarks, and copyright records across all academic departments.
+        </p>
+
+        <!-- IP type pills row -->
+        <div class="flex flex-wrap gap-2 justify-center lg:justify-start fade-up fade-up-2">
+          <span class="ip-badge"><span class="dot"></span>Patents</span>
+          <span class="ip-badge"><span class="dot"></span>Trademarks</span>
+          <span class="ip-badge"><span class="dot"></span>Copyrights</span>
+          <span class="ip-badge"><span class="dot"></span>Research Outputs</span>
+        </div>
+
+      </div>
+
+      <!-- ── RIGHT: Login Card (original style) ── -->
+      <div class="w-full lg:w-[48%] relative fade-up fade-up-4">
+        <div class="absolute inset-0 bg-brand-accent/5 -rotate-2 rounded-[3rem] blur-xl"></div>
+        <div class="absolute inset-0 bg-surface-container/60 rotate-1 translate-x-4 translate-y-4 rounded-[3rem]"></div>
+        <div class="relative glass-panel p-8 md:p-12 rounded-tr-[5rem] rounded-bl-[5rem] rounded-tl-4xl rounded-br-4xl overflow-hidden">
+          <div class="absolute -top-24 -right-24 w-48 h-48 bg-brand-accent/5 blur-3xl rounded-full"></div>
+          <div class="relative z-10">
+
+            <div class="mb-10">
+              <h2 class="text-3xl font-semibold text-on-surface mb-2">Sign In</h2>
+              <div class="h-1 w-12 bg-brand-accent rounded-full mb-4"></div>
+              <p class="text-on-surface-variant text-sm">Enter your institutional credentials to access the IP Management System.</p>
+            </div>
+
+            <!-- Error banner -->
+            <div id="loginError" class="hidden mb-6 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm flex items-start gap-2">
+              <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="loginErrorSvg"><path id="loginErrorIcon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+              <span id="loginErrorText">Invalid email or password. Please try again.</span>
+            </div>
+
+            <form id="loginForm" class="space-y-8" onsubmit="login(event)">
+              <!-- Email -->
+              <div class="space-y-2">
+                <label class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/70 ml-1" for="email">Email</label>
+                <div class="relative">
+                  <input class="w-full px-5 py-4 bg-surface-container-low border-0 border-b-2 border-outline-variant rounded-xl text-on-surface placeholder-on-surface-variant/40 focus:ring-0 focus:border-brand-accent focus:bg-white transition-all duration-300" id="email" name="email" placeholder="yourname@institution.edu.ph" type="email" value="admin@itso.edu.ph"/>
+                  <div class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant/30">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.206" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Password -->
+              <div class="space-y-2">
+                <div class="flex items-center px-1">
+                  <label class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/70" for="password">Password</label>
+                </div>
+                <div class="relative">
+                  <input class="w-full px-5 py-4 bg-surface-container-low border-0 border-b-2 border-outline-variant rounded-xl text-on-surface placeholder-on-surface-variant/40 focus:ring-0 focus:border-brand-accent focus:bg-white transition-all duration-300" id="password" name="password" placeholder="••••••••" type="password"/>
+                  <!-- Eye toggle button -->
+                  <button type="button" id="togglePassword" onclick="togglePasswordVisibility()" class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 hover:text-brand-accent transition-colors duration-200 focus:outline-none" aria-label="Toggle password visibility">
+                    <!-- Eye open (shown when password is hidden) -->
+                    <svg id="eyeOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+                    <!-- Eye closed (shown when password is visible) -->
+                    <svg id="eyeClosed" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/><line x1="1" y1="1" x2="23" y2="23" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Remember toggle -->
+              <div class="flex items-center gap-3">
+                <div class="relative inline-flex items-center cursor-pointer">
+                  <input checked class="sr-only peer" id="remember" type="checkbox"/>
+                  <div class="w-10 h-5 bg-surface-container-highest rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-outline-variant after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-accent"></div>
+                </div>
+                <label class="text-xs font-medium text-on-surface-variant select-none cursor-pointer" for="remember">Keep me signed in on this device</label>
+              </div>
+
+              <!-- Submit -->
+              <button id="loginBtn" class="group relative w-full overflow-hidden rounded-2xl bg-brand-accent py-4 font-bold text-white shadow-[0_0_20px_rgba(99,102,241,0.3)] transition-all hover:shadow-[0_0_35px_rgba(99,102,241,0.5)] hover:-translate-y-1 active:translate-y-0" type="submit">
+                <span class="relative z-10 flex items-center justify-center gap-2" id="loginBtnLabel">
+                  Sign In
+                  <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 7l5 5m0 0l-5 5m5-5H6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+                </span>
+                <div class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full"></div>
+              </button>
+            </form>
+
+          </div>
+        </div>
+      </div><!-- /right col -->
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer style="padding:20px 40px;border-top:1px solid rgba(194,198,214,0.4);display:flex;justify-content:center;align-items:center;">
+    <p style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:rgba(66,71,84,0.4);margin:0;">
+      Developed by Justine Kenneth L. Ibo
+    </p>
+  </footer>
+
+</div>
+
+<script>
+const API_URL = "http://localhost:5000/api/auth/login";
+
+const MAX_ATTEMPTS = 3;
+let failedAttempts = 0;
+let isLocked = false;
+
+/* ── Password toggle ── */
+function togglePasswordVisibility() {
+  const input = document.getElementById('password');
+  const eyeOpen = document.getElementById('eyeOpen');
+  const eyeClosed = document.getElementById('eyeClosed');
+
+  const isHidden = input.type === 'password';
+  input.type = isHidden ? 'text' : 'password';
+
+  eyeOpen.classList.toggle('hidden', isHidden);
+  eyeClosed.classList.toggle('hidden', !isHidden);
+}
+
+/* ── LOGIN ── */
+async function login(e) {
+  e.preventDefault();
+  if (isLocked) return;
+
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+
+  const btn = document.getElementById('loginBtn');
+  const label = document.getElementById('loginBtnLabel');
+
+  document.getElementById('loginError').classList.add('hidden');
+
+  if (!email || !password) {
+    return showError("Please enter email and password.");
+  }
+
+  btn.disabled = true;
+  label.innerHTML = `
+    <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"></circle>
+      <path fill="currentColor" class="opacity-75" d="M4 12a8 8 0 018-8v8z"></path>
+    </svg>
+    Signing in...
+  `;
+
+  try {
+    const res = await fetch(API_URL, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  body: JSON.stringify({ email, password })
+});
+
+const text = await res.text(); // always read raw response first
+
+console.log("RAW RESPONSE:", text); // 🔥 DEBUG
+
+let data;
+try {
+  data = JSON.parse(text);
+} catch (e) {
+  throw new Error("Backend did not return JSON. Check server logs.");
+}
+
+if (!res.ok || !data.success) {
+  throw new Error(data.message || "Login failed");
+}
+    // SUCCESS
+    sessionStorage.setItem('itso_authenticated', 'true');
+    sessionStorage.setItem('itso_user', JSON.stringify(data.user));
+
+   if (data.user.role === "admin") {
+  window.location.href = "admin-dashboard.html";
+} else {
+  window.location.href = "dashboard.html";
+}
+
+  } catch (err) {
+    console.error("LOGIN ERROR:", err);
+
+    failedAttempts++;
+    btn.disabled = false;
+
+    label.innerHTML = "Sign In";
+
+    const remaining = MAX_ATTEMPTS - failedAttempts;
+
+    if (failedAttempts >= MAX_ATTEMPTS) {
+      lockAccount();
+    } else {
+      showError(`${err.message} (${remaining} attempts left)`);
+    }
+  }
+}
+
+/* ── LOCK ACCOUNT ── */
+function lockAccount() {
+  isLocked = true;
+
+  document.getElementById('email').disabled = true;
+  document.getElementById('password').disabled = true;
+  document.getElementById('loginBtn').disabled = true;
+
+  showError("Too many failed attempts. Account locked.", true);
+}
+
+/* ── ERROR DISPLAY ── */
+function showError(msg, isLock = false) {
+  const el = document.getElementById('loginError');
+  const txt = document.getElementById('loginErrorText');
+
+  txt.textContent = msg;
+  el.classList.remove('hidden');
+
+  if (!isLock) {
+    const form = document.getElementById('loginForm');
+    form.classList.add('shake');
+    setTimeout(() => form.classList.remove('shake'), 350);
+  }
+}
+</script>
+</body>
+</html>

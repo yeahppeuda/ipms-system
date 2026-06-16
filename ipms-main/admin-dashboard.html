@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Admin Dashboard | IP Management System</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "background": "#f9f9ff","inverse-on-surface": "#eff0fa","surface-container-high": "#e6e7f2",
+          "primary": "#0058be","inverse-surface": "#2e3038","on-primary-container": "#fefcff",
+          "on-primary": "#ffffff","secondary-fixed": "#e9ddff","surface-container-low": "#f2f3fd",
+          "surface-container": "#ecedf7","outline": "#727785","surface-container-highest": "#e1e2ec",
+          "surface-variant": "#e1e2ec","surface-container-lowest": "#ffffff","secondary": "#6b38d4",
+          "on-surface": "#191b23","surface-bright": "#f9f9ff","tertiary-container": "#b75b00",
+          "primary-container": "#2170e4","tertiary": "#924700","on-tertiary": "#ffffff",
+          "on-background": "#191b23","on-surface-variant": "#424754","surface-dim": "#d8d9e3",
+          "inverse-primary": "#adc6ff","outline-variant": "#c2c6d6","surface": "#f9f9ff"
+        },
+        borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
+        fontFamily: { display: ["Inter"],"body-lg": ["Inter"],"headline-lg": ["Inter"],"body-md": ["Inter"],"headline-md": ["Inter"] },
+        fontSize: {
+          display: ["36px",{ lineHeight:"1.2",letterSpacing:"-0.02em",fontWeight:"700" }],
+          "body-lg": ["16px",{ lineHeight:"1.6",fontWeight:"400" }],
+          "headline-lg": ["28px",{ lineHeight:"1.3",fontWeight:"600" }],
+          "body-md": ["14px",{ lineHeight:"1.5",fontWeight:"400" }],
+          "headline-md": ["20px",{ lineHeight:"1.4",fontWeight:"600" }]
+        }
+      }
+    }
+  }
+</script>
+<style>
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .glass-panel { background:rgba(255,255,255,0.7); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid rgba(226,232,240,0.5); }
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:#e2e8f0; border-radius:10px; }
+
+  .nav-item { display:flex; align-items:center; gap:10px; padding:11px 12px; border-radius:8px; cursor:pointer; transition:background 0.15s,color 0.15s; text-decoration:none; color:#424754; font-size:13.5px; font-weight:400; width:100%; }
+  .nav-item:hover { background-color:#f1f5f9; color:#191b23; transform:translateX(4px); }
+  .nav-item.active { background-color:#fee2e2; color:#dc2626; font-weight:500; transform:none; }
+  .nav-item.active i { color:#dc2626; }
+  .nav-item.active-blue { background-color:#e8f0fd; color:#0058be; font-weight:500; transform:none; }
+  .nav-item.active-blue i { color:#0058be; }
+  .nav-item i { font-size:18px; width:20px; text-align:center; flex-shrink:0; }
+  .nav-section-label { font-size:10px; font-weight:600; color:#727785; text-transform:uppercase; letter-spacing:0.08em; padding:0 12px; margin:12px 0 4px; }
+
+
+
+  .chart-filter-btn { padding:5px 14px; border-radius:8px; font-size:12px; font-weight:600; border:none; cursor:pointer; background:transparent; color:#727785; transition:background 0.12s,color 0.12s; }
+  .chart-filter-btn.active { background:#fff; color:#0058be; box-shadow:0 1px 4px rgba(0,0,0,0.1); }
+  .chart-filter-btn:hover:not(.active) { color:#191b23; }
+  .pie-legend-item { display:flex; align-items:center; gap:8px; font-size:12px; color:#191b23; }
+  .pie-legend-sq { width:10px; height:10px; border-radius:3px; flex-shrink:0; }
+  .pie-legend-pct { font-weight:600; color:#727785; font-size:11px; margin-left:auto; padding-left:12px; }
+
+  .live-time-badge { display:flex; align-items:center; gap:6px; background:#f2f3fd; border:1px solid #e1e2ec; border-radius:8px; padding:5px 11px; font-size:12px; font-weight:600; color:#424754; white-space:nowrap; flex-shrink:0; }
+  .live-time-badge i { color:#0058be; font-size:14px; }
+
+  .filter-dropdown { position:absolute; z-index:100; background:#fff; border:1px solid #e1e2ec; border-radius:14px; padding:6px; box-shadow:0 10px 36px rgba(0,0,0,0.13); animation:filterDropIn 0.15s ease; }
+  @keyframes filterDropIn { from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none} }
+  .filter-opt { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:9px; cursor:pointer; font-size:13px; color:#424754; font-family:'Inter',sans-serif; transition:background 0.12s; border:none; background:none; width:100%; text-align:left; font-weight:500; }
+  .filter-opt:hover { background:#f2f3fd; color:#191b23; }
+  .filter-opt.active { background:#e8f0fd; color:#0058be; font-weight:700; }
+  .filter-opt .fo-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .filter-opt .fo-check { margin-left:auto; font-size:14px; color:#0058be; display:none; }
+  .filter-opt.active .fo-check { display:block; }
+  .filter-divider { height:1px; background:#f1f5f9; margin:4px 0; }
+
+  .activity-item { display:flex; align-items:flex-start; gap:12px; padding:12px 16px; border-radius:10px; transition:background 0.12s; cursor:default; }
+  .activity-item:hover { background:#f9f9ff; }
+  .activity-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; margin-top:4px; }
+
+  .prog-bar { height:5px; background:#f0f2f7; border-radius:20px; overflow:hidden; }
+  .prog-fill { height:100%; border-radius:20px; transition:width 0.8s cubic-bezier(0.4,0,0.2,1); }
+
+  .insight-row { display:flex; flex-direction:column; gap:3px; padding:8px 0; border-bottom:1px solid #f2f3fd; }
+  .insight-row:last-child { border-bottom:none; }
+  .insight-label { font-size:10px; font-weight:700; color:#727785; text-transform:uppercase; letter-spacing:0.06em; }
+  .insight-value { font-size:13px; font-weight:600; color:#191b23; }
+  .insight-sub { font-size:11px; color:#727785; }
+
+  .skeleton { background:linear-gradient(90deg,#f2f3fd 25%,#e6e7f2 50%,#f2f3fd 75%); background-size:200% 100%; animation:shimmer 1.5s infinite; border-radius:6px; }
+  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+  .hover-card { transition:transform 0.2s, box-shadow 0.2s; }
+  .hover-card:hover { transform:translateY(-3px); box-shadow:0 8px 28px rgba(0,0,0,0.09); }
+
+  #mainContent { opacity:0; transform:translateY(8px); transition:opacity 0.6s ease-out, transform 0.6s ease-out; }
+
+  .cat-mini-card { display:flex; flex-direction:column; align-items:center; gap:8px; padding:16px 10px; border-radius:14px; border:1px solid #e2e8f0; background:#fff; text-align:center; transition:all 0.18s; }
+  .cat-mini-card:hover { border-color:#0058be22; background:#f5f8ff; transform:translateY(-2px); box-shadow:0 4px 16px rgba(0,88,190,0.1); }
+
+  @media(max-width:768px){
+    aside { transform:translateX(-100%); transition:transform 0.3s; z-index:60; }
+    aside.open { transform:translateX(0); }
+    header { left:0!important; padding-left:1rem!important; }
+    main  { padding-left:1rem!important; }
+  }
+</style>
+</head>
+<body class="bg-background font-body-md text-on-surface">
+
+<!-- SIDEBAR -->
+<aside class="w-[260px] h-screen fixed left-0 top-0 border-r border-outline-variant bg-surface-container-lowest flex flex-col z-50">
+  <div class="flex items-center gap-3 px-5 py-5 border-b border-outline-variant">
+    <div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white flex-shrink-0">
+      <i class="ti ti-building-bank" style="font-size:18px;"></i>
+    </div>
+    <div>
+      <h1 class="text-sm font-semibold leading-tight text-on-surface">IP Management</h1>
+      <p class="text-[10px] text-on-surface-variant font-semibold tracking-widest uppercase">System</p>
+    </div>
+  </div>
+  <nav class="flex-1 overflow-y-auto px-3 pt-2 pb-2 space-y-2" aria-label="Admin navigation">
+    <div class="nav-section-label">Overview</div>
+    <a class="nav-item active" href="admin-dashboard.html"><i class="ti ti-layout-dashboard"></i><span>Dashboard</span></a>
+    <div class="nav-section-label">Management</div>
+    <a class="nav-item" href="admin-users.html">
+      <i class="ti ti-users"></i><span>User Management</span>
+      <span class="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-600" id="nav-pending-users">…</span>
+    </a>
+    <a class="nav-item" href="admin-logs.html"><i class="ti ti-clipboard-list"></i><span>Activity Logs</span></a>
+  </nav>
+</aside>
+
+<!-- HEADER -->
+<header class="fixed top-0 left-0 right-0 pl-[260px] z-40 bg-surface/80 backdrop-blur-md border-b border-outline-variant">
+  <div class="flex items-center justify-between h-[60px] w-full px-6 gap-4">
+    <div class="flex items-center gap-3 w-full">
+      <div class="relative flex-1" id="searchWrapper">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px] pointer-events-none transition-colors" id="searchIcon">search</span>
+        <span class="active-filter-chip" id="activeFilterChip" style="left:34px;top:50%;transform:translateY(-50%);display:none;position:absolute;align-items:center;gap:5px;background:#fef2f2;border:1px solid #fca5a5;border-radius:20px;padding:2px 8px 2px 6px;font-size:11px;font-weight:700;color:#dc2626;pointer-events:none;white-space:nowrap;z-index:5;">
+          <span id="activeFilterChipText"></span>
+        </span>
+        <input id="globalSearch" class="w-full h-[38px] bg-surface-container-lowest border border-outline-variant rounded-xl pl-10 pr-8 text-[13.5px] text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-on-surface-variant/60 shadow-sm" placeholder="Search users, records, logs..." type="text" autocomplete="off"/>
+        <button id="searchClearBtn" class="absolute right-2 top-1/2 -translate-y-1/2 bg-surface-variant hover:bg-outline-variant text-on-surface-variant rounded-full w-[20px] h-[20px] hidden items-center justify-center text-[12px] transition-colors" onclick="clearSearch()" title="Clear search">×</button>
+        <div id="searchDropdownMenu" class="absolute left-0 right-0 top-[calc(100%+6px)] bg-surface-container-lowest border border-outline-variant rounded-xl shadow-xl z-[100] hidden flex-col overflow-hidden max-h-[300px]">
+          <div id="searchDropdownContent" class="overflow-y-auto flex-1 p-2 space-y-1"></div>
+        </div>
+      </div>
+      <div class="relative shrink-0">
+        <button id="filterBtn" class="h-[38px] flex items-center gap-2 px-4 bg-surface-container-lowest border border-outline-variant rounded-xl text-[13px] font-semibold text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all shadow-sm" onclick="toggleFilterDropdown(event)" title="Filter section">
+          <i class="ti ti-adjustments-horizontal text-[16px]"></i>
+          <span id="filterBtnLabel">All Sections</span>
+          <i class="ti ti-chevron-down text-[12px] transition-transform duration-200" id="filterChevron"></i>
+        </button>
+        <div class="filter-dropdown" id="filterDropdown" style="display:none;right:0;top:calc(100% + 6px);min-width:190px;">
+          <div style="padding:6px 10px 4px;font-size:10px;font-weight:700;color:#727785;text-transform:uppercase;letter-spacing:0.08em;">Filter by Section</div>
+          <button class="filter-opt active" data-cat="" onclick="setAdminFilter('',this)"><span class="fo-dot" style="background:#e1e2ec;"></span>All Sections<span class="material-symbols-outlined fo-check">check</span></button>
+          <div class="filter-divider"></div>
+          <button class="filter-opt" data-cat="users" onclick="setAdminFilter('users',this)"><span class="fo-dot" style="background:#0058be;"></span>Users<span class="material-symbols-outlined fo-check">check</span></button>
+          <button class="filter-opt" data-cat="research" onclick="setAdminFilter('research',this)"><span class="fo-dot" style="background:#6b38d4;"></span>Research Records<span class="material-symbols-outlined fo-check">check</span></button>
+          <button class="filter-opt" data-cat="logs" onclick="setAdminFilter('logs',this)"><span class="fo-dot" style="background:#dc2626;"></span>Activity Logs<span class="material-symbols-outlined fo-check">check</span></button>
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center gap-4 shrink-0">
+      <div class="live-time-badge"><i class="ti ti-clock"></i><span id="liveClockDisplay">--:-- --</span></div>
+      <div class="h-6 w-px bg-outline-variant"></div>
+      <div class="relative shrink-0" id="profileMenuWrapper">
+        <div onclick="toggleProfileDropdown(event)" class="w-9 h-9 rounded-full bg-red-100 flex items-center justify-center overflow-hidden border-2 border-surface-container-highest cursor-pointer hover:ring-2 hover:ring-primary/30 transition-all shadow-sm">
+          <span class="text-[12px] font-bold text-red-700">SA</span>
+        </div>
+        <div id="profileDropdown" class="hidden absolute right-0 top-[calc(100%+8px)] min-w-[160px] bg-white border border-slate-200 rounded-xl p-1.5 shadow-xl z-50">
+          <div class="px-3 py-2 border-b border-slate-100 mb-1">
+            <p class="text-[12px] font-semibold text-on-surface">Super Admin</p>
+            <p class="text-[10px] font-bold text-red-500 uppercase tracking-wider">Administrator</p>
+          </div>
+          <button onclick="window.location.href='index.html'" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] font-semibold text-red-600 hover:bg-red-50 transition-colors text-left">
+            <i class="ti ti-logout" style="font-size:16px;"></i><span>Log Out</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main id="mainContent" class="pl-[280px] pt-[76px] min-h-screen">
+  <div class="py-6 px-8 max-w-[1440px]">
+
+    <!-- Page Header -->
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h2 id="dynamicGreeting" class="text-[28px] font-bold leading-tight text-on-surface tracking-tight">Good Morning, Admin!</h2>
+        <p class="text-[14px] text-on-surface-variant mt-1">Full system overview — users, records, and platform analytics.</p>
+      </div>
+      <div class="flex gap-3 items-center">
+        <!-- API status indicator -->
+        <div id="apiStatusBadge" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] font-semibold border" style="display:none!important;">
+          <span id="apiStatusDot" class="w-2 h-2 rounded-full"></span>
+          <span id="apiStatusText"></span>
+        </div>
+        <button onclick="window.location.reload()" class="h-[40px] px-4 border border-outline-variant text-on-surface-variant rounded-xl font-semibold text-[13px] flex items-center gap-2 hover:bg-surface-container-low transition-all">
+          <i class="ti ti-refresh" style="font-size:16px;"></i>Refresh
+        </button>
+        <a href="admin-logs.html" class="h-[40px] px-5 bg-primary text-white rounded-xl font-semibold text-[13px] flex items-center gap-2 hover:opacity-90 transition-all shadow-md shadow-primary/20">
+          <i class="ti ti-clipboard-list" style="font-size:16px;"></i>View All Logs
+        </a>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-12 gap-6">
+
+      <!-- KPI: Total Users -->
+      <div class="col-span-12 md:col-span-6 lg:col-span-4 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm hover-card overflow-hidden flex flex-col" style="border-left:3px solid #0058be;">
+        <div class="flex flex-col justify-between h-full p-4 gap-3">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <div class="p-1.5 rounded-lg" style="background:#e8f0fd;"><i class="ti ti-users" style="font-size:16px;color:#0058be;"></i></div>
+              <span class="text-[10px] font-semibold uppercase tracking-widest text-on-surface-variant">Users</span>
+            </div>
+            <span id="kpi-active-users" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600"><span class="skeleton inline-block w-8 h-3 align-middle"></span></span>
+          </div>
+          <div>
+            <p class="text-[28px] font-bold leading-none text-on-surface tracking-tight" id="kpi-total-users"><span class="skeleton inline-block w-12 h-7 align-middle"></span></p>
+            <p class="text-[11px] text-on-surface-variant mt-1">Registered accounts</p>
+          </div>
+          <div>
+            <div class="flex justify-between text-[11px] text-on-surface-variant mb-1.5">
+              <span>Active rate</span><span id="kpi-active-pct" class="font-semibold text-on-surface">—</span>
+            </div>
+            <div class="prog-bar"><div class="prog-fill" style="background:#0058be;" id="kpi-active-bar"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI: Research Records -->
+      <div class="col-span-12 md:col-span-6 lg:col-span-4 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm hover-card overflow-hidden flex flex-col" style="border-left:3px solid #6b38d4;">
+        <div class="flex flex-col justify-between h-full p-4 gap-3">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <div class="p-1.5 rounded-lg" style="background:#f2edfd;"><i class="ti ti-database" style="font-size:16px;color:#6b38d4;"></i></div>
+              <span class="text-[10px] font-semibold uppercase tracking-widest text-on-surface-variant">Research Records</span>
+            </div>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full" style="background:#f2edfd;color:#6b38d4;">↑ Live</span>
+          </div>
+          <div>
+            <p class="text-[28px] font-bold leading-none text-on-surface tracking-tight" id="kpi-research"><span class="skeleton inline-block w-12 h-7 align-middle"></span></p>
+            <p class="text-[11px] text-on-surface-variant mt-1">Total submissions</p>
+          </div>
+          <div>
+            <div class="flex justify-between text-[11px] text-on-surface-variant mb-1.5">
+              <span>Filed this month</span><span id="kpi-research-month" class="font-semibold text-on-surface">—</span>
+            </div>
+            <div class="prog-bar"><div class="prog-fill" style="background:#6b38d4;" id="kpi-research-bar"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI: Total IP Records -->
+      <div class="col-span-12 md:col-span-6 lg:col-span-4 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm hover-card overflow-hidden flex flex-col" style="border-left:3px solid #924700;">
+        <div class="flex flex-col justify-between h-full p-4 gap-3">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <div class="p-1.5 rounded-lg" style="background:#fef3c7;"><i class="ti ti-certificate" style="font-size:16px;color:#924700;"></i></div>
+              <span class="text-[10px] font-semibold uppercase tracking-widest text-on-surface-variant">Total IP Records</span>
+            </div>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full" style="background:#fef3c7;color:#924700;">↑ Live</span>
+          </div>
+          <div>
+            <p class="text-[28px] font-bold leading-none text-on-surface tracking-tight" id="kpi-ip-total"><span class="skeleton inline-block w-12 h-7 align-middle"></span></p>
+            <p class="text-[11px] text-on-surface-variant mt-1">All categories combined</p>
+          </div>
+          <div>
+            <div class="flex justify-between text-[11px] text-on-surface-variant mb-1.5">
+              <span>Approved</span><span id="kpi-approved-pct" class="font-semibold text-on-surface">—</span>
+            </div>
+            <div class="prog-bar"><div class="prog-fill" style="background:#924700;" id="kpi-approved-bar"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- IP Category Mini Cards -->
+      <div class="col-span-12 lg:col-span-9 grid grid-cols-5 gap-3">
+        <div class="cat-mini-card hover-card">
+          <div class="p-2 rounded-lg" style="background:#e8f0fd;"><i class="ti ti-copyright" style="font-size:18px;color:#0058be;"></i></div>
+          <p class="text-[20px] font-bold text-on-surface" id="cat-copyright"><span class="skeleton inline-block w-8 h-5"></span></p>
+          <p class="text-[10px] font-semibold uppercase tracking-widest text-on-surface-variant">Copyright</p>
+        </div>
+        <div class="cat-mini-card hover-card">
+          <div class="p-2 rounded-lg" style="background:#f2edfd;"><i class="ti ti-file-description" style="font-size:18px;color:#6b38d4;"></i></div>
+          <p class="text-[20px] font-bold text-on-surface" id="cat-patent"><span class="skeleton inline-block w-8 h-5"></span></p>
+          <p class="text-[10px] font-semibold uppercase tracking-widest text-on-surface-variant">Patent</p>
+        </div>
+        <div class="cat-mini-card hover-card">
+          <div class="p-2 rounded-lg" style="background:#d1fae5;"><i class="ti ti-shield-check" style="font-size:18px;color:#059669;"></i></div>
+          <p class="text-[20px] font-bold text-on-surface" id="cat-trademark"><span class="skeleton inline-block w-8 h-5"></span></p>
+          <p class="text-[10px] font-semibold uppercase tracking-widest text-on-surface-variant">Trademark</p>
+        </div>
+        <div class="cat-mini-card hover-card">
+          <div class="p-2 rounded-lg" style="background:#fff7ed;"><i class="ti ti-settings-2" style="font-size:18px;color:#924700;"></i></div>
+          <p class="text-[20px] font-bold text-on-surface" id="cat-utility"><span class="skeleton inline-block w-8 h-5"></span></p>
+          <p class="text-[10px] font-semibold uppercase tracking-widest text-on-surface-variant">Utility Model</p>
+        </div>
+        <div class="cat-mini-card hover-card">
+          <div class="p-2 rounded-lg" style="background:#fee2e2;"><i class="ti ti-vector-bezier-2" style="font-size:18px;color:#dc2626;"></i></div>
+          <p class="text-[20px] font-bold text-on-surface" id="cat-design"><span class="skeleton inline-block w-8 h-5"></span></p>
+          <p class="text-[10px] font-semibold uppercase tracking-widest text-on-surface-variant">Ind. Design</p>
+        </div>
+      </div>
+
+      <!-- System Health -->
+      <div class="col-span-12 lg:col-span-3 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm hover-card p-5">
+        <div class="flex items-center gap-2 mb-4">
+          <div class="p-1.5 rounded-lg" style="background:#e8f0fd;"><span class="material-symbols-outlined text-[18px]" style="color:#0058be;font-variation-settings:'FILL' 1;">monitor_heart</span></div>
+          <h3 class="text-[15px] font-semibold text-on-surface">System Health</h3>
+        </div>
+        <div id="sysStatsContent" class="space-y-4">
+          <div class="skeleton h-8 rounded-lg"></div>
+          <div class="skeleton h-8 rounded-lg"></div>
+          <div class="skeleton h-8 rounded-lg"></div>
+          <div class="skeleton h-8 rounded-lg"></div>
+        </div>
+      </div>
+
+      <!-- Line Chart -->
+      <div class="col-span-12 glass-panel rounded-2xl p-6 shadow-sm lg:col-span-7 hover-card">
+        <div class="flex justify-between items-start mb-3">
+          <div>
+            <h3 class="text-[16px] font-semibold text-on-surface">Submissions Over Time</h3>
+            <p class="text-[13px] text-on-surface-variant mt-0.5">Volume of IP documents filed across all categories</p>
+          </div>
+          <div class="flex bg-surface-container-high rounded-lg p-1">
+            <button class="chart-filter-btn" data-period="weekly">Weekly</button>
+            <button class="chart-filter-btn active" data-period="monthly">Monthly</button>
+            <button class="chart-filter-btn" data-period="yearly">Yearly</button>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-4 mb-4" id="lineLegend"></div>
+        <div id="lineChartLoading" style="position:relative;width:100%;height:220px;" class="flex items-center justify-center">
+          <div class="skeleton w-full h-full rounded-xl"></div>
+        </div>
+        <div id="lineChartWrap" style="position:relative;width:100%;height:220px;display:none;"><canvas id="lineChart" role="img" aria-label="Line chart of IP submissions over time"></canvas></div>
+      </div>
+
+      <!-- Pie Chart -->
+      <div class="col-span-12 lg:col-span-5 glass-panel rounded-2xl p-6 shadow-sm flex flex-col hover-card">
+        <div class="flex justify-between items-center mb-5">
+          <div>
+            <h3 class="text-[16px] font-semibold text-on-surface">Submissions by College</h3>
+            <p class="text-[13px] text-on-surface-variant mt-0.5">Distribution of IP filings per college</p>
+          </div>
+        </div>
+        <div id="pieChartLoading" class="flex flex-1 items-center justify-center">
+          <div class="skeleton w-full rounded-xl" style="height:180px;"></div>
+        </div>
+        <div id="pieChartWrap" style="display:none;" class="flex flex-1 items-center justify-center gap-8">
+          <div style="position:relative;width:160px;height:160px;flex-shrink:0;"><canvas id="pieChart" role="img" aria-label="Doughnut chart of submissions by college"></canvas></div>
+          <div class="flex flex-col gap-3" id="pieLegend"></div>
+        </div>
+        <div id="pieChartEmpty" style="display:none;" class="flex flex-1 flex-col items-center justify-center gap-2 text-on-surface-variant">
+          <i class="ti ti-chart-donut-3" style="font-size:32px;opacity:0.3;"></i>
+          <p class="text-[13px]">No college data available</p>
+        </div>
+      </div>
+
+      <!-- Quick Insights -->
+      <div class="col-span-12 lg:col-span-4 bg-surface-container-lowest rounded-2xl p-6 border border-outline-variant shadow-sm hover-card">
+        <div class="flex items-center gap-2 mb-4">
+          <div class="p-1.5 rounded-lg" style="background:#e8f0fd;"><span class="material-symbols-outlined text-[18px]" style="color:#0058be;font-variation-settings:'FILL' 1;">insights</span></div>
+          <h3 class="text-[15px] font-semibold text-on-surface">Quick Insights</h3>
+        </div>
+        <div id="insightsLoading" class="space-y-3">
+          <div class="skeleton h-10 rounded-lg"></div>
+          <div class="skeleton h-10 rounded-lg"></div>
+          <div class="skeleton h-10 rounded-lg"></div>
+          <div class="skeleton h-10 rounded-lg"></div>
+          <div class="skeleton h-10 rounded-lg"></div>
+        </div>
+        <div id="insightsContent" style="display:none;"></div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-2xl p-6 border border-outline-variant shadow-sm hover-card">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <div class="p-1.5 rounded-lg" style="background:#f2edfd;"><span class="material-symbols-outlined text-[18px]" style="color:#6b38d4;font-variation-settings:'FILL' 1;">history</span></div>
+            <h3 class="text-[15px] font-semibold text-on-surface">Recent Activity</h3>
+          </div>
+          <a href="admin-logs.html" class="text-[12px] font-semibold text-primary hover:underline flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+            View All <i class="ti ti-arrow-right text-[13px]"></i>
+          </a>
+        </div>
+        <div id="activityLoading" class="space-y-2">
+          <div class="skeleton h-14 rounded-lg"></div>
+          <div class="skeleton h-14 rounded-lg"></div>
+          <div class="skeleton h-14 rounded-lg"></div>
+        </div>
+        <div id="activityFeed" style="display:none;" class="space-y-1"></div>
+        <div id="activityEmpty" style="display:none;" class="flex flex-col items-center justify-center py-8 text-on-surface-variant gap-2">
+          <i class="ti ti-history" style="font-size:32px;opacity:0.3;"></i>
+          <p class="text-[13px]">No recent activity found</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+/* ═══════════════════════════════════════
+   CONFIG — adjust these to match your API
+═══════════════════════════════════════ */
+const API_BASE = 'http://localhost:5000/api';
+
+// Field name mappings — update if your DB uses different keys
+const FIELD = {
+  // Research record fields
+  category:   ['category', 'type', 'ip_type', 'ipType'],
+  college:    ['college', 'department', 'dept', 'faculty', 'college_name'],
+  date:       ['date', 'dateOfApplication', 'date_of_application', 'createdAt', 'created_at', 'submittedAt', 'submitted_at'],
+  status:     ['status', 'approvalStatus', 'approval_status'],
+
+  // User fields
+  userStatus: ['status', 'isActive', 'is_active', 'active'],
+};
+
+// Category name → key mapping (lowercase, various formats)
+const CAT_MAP = {
+  'copyright': 'copyright',
+  'patent': 'patent',
+  'trademark': 'trademark',
+  'utility model': 'utility',
+  'utility-model': 'utility',
+  'utility_model': 'utility',
+  'industrial design': 'design',
+  'industrial-design': 'design',
+  'industrial_design': 'design',
+  'ind. design': 'design',
+  'ind design': 'design',
+};
+
+/* ═══════════════════════════════════════
+   STATE
+═══════════════════════════════════════ */
+let lineChartInstance = null;
+let pieChartInstance  = null;
+let currentPeriod     = 'monthly';
+let _researchRecords  = [];  // raw API data stored for period switching
+let _usersData        = { total: 0, active: 0 };
+
+/* ═══════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════ */
+function set(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
+function setBar(id, pct) { const el = document.getElementById(id); if (el) el.style.width = Math.min(pct, 100) + '%'; }
+function show(id) { const el = document.getElementById(id); if (el) el.style.display = ''; }
+function hide(id) { const el = document.getElementById(id); if (el) el.style.display = 'none'; }
+
+// Safely read a field that might have several possible names
+function getField(obj, candidates) {
+  for (const k of candidates) {
+    if (obj[k] !== undefined && obj[k] !== null && obj[k] !== '') return obj[k];
+  }
+  return null;
+}
+
+function getCategory(record) {
+  const raw = (getField(record, FIELD.category) || '').toLowerCase().trim();
+  return CAT_MAP[raw] || raw;  // returns normalised key or raw string
+}
+
+function getCollege(record) {
+  return (getField(record, FIELD.college) || 'Unknown').trim();
+}
+
+function getDate(record) {
+  const raw = getField(record, FIELD.date);
+  if (!raw) return null;
+  const d = new Date(raw);
+  return isNaN(d) ? null : d;
+}
+
+function getStatus(record) {
+  return (getField(record, FIELD.status) || '').toLowerCase();
+}
+
+function timeAgo(dateStr) {
+  const d = new Date(dateStr);
+  if (isNaN(d)) return 'Recently';
+  const diff = Math.floor((Date.now() - d) / 1000);
+  if (diff < 60) return diff + ' sec ago';
+  if (diff < 3600) return Math.floor(diff / 60) + ' min ago';
+  if (diff < 86400) return Math.floor(diff / 3600) + ' hr ago';
+  return Math.floor(diff / 86400) + ' day ago';
+}
+
+/* ═══════════════════════════════════════
+   CLOCK & GREETING
+═══════════════════════════════════════ */
+function startLiveClock() {
+  function tick() {
+    const n = new Date();
+    let h = n.getHours(), m = n.getMinutes(), s = n.getSeconds();
+    const ap = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    document.getElementById('liveClockDisplay').textContent =
+      `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')} ${ap}`;
+  }
+  tick(); setInterval(tick, 1000);
+}
+
+function updateGreeting() {
+  const h = new Date().getHours();
+  let g = h < 12 ? 'Good Morning' : h < 18 ? 'Good Afternoon' : 'Good Evening';
+  document.getElementById('dynamicGreeting').textContent = `${g}, Admin!`;
+}
+
+function toggleProfileDropdown(e) {
+  e.stopPropagation();
+  document.getElementById('profileDropdown').classList.toggle('hidden');
+}
+
+/* ═══════════════════════════════════════
+   API STATUS INDICATOR
+═══════════════════════════════════════ */
+function showApiStatus(ok, msg) {
+  const badge = document.getElementById('apiStatusBadge');
+  const dot   = document.getElementById('apiStatusDot');
+  const text  = document.getElementById('apiStatusText');
+  badge.style.display = 'flex';
+  if (ok) {
+    badge.style.cssText = 'display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:#d1fae5;border:1px solid #6ee7b7;color:#065f46;';
+    dot.style.background = '#059669';
+  } else {
+    badge.style.cssText = 'display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:#fee2e2;border:1px solid #fca5a5;color:#991b1b;';
+    dot.style.background = '#dc2626';
+  }
+  dot.style.cssText += 'width:7px;height:7px;border-radius:50%;';
+  text.textContent = msg;
+  // Auto-hide after 4s
+  setTimeout(() => { badge.style.display = 'none'; }, 4000);
+}
+
+/* ═══════════════════════════════════════
+   MAIN LOAD
+═══════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  const main = document.getElementById('mainContent');
+  setTimeout(() => { main.style.opacity = '1'; main.style.transform = 'translateY(0)'; }, 80);
+  startLiveClock();
+  updateGreeting();
+  setupSearch();
+  loadAllData();
+});
+
+async function loadAllData() {
+  // Fire all requests in parallel
+  const [researchResult, usersResult, logsResult] = await Promise.allSettled([
+    fetchResearch(),
+    fetchUsers(),
+    fetchLogs(),
+  ]);
+
+  const records = researchResult.status === 'fulfilled' ? researchResult.value : null;
+  const users   = usersResult.status   === 'fulfilled' ? usersResult.value   : null;
+  const logs    = logsResult.status    === 'fulfilled' ? logsResult.value    : null;
+
+  const apiOk = records !== null || users !== null || logs !== null;
+  showApiStatus(apiOk,
+    apiOk ? 'Connected to database' : 'API unreachable — check server'
+  );
+
+  _researchRecords = records || [];
+  _usersData = computeUsers(users);
+
+  const agg = aggregateRecords(_researchRecords);
+
+  renderKPIs(agg);
+  renderCatCards(agg);
+  renderLineChart(currentPeriod, agg);
+  renderPieChart(agg);
+  renderInsights(agg);
+  renderActivity(logs);
+  renderSysStats(agg, _usersData);
+  renderNavBadge(users);
+}
+
+/* ═══════════════════════════════════════
+   FETCH FUNCTIONS
+═══════════════════════════════════════ */
+async function fetchResearch() {
+  const res = await fetch(`${API_BASE}/research`);
+  if (!res.ok) throw new Error('research ' + res.status);
+  const data = await res.json();
+  return Array.isArray(data) ? data : (data.data || data.records || data.results || []);
+}
+
+async function fetchUsers() {
+  const res = await fetch(`${API_BASE}/users`);
+  if (!res.ok) throw new Error('users ' + res.status);
+  const data = await res.json();
+  return Array.isArray(data) ? data : (data.data || data.users || []);
+}
+
+async function fetchLogs() {
+  // Try /logs, then /activity, then /audit-logs
+  for (const endpoint of ['logs', 'activity', 'audit-logs', 'audit_logs']) {
+    try {
+      const res = await fetch(`${API_BASE}/${endpoint}`);
+      if (!res.ok) continue;
+      const data = await res.json();
+      return Array.isArray(data) ? data : (data.data || data.logs || []);
+    } catch { continue; }
+  }
+  return null; // No logs endpoint found
+}
+
+/* ═══════════════════════════════════════
+   DATA AGGREGATION
+═══════════════════════════════════════ */
+function computeUsers(users) {
+  if (!users || !users.length) return { total: 0, active: 0 };
+  const active = users.filter(u => {
+    const s = getField(u, FIELD.userStatus);
+    if (typeof s === 'boolean') return s;
+    if (typeof s === 'string') return ['active', 'enabled', 'approved', '1', 'true'].includes(s.toLowerCase());
+    if (typeof s === 'number') return s === 1;
+    return false;
+  }).length;
+  return { total: users.length, active };
+}
+
+function aggregateRecords(records) {
+  const now   = new Date();
+  const thisY = now.getFullYear();
+  const thisM = now.getMonth();
+
+  // Category counts
+  const cats  = { copyright: 0, patent: 0, trademark: 0, utility: 0, design: 0 };
+
+  // College breakdown
+  const colleges = {};
+
+  // Time series — monthly (12 months of current year)
+  const monthly = {
+    copyright: new Array(12).fill(0),
+    patent:    new Array(12).fill(0),
+    trademark: new Array(12).fill(0),
+    utility:   new Array(12).fill(0),
+    design:    new Array(12).fill(0),
+  };
+
+  // Time series — yearly (last 6 years)
+  const currentYear = thisY;
+  const yearLabels  = Array.from({ length: 6 }, (_, i) => String(currentYear - 5 + i));
+  const yearly = {
+    copyright: new Array(6).fill(0),
+    patent:    new Array(6).fill(0),
+    trademark: new Array(6).fill(0),
+    utility:   new Array(6).fill(0),
+    design:    new Array(6).fill(0),
+  };
+
+  // Time series — weekly (last 12 weeks)
+  const weekly = {
+    copyright: new Array(12).fill(0),
+    patent:    new Array(12).fill(0),
+    trademark: new Array(12).fill(0),
+    utility:   new Array(12).fill(0),
+    design:    new Array(12).fill(0),
+  };
+
+  let thisMonth = 0;
+  let approved  = 0;
+
+  records.forEach(r => {
+    const cat     = getCategory(r);
+    const college = getCollege(r);
+    const d       = getDate(r);
+    const status  = getStatus(r);
+
+    // Category tally
+    if (cats[cat] !== undefined) cats[cat]++;
+
+    // College tally
+    if (college && college !== 'Unknown') {
+      colleges[college] = (colleges[college] || 0) + 1;
+    }
+
+    // Approval count
+    if (['approved', 'approved', 'accept', 'accepted', 'granted'].includes(status)) approved++;
+
+    if (d) {
+      const recY = d.getFullYear();
+      const recM = d.getMonth();
+
+      // This month count
+      if (recY === thisY && recM === thisM) thisMonth++;
+
+      // Monthly chart (current year only)
+      if (recY === thisY && cats[cat] !== undefined) {
+        if (monthly[cat]) monthly[cat][recM]++;
+      }
+
+      // Yearly chart
+      const yIdx = yearLabels.indexOf(String(recY));
+      if (yIdx >= 0 && yearly[cat]) yearly[cat][yIdx]++;
+
+      // Weekly chart — which of the last 12 weeks?
+      const msPerWeek = 7 * 24 * 3600 * 1000;
+      const weeksAgo  = Math.floor((Date.now() - d.getTime()) / msPerWeek);
+      if (weeksAgo >= 0 && weeksAgo < 12 && weekly[cat]) {
+        weekly[cat][11 - weeksAgo]++;
+      }
+    }
+  });
+
+  const weekLabels = Array.from({ length: 12 }, (_, i) => {
+    const d = new Date(Date.now() - (11 - i) * 7 * 24 * 3600 * 1000);
+    return `Wk ${Math.ceil((d.getDate()) / 7)} ${d.toLocaleString('default', { month: 'short' })}`;
+  });
+
+  return {
+    cats, colleges,
+    monthly: {
+      labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+      ...monthly
+    },
+    yearly:  { labels: yearLabels, ...yearly },
+    weekly:  { labels: weekLabels, ...weekly },
+    total:   records.length,
+    thisMonth,
+    approved,
+  };
+}
+
+/* ═══════════════════════════════════════
+   KPI CARDS
+═══════════════════════════════════════ */
+function renderKPIs(agg) {
+  const { total: users, active } = _usersData;
+  const research    = agg.total;
+  const thisMonth   = agg.thisMonth;
+  const ipTotal     = Object.values(agg.cats).reduce((a, b) => a + b, 0);
+  const activePct   = users ? Math.round(active / users * 100) : 0;
+  const approvedPct = research ? Math.round(agg.approved / research * 100) : 0;
+  const monthPct    = research ? Math.round(thisMonth / research * 100) : 0;
+
+  set('kpi-total-users',    users  || '—');
+  // Active users shown as a badge on the Users card
+  const activeEl = document.getElementById('kpi-active-users');
+  if (activeEl) activeEl.textContent = users ? `${active} active` : '—';
+  set('kpi-research',       research.toLocaleString());
+  set('kpi-ip-total',       ipTotal.toLocaleString());
+  set('kpi-active-pct',     users ? activePct + '%' : '—');
+  setBar('kpi-active-bar',  activePct);
+  set('kpi-research-month', '+' + thisMonth);
+  setBar('kpi-research-bar', monthPct);
+  set('kpi-approved-pct',   research ? approvedPct + '%' : '—');
+  setBar('kpi-approved-bar', approvedPct);
+
+  // Nav badge: pending / inactive users
+  const pending = users - active;
+  set('nav-pending-users', pending > 0 ? pending : '');
+}
+
+/* ═══════════════════════════════════════
+   CATEGORY MINI CARDS
+═══════════════════════════════════════ */
+function renderCatCards(agg) {
+  set('cat-copyright', agg.cats.copyright.toLocaleString());
+  set('cat-patent',    agg.cats.patent.toLocaleString());
+  set('cat-trademark', agg.cats.trademark.toLocaleString());
+  set('cat-utility',   agg.cats.utility.toLocaleString());
+  set('cat-design',    agg.cats.design.toLocaleString());
+}
+
+/* ═══════════════════════════════════════
+   LINE CHART
+═══════════════════════════════════════ */
+const LINE_SERIES = [
+  { label: 'Copyright',     key: 'copyright', color: '#0058be', dash: [] },
+  { label: 'Patent',        key: 'patent',    color: '#6b38d4', dash: [6, 3] },
+  { label: 'Trademark',     key: 'trademark', color: '#10b981', dash: [3, 3] },
+  { label: 'Utility Model', key: 'utility',   color: '#924700', dash: [8, 4] },
+  { label: 'Ind. Design',   key: 'design',    color: '#dc2626', dash: [4, 4] },
+];
+
+function renderLineChart(period, agg) {
+  hide('lineChartLoading');
+  show('lineChartWrap');
+
+  // If called from period toggle button, re-use stored agg
+  const src = agg ? agg[period] : aggregateRecords(_researchRecords)[period];
+
+  const datasets = LINE_SERIES.map(s => ({
+    label:              s.label,
+    data:               src[s.key] || [],
+    borderColor:        s.color,
+    borderWidth:        2,
+    borderDash:         s.dash,
+    pointBackgroundColor: s.color,
+    pointRadius:        3,
+    pointHoverRadius:   6,
+    fill:               false,
+    tension:            0.38,
+  }));
+
+  // Legend
+  const legendEl = document.getElementById('lineLegend');
+  legendEl.innerHTML = '';
+  LINE_SERIES.forEach(s => {
+    const span = document.createElement('span');
+    span.style.cssText = 'display:flex;align-items:center;gap:5px;font-size:11px;color:#424754;';
+    span.innerHTML = `<span style="width:10px;height:3px;border-radius:2px;background:${s.color};display:inline-block;"></span>${s.label}`;
+    legendEl.appendChild(span);
+  });
+
+  if (lineChartInstance) lineChartInstance.destroy();
+  lineChartInstance = new Chart(document.getElementById('lineChart'), {
+    type: 'line',
+    data: { labels: src.labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend:  { display: false },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}` } },
+      },
+      scales: {
+        x: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 11, family: 'Inter' }, autoSkip: true, maxRotation: 0 } },
+        y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 11, family: 'Inter' } }, beginAtZero: true },
+      },
+    },
+  });
+}
+
+document.querySelectorAll('.chart-filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.chart-filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentPeriod = btn.dataset.period;
+    renderLineChart(currentPeriod, null);
+  });
+});
+
+/* ═══════════════════════════════════════
+   PIE CHART
+═══════════════════════════════════════ */
+const COLLEGE_COLORS = {
+  'College of Computer Studies':  '#6b7280',
+  'College of Engineering':       '#ef4444',
+  'College of Business':          '#eab308',
+  'College of Accounting':        '#22c55e',
+  'College of Education':         '#3b82f6',
+  'College of Arts and Sciences': '#8b5cf6',
+  'College of Nursing':           '#ec4899',
+};
+const PIE_PALETTE = ['#0058be','#6b38d4','#924700','#10b981','#e24b4a','#f59e0b','#0891b2','#7c3aed'];
+
+function getPieColor(label, i) {
+  return COLLEGE_COLORS[label] || PIE_PALETTE[i % PIE_PALETTE.length];
+}
+
+function renderPieChart(agg) {
+  hide('pieChartLoading');
+
+  const entries = Object.entries(agg.colleges).sort((a, b) => b[1] - a[1]);
+
+  if (!entries.length) {
+    show('pieChartEmpty');
+    return;
+  }
+
+  show('pieChartWrap');
+  const total = entries.reduce((s, [, v]) => s + v, 0);
+
+  // Legend
+  const legendEl = document.getElementById('pieLegend');
+  legendEl.innerHTML = '';
+  entries.slice(0, 8).forEach(([label, val], i) => {  // cap at 8 for readability
+    const pct      = total ? Math.round(val / total * 100) : 0;
+    const short    = label.replace(/^College\s+of\s+/i, '');
+    const div      = document.createElement('div');
+    div.className  = 'pie-legend-item';
+    div.innerHTML  = `<span class="pie-legend-sq" style="background:${getPieColor(label, i)}"></span><span style="font-size:12px;">${short}</span><span class="pie-legend-pct">${pct}%</span>`;
+    legendEl.appendChild(div);
+  });
+
+  if (pieChartInstance) pieChartInstance.destroy();
+  pieChartInstance = new Chart(document.getElementById('pieChart'), {
+    type: 'doughnut',
+    data: {
+      labels:   entries.map(([l]) => l),
+      datasets: [{
+        data:            entries.map(([, v]) => v),
+        backgroundColor: entries.map(([l], i) => getPieColor(l, i)),
+        borderWidth:     3,
+        borderColor:     '#ffffff',
+        hoverOffset:     8,
+      }],
+    },
+    options: {
+      responsive:          true,
+      maintainAspectRatio: false,
+      cutout:              '62%',
+      plugins: {
+        legend:  { display: false },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}` } },
+      },
+    },
+  });
+}
+
+/* ═══════════════════════════════════════
+   QUICK INSIGHTS
+═══════════════════════════════════════ */
+function renderInsights(agg) {
+  hide('insightsLoading');
+
+  const ipTotal     = Object.values(agg.cats).reduce((a, b) => a + b, 0);
+  const activePct   = _usersData.total ? Math.round(_usersData.active / _usersData.total * 100) : 0;
+
+  const topCollege  = Object.entries(agg.colleges).sort((a, b) => b[1] - a[1])[0];
+  const topCollegeStr = topCollege
+    ? `${topCollege[0].replace(/^College of /i, 'Col. of ')} (${topCollege[1]})`
+    : '—';
+
+  const rows = [
+    { label: 'Total Research Records', value: agg.total.toLocaleString(),               sub: 'Across all IP categories' },
+    { label: 'Total IP Records Filed',  value: ipTotal.toLocaleString(),                sub: 'All categories combined' },
+    { label: 'Registered Users',        value: `${_usersData.total} total / ${_usersData.active} active`, sub: `${activePct}% active rate` },
+    { label: 'Top College',             value: topCollegeStr,                            sub: 'Most filings submitted' },
+    { label: 'New This Month',          value: `+${agg.thisMonth} submissions`,          sub: 'Recent activity' },
+  ];
+
+  const el = document.getElementById('insightsContent');
+  el.innerHTML = rows.map(r => `
+    <div class="insight-row">
+      <span class="insight-label">${r.label}</span>
+      <span class="insight-value">${r.value}</span>
+      <span class="insight-sub">${r.sub}</span>
+    </div>`).join('');
+  show('insightsContent');
+}
+
+/* ═══════════════════════════════════════
+   ACTIVITY FEED
+═══════════════════════════════════════ */
+const ACTION_COLORS = {
+  create:  '#0058be', add:     '#0058be',
+  update:  '#6b38d4', edit:    '#6b38d4', change: '#6b38d4',
+  delete:  '#dc2626', remove:  '#dc2626',
+  login:   '#059669', logout:  '#924700',
+  export:  '#924700', approve: '#059669',
+  default: '#424754',
+};
+
+function getActionColor(action) {
+  const a = (action || '').toLowerCase();
+  for (const [key, color] of Object.entries(ACTION_COLORS)) {
+    if (a.includes(key)) return color;
+  }
+  return ACTION_COLORS.default;
+}
+
+function renderActivity(logs) {
+  hide('activityLoading');
+
+  if (!logs || !logs.length) {
+    // No logs API — show a helpful message
+    show('activityEmpty');
+    document.getElementById('activityEmpty').innerHTML = `
+      <i class="ti ti-database-off" style="font-size:32px;opacity:0.3;"></i>
+      <p class="text-[13px]">No logs endpoint found at <code class="text-[11px] bg-surface-container px-1.5 py-0.5 rounded">${API_BASE}/logs</code></p>
+      <p class="text-[11px] text-on-surface-variant mt-1">Try: /logs, /activity, or /audit-logs</p>`;
+    return;
+  }
+
+  const feed = document.getElementById('activityFeed');
+  feed.innerHTML = '';
+
+  // Show most recent 6 entries
+  const recent = [...logs]
+    .sort((a, b) => new Date(b.createdAt || b.timestamp || b.date || 0) - new Date(a.createdAt || a.timestamp || a.date || 0))
+    .slice(0, 6);
+
+  if (!recent.length) { show('activityEmpty'); return; }
+
+  recent.forEach(log => {
+    const user   = log.user || log.username || log.userName || log.performed_by || log.performedBy || 'System';
+    const action = log.action || log.event || log.type || log.activity || 'Action';
+    const module = log.module || log.section || log.resource || log.ip_type || '';
+    const desc   = log.description || log.details || log.message || log.note || '';
+    const dateRaw= log.createdAt || log.timestamp || log.date || log.created_at || '';
+    const color  = getActionColor(action);
+
+    const item   = document.createElement('div');
+    item.className = 'activity-item';
+    item.innerHTML = `
+      <div class="activity-dot" style="background:${color};margin-top:6px;"></div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-[13px] font-semibold text-on-surface">${user}</span>
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full" style="background:${color}18;color:${color};">${action}</span>
+          ${module ? `<span class="text-[11px] text-on-surface-variant">in ${module}</span>` : ''}
+        </div>
+        ${desc ? `<p class="text-[12px] text-on-surface-variant mt-0.5 truncate">${desc}</p>` : ''}
+      </div>
+      <span class="text-[11px] text-on-surface-variant whitespace-nowrap flex-shrink-0">${timeAgo(dateRaw)}</span>`;
+    feed.appendChild(item);
+  });
+
+  show('activityFeed');
+}
+
+/* ═══════════════════════════════════════
+   SYSTEM HEALTH
+═══════════════════════════════════════ */
+function renderSysStats(agg, users) {
+  const ipTotal = Object.values(agg.cats).reduce((a, b) => a + b, 0);
+
+  const stats = [
+    {
+      label: 'Total Records',
+      value: agg.total.toLocaleString(),
+      pct:   Math.min(Math.round(agg.total / 5000 * 100), 100),  // baseline: 5000 max
+      color: '#0058be',
+    },
+    {
+      label: 'IP Records',
+      value: ipTotal.toLocaleString(),
+      pct:   Math.min(Math.round(ipTotal / 3000 * 100), 100),
+      color: '#6b38d4',
+    },
+    {
+      label: 'Registered Users',
+      value: String(users.total),
+      pct:   Math.min(Math.round(users.total / 200 * 100), 100),
+      color: '#059669',
+    },
+    {
+      label: 'Active Users',
+      value: String(users.active),
+      pct:   users.total ? Math.round(users.active / users.total * 100) : 0,
+      color: '#924700',
+    },
+    {
+      label: 'Filed This Month',
+      value: String(agg.thisMonth),
+      pct:   agg.total ? Math.min(Math.round(agg.thisMonth / agg.total * 100 * 5), 100) : 0,
+      color: '#dc2626',
+    },
+  ];
+
+  const el = document.getElementById('sysStatsContent');
+  el.innerHTML = '';
+  stats.forEach(s => {
+    const row = document.createElement('div');
+    row.innerHTML = `
+      <div class="flex justify-between items-center mb-1.5">
+        <span class="text-[12px] font-semibold text-on-surface-variant">${s.label}</span>
+        <span class="text-[13px] font-bold text-on-surface">${s.value}</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" style="background:${s.color};width:${s.pct}%;"></div></div>`;
+    el.appendChild(row);
+  });
+}
+
+/* ═══════════════════════════════════════
+   NAV BADGE
+═══════════════════════════════════════ */
+function renderNavBadge(users) {
+  const el = document.getElementById('nav-pending-users');
+  if (!el) return;
+  if (!users || !users.length) { el.textContent = ''; return; }
+  const inactive = users.filter(u => {
+    const s = getField(u, FIELD.userStatus);
+    if (typeof s === 'boolean') return !s;
+    if (typeof s === 'string') return ['inactive', 'disabled', 'pending', '0', 'false'].includes(s.toLowerCase());
+    return false;
+  }).length;
+  el.textContent = inactive > 0 ? inactive : '';
+}
+
+/* ═══════════════════════════════════════
+   SEARCH & FILTER
+═══════════════════════════════════════ */
+function toggleFilterDropdown(e) {
+  e.stopPropagation();
+  const dd     = document.getElementById('filterDropdown');
+  const chevron = document.getElementById('filterChevron');
+  const isOpen  = dd.style.display !== 'none';
+  dd.style.display          = isOpen ? 'none' : 'block';
+  chevron.style.transform   = isOpen ? '' : 'rotate(180deg)';
+}
+
+function setAdminFilter(cat, el) {
+  document.querySelectorAll('.filter-opt').forEach(o => o.classList.toggle('active', o.dataset.cat === cat));
+  const label    = document.getElementById('filterBtnLabel');
+  const chip     = document.getElementById('activeFilterChip');
+  const chipText = document.getElementById('activeFilterChipText');
+  const input    = document.getElementById('globalSearch');
+  const LABELS   = { users: 'Users', research: 'Research Records', logs: 'Activity Logs' };
+
+  if (cat) {
+    label.textContent       = LABELS[cat] || cat;
+    chip.style.display      = 'flex';
+    chipText.textContent    = LABELS[cat] || cat;
+    input.style.paddingLeft = '140px';
+    input.placeholder       = `Search in ${LABELS[cat]}...`;
+  } else {
+    label.textContent       = 'All Sections';
+    chip.style.display      = 'none';
+    input.style.paddingLeft = '2.5rem';
+    input.placeholder       = 'Search users, records, logs...';
+  }
+  document.getElementById('filterDropdown').style.display = 'none';
+  document.getElementById('filterChevron').style.transform = '';
+}
+
+function clearSearch() {
+  const input = document.getElementById('globalSearch');
+  input.value = '';
+  document.getElementById('searchClearBtn').style.display = 'none';
+  const dd = document.getElementById('searchDropdownMenu');
+  dd.classList.add('hidden'); dd.classList.remove('flex');
+}
+
+function setupSearch() {
+  const input = document.getElementById('globalSearch');
+  if (!input) return;
+  input.addEventListener('input', () => {
+    const q  = input.value.trim();
+    const cb = document.getElementById('searchClearBtn');
+    cb.style.display = q ? 'flex' : 'none';
+    const dd = document.getElementById('searchDropdownMenu');
+    if (!q) { dd.classList.add('hidden'); dd.classList.remove('flex'); return; }
+    dd.classList.remove('hidden'); dd.classList.add('flex');
+
+    // Live search across cached records
+    const results = _researchRecords
+      .filter(r => JSON.stringify(r).toLowerCase().includes(q.toLowerCase()))
+      .slice(0, 5);
+
+    const content = document.getElementById('searchDropdownContent');
+    if (!results.length) {
+      content.innerHTML = `<div class="px-4 py-3 text-[13px] text-on-surface-variant text-center">No results for "<strong>${q}</strong>"</div>`;
+      return;
+    }
+    content.innerHTML = results.map(r => {
+      const title = r.title || r.name || r.ip_title || r.record_name || 'Record';
+      const cat   = getCategory(r);
+      return `<button class="w-full text-left flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-container-low transition-colors">
+        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant uppercase">${cat}</span>
+        <span class="text-[13px] text-on-surface truncate">${title}</span>
+      </button>`;
+    }).join('');
+  });
+  input.addEventListener('focus',  () => { document.getElementById('searchIcon').style.color = '#0058be'; });
+  input.addEventListener('blur',   () => { document.getElementById('searchIcon').style.color = ''; });
+}
+
+document.addEventListener('click', e => {
+  const filterBtn = document.getElementById('filterBtn');
+  if (filterBtn && !filterBtn.parentElement.contains(e.target)) {
+    const dd = document.getElementById('filterDropdown');
+    if (dd) { dd.style.display = 'none'; document.getElementById('filterChevron').style.transform = ''; }
+  }
+  const searchWrapper = document.getElementById('searchWrapper');
+  if (searchWrapper && !searchWrapper.contains(e.target)) {
+    const dd = document.getElementById('searchDropdownMenu');
+    if (dd) { dd.classList.add('hidden'); dd.classList.remove('flex'); }
+  }
+  const profileWrapper = document.getElementById('profileMenuWrapper');
+  if (profileWrapper && !profileWrapper.contains(e.target)) {
+    const dd = document.getElementById('profileDropdown');
+    if (dd) dd.classList.add('hidden');
+  }
+});
+</script>
+</body>
+</html>
