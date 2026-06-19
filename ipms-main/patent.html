@@ -253,7 +253,8 @@
     <a class="nav-item" href="industrial-design.html" onclick="handleNavAway('industrial-design.html'); return false;"><i class="ti ti-vector-bezier-2"></i><span>Industrial Design</span></a>
     <div class="border-t border-slate-100 my-5"></div>
     <div class="nav-section-label">General</div>
-    <a class="nav-item" href="event.html" onclick="handleNavAway('event.html'); return false;"><i class="ti ti-calendar-event"></i><span>Event</span></a>
+    <a class="nav-item" href="inventory-of-technology.html"><i class="ti ti-device-desktop-analytics"></i><span>Inventory of Technology</span></a>
+    <a class="nav-item" href="event.html"><i class="ti ti-calendar-event"></i><span>Event</span></a>
   </nav>
   <div class="p-4 border-t border-outline-variant">
     <button onclick="handleNavAway('index.html')"
@@ -371,10 +372,10 @@
           <div id="filter-menu" class="hidden absolute right-0 mt-1 w-56 bg-white rounded-xl border border-slate-200 shadow-lg z-[200] py-1.5">
             <div class="px-3 py-1.5 text-[10px] font-bold text-outline uppercase tracking-widest">Filter by Status</div>
             <button onclick="applyStatusFilter('All')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="All">All<i class="ti ti-check text-primary" style="font-size:13px;"></i></button>
-            <button onclick="applyStatusFilter('Submitted to IPO')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Submitted to IPO">Submitted to IPO<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
+            <button onclick="applyStatusFilter('Submitted to IPOPHL')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Submitted to IPO">Submitted to IPO<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
             <button onclick="applyStatusFilter('Received E-SOA')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Received E-SOA">Received E-SOA<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
             <button onclick="applyStatusFilter('Paid')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Paid">Paid<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
-            <button onclick="applyStatusFilter('Approved')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Approved">Approved<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
+            <button onclick="applyStatusFilter('Approved with Certificate')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Approved">Approved<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
             <div class="px-3 py-1.5 mt-1 border-t border-slate-100 text-[10px] font-bold text-outline uppercase tracking-widest">Action Alerts</div>
             <button onclick="applyStatusFilter('Urgent Substantive')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-pink-600 font-semibold hover:bg-pink-50 flex items-center justify-between transition-colors" data-val="Urgent Substantive">Urgent Substantive<i class="ti ti-check text-pink-600 hidden" style="font-size:13px;"></i></button>
             <button onclick="applyStatusFilter('Defect Compliance')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-red-600 font-semibold hover:bg-red-50 flex items-center justify-between transition-colors" data-val="Defect Compliance">Defect Compliance<i class="ti ti-check text-red-600 hidden" style="font-size:13px;"></i></button>
@@ -535,10 +536,10 @@
           <select id="field-status" disabled onchange="updateStatusStyle(this); markDirty();"
             class="w-full text-[15px] font-bold rounded-xl py-3 px-4 border-2 outline-none transition-all appearance-none cursor-default"
             style="background-image:none;">
-            <option value="Submitted to IPO">Submitted to IPO</option>
+            <option value="Submitted to IPO">Submitted to IPOPHL</option>
             <option value="Received E-SOA">Received E-SOA</option>
             <option value="Paid">Paid</option>
-            <option value="Approved">Approved</option>
+            <option value="Approved">Approved with Certificate</option>
           </select>
         </div>
         <div class="space-y-4">
@@ -585,6 +586,19 @@
             <div id="display-date-filing" class="text-[14px] font-medium text-on-surface py-1.5">—</div>
             <input id="field-date-filing" type="date" disabled onchange="recalcSubstantive(); markDirty();"
               class="modal-field w-full text-[13px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all hidden"/>
+          </div>
+          <div class="pt-4">
+            <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">
+              Google Drive Link
+              <span class="text-[10px] font-normal text-outline normal-case tracking-normal ml-1">(optional)</span>
+            </label>
+            <div class="relative">
+              <i class="ti ti-brand-google-drive absolute left-3.5 top-1/2 -translate-y-1/2" style="font-size:16px; color:#1a73e8;"></i>
+              <input id="field-gdrive" type="url" disabled oninput="markDirty()"
+                class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 pl-9 border border-slate-200 bg-slate-50 outline-none transition-all"
+                placeholder="https://drive.google.com/…"/>
+            </div>
+            <p class="text-[10px] text-outline mt-1">Paste a Google Drive folder or file link for related documents</p>
           </div>
         </div>
       </div>
@@ -892,8 +906,11 @@ function computeRecordFlags(r) {
       if (!d.confirmed && d.date) activeDeadlines.push(addMonths(d.date, 2));
     });
   } else {
-    if (r.defectNoticeDate  && !r.defectConfirmed1) activeDeadlines.push(addMonths(r.defectNoticeDate,  2));
+    if (r.defectNoticeDate  && !r.defectConfirmed) activeDeadlines.push(addMonths(r.defectNoticeDate,  2));
     if (r.defectNoticeDate2 && !r.defectConfirmed2) activeDeadlines.push(addMonths(r.defectNoticeDate2, 2));
+    if (r.defectNoticeDate3 && !r.defectConfirmed3) activeDeadlines.push(addMonths(r.defectNoticeDate3, 2));
+    if (r.defectNoticeDate4 && !r.defectConfirmed4) activeDeadlines.push(addMonths(r.defectNoticeDate4, 2));
+    if (r.defectNoticeDate5 && !r.defectConfirmed5) activeDeadlines.push(addMonths(r.defectNoticeDate5, 2));
   }
 
   const complianceDeadline  = r.defectNoticeDate  ? addMonths(r.defectNoticeDate,  2) : null;
@@ -1035,10 +1052,10 @@ function executeResolve() {
 
 /* ── STATUS BADGES ── */
 const statusMeta = {
-  'Submitted to IPO': { cls:'badge-submitted' },
+  'Submitted to IPOPHL': { cls:'badge-submitted' },
   'Received E-SOA':   { cls:'badge-esoa'      },
   'Paid':             { cls:'badge-paid'       },
-  'Approved':         { cls:'badge-approved'   },
+  'Approved with Certificate':         { cls:'badge-approved'   },
 };
 function statusBadgeHTML(s) { const m = statusMeta[s] || { cls:'badge-default' }; return `<span class="status-badge ${m.cls}">${s || '—'}</span>`; }
 function flagBadgeHTML(f) {
@@ -1049,10 +1066,10 @@ function flagBadgeHTML(f) {
   return b || '<span class="text-[11px] text-outline">—</span>';
 }
 const statusHero = {
-  'Submitted to IPO': { border:'#93c5fd', bg:'#eff6ff', color:'#1d4ed8' },
+  'Submitted to IPOPHL': { border:'#93c5fd', bg:'#eff6ff', color:'#1d4ed8' },
   'Received E-SOA':   { border:'#a5b4fc', bg:'#eef2ff', color:'#4338ca' },
   'Paid':             { border:'#6ee7b7', bg:'#ecfdf5', color:'#065f46' },
-  'Approved':         { border:'#fcd34d', bg:'#fffbeb', color:'#92400e' },
+  'Approved with Certificate':         { border:'#fcd34d', bg:'#fffbeb', color:'#92400e' },
 };
 function updateStatusStyle(sel) {
   const s = statusHero[sel.value] || { border:'#e2e8f0', bg:'#f8fafc', color:'#334155' };
@@ -1061,11 +1078,13 @@ function updateStatusStyle(sel) {
 
 /* ── STAT CARDS ── */
 function updateStats() {
-  document.getElementById('stat-total').textContent    = ALL_RECORDS.length;
-  document.getElementById('stat-approved').textContent = ALL_RECORDS.filter(r => r.status === 'Approved').length;
-  document.getElementById('stat-pending').textContent  = ALL_RECORDS.filter(r => r.status !== 'Approved').length;
+  const active = ALL_RECORDS.filter(r => !r.archived);
+  document.getElementById('stat-total').textContent    = active.length;
+  document.getElementById('stat-approved').textContent = active.filter(r => r.status === 'Approved with Certificate').length;
+  document.getElementById('stat-pending').textContent  = active.filter(r => r.status !== 'Approved with Certificate').length;
   let ser = 0, fd = 0;
-  ALL_RECORDS.forEach(r => { const f = computeRecordFlags(r); if (f.isUrgentSubstantive) ser++; if (f.isUrgentCompliance) fd++; });
+  active.forEach(r => { const f = computeRecordFlags(r); if (f.isUrgentSubstantive) ser++; if (f.isUrgentCompliance) fd++; });
+
   const total = ser + fd;
   document.getElementById('stat-urgent').textContent = total;
   const card    = document.getElementById('alert-card');
@@ -1130,7 +1149,9 @@ function sortByDateDesc(arr) {
 /* ── SEARCH + FILTER ── */
 function filterAndRender() {
   const q = document.getElementById('search-input').value.toLowerCase().trim();
-  filteredRecords = ALL_RECORDS.filter(r => {
+  const activeRecords = ALL_RECORDS.filter(r => !r.archived);   // ← bagong line
+
+  filteredRecords = activeRecords.filter(r => {                 // ← galing ALL_RECORDS naging activeRecords
     const f = computeRecordFlags(r);
     let ms = false;
     if      (activeStatusFilter === 'All')                ms = true;
@@ -1256,17 +1277,25 @@ function mapRecord(item) {
     _rawDateTime: rawDateTime,
     referenceNo: item.referenceId || item.referenceNo || item.refNo || String(item._id),
     title, author, dept,
-    status: item.status || 'Submitted to IPO',
+    status: item.status || 'Submitted to IPOPHL',
     dateOfFiling,
+    googleDriveLink: item.googleDriveLink || '',
+    archived: item.archived === true || item.archived === 'true',
 
     // Add mapping for the new defects array
     defects: Array.isArray(item.defects) ? item.defects : [],
 
-    // Kept for legacy backend support
+    // Kept for legacy backend support (all 5 defects with correct field names)
     defectNoticeDate:  (item.defectNoticeDate  && item.defectNoticeDate  !== "null") ? String(item.defectNoticeDate).split("T")[0]  : null,
     defectNoticeDate2: (item.defectNoticeDate2 && item.defectNoticeDate2 !== "null") ? String(item.defectNoticeDate2).split("T")[0] : null,
-    defectConfirmed1:  !!item.defectConfirmed1,
+    defectNoticeDate3: (item.defectNoticeDate3 && item.defectNoticeDate3 !== "null") ? String(item.defectNoticeDate3).split("T")[0] : null,
+    defectNoticeDate4: (item.defectNoticeDate4 && item.defectNoticeDate4 !== "null") ? String(item.defectNoticeDate4).split("T")[0] : null,
+    defectNoticeDate5: (item.defectNoticeDate5 && item.defectNoticeDate5 !== "null") ? String(item.defectNoticeDate5).split("T")[0] : null,
+    defectConfirmed:   !!item.defectConfirmed,
     defectConfirmed2:  !!item.defectConfirmed2,
+    defectConfirmed3:  !!item.defectConfirmed3,
+    defectConfirmed4:  !!item.defectConfirmed4,
+    defectConfirmed5:  !!item.defectConfirmed5,
   };
 }
 
@@ -1276,10 +1305,9 @@ async function fetchPatents() {
     const res  = await fetch(API_URL);
     const data = await res.json();
     const raw  = Array.isArray(data) ? data : (data.data ?? []);
-    console.log('🔄 Fetched records sample:', raw.slice(0,2).map(r => ({ id: r._id, defects: r.defects, defectNoticeDate: r.defectNoticeDate, defectConfirmed1: r.defectConfirmed1 })));
-    ALL_RECORDS     = raw.filter(i => (i.category || '').toLowerCase() === CATEGORY).map(mapRecord);
-    filteredRecords = sortByDateDesc([...ALL_RECORDS]);
-    updateStats(); render();
+    ALL_RECORDS = raw.filter(i => (i.category || '').toLowerCase() === CATEGORY).map(mapRecord);
+    updateStats();
+    filterAndRender();  
     checkAndHighlightResearch();
   } catch (err) {
     console.error('Fetch failed:', err);
@@ -1298,12 +1326,16 @@ function openResearchModal(mongoId) {
   document.getElementById('field-title').value             = rec.title || '';
   document.getElementById('field-author').value            = rec.author || '';
   document.getElementById('field-date-filing').value       = rec.dateOfFiling || '';
+  document.getElementById('field-gdrive').value            = rec.googleDriveLink || '';
   activeDefects = [];
   if (rec.defects && rec.defects.length > 0) {
     activeDefects = JSON.parse(JSON.stringify(rec.defects));
   } else {
-    if (rec.defectNoticeDate)  activeDefects.push({ date: rec.defectNoticeDate,  confirmed: !!rec.defectConfirmed1 });
+    if (rec.defectNoticeDate)  activeDefects.push({ date: rec.defectNoticeDate,  confirmed: !!rec.defectConfirmed });
     if (rec.defectNoticeDate2) activeDefects.push({ date: rec.defectNoticeDate2, confirmed: !!rec.defectConfirmed2 });
+    if (rec.defectNoticeDate3) activeDefects.push({ date: rec.defectNoticeDate3, confirmed: !!rec.defectConfirmed3 });
+    if (rec.defectNoticeDate4) activeDefects.push({ date: rec.defectNoticeDate4, confirmed: !!rec.defectConfirmed4 });
+    if (rec.defectNoticeDate5) activeDefects.push({ date: rec.defectNoticeDate5, confirmed: !!rec.defectConfirmed5 });
   }
   const parts  = rec.dept ? rec.dept.split(' — ') : [];
   const col    = parts[0] || rec.dept || '';
@@ -1322,7 +1354,7 @@ function openResearchModal(mongoId) {
 function closeModal() { document.getElementById('research-modal').style.display = 'none'; activeMongoId = null; activeSnapshot = null; clearDirty(); }
 
 /* ── VIEW / EDIT MODE ── */
-const EDITABLE_FIELDS  = ['field-title','field-author'];
+const EDITABLE_FIELDS  = ['field-title','field-author','field-gdrive'];
 const EDITABLE_SELECTS = ['field-dept','field-status','field-college'];
 
 function setViewMode() {
@@ -1365,12 +1397,16 @@ function exitEditMode() {
     document.getElementById('field-title').value       = activeSnapshot.title || '';
     document.getElementById('field-author').value      = activeSnapshot.author || '';
     document.getElementById('field-date-filing').value = activeSnapshot.dateOfFiling || '';
+    document.getElementById('field-gdrive').value      = activeSnapshot.googleDriveLink || '';
     activeDefects = [];
     if (activeSnapshot.defects && activeSnapshot.defects.length > 0) {
       activeDefects = JSON.parse(JSON.stringify(activeSnapshot.defects));
     } else {
-      if (activeSnapshot.defectNoticeDate)  activeDefects.push({ date: activeSnapshot.defectNoticeDate,  confirmed: !!activeSnapshot.defectConfirmed1 });
+      if (activeSnapshot.defectNoticeDate)  activeDefects.push({ date: activeSnapshot.defectNoticeDate,  confirmed: !!activeSnapshot.defectConfirmed });
       if (activeSnapshot.defectNoticeDate2) activeDefects.push({ date: activeSnapshot.defectNoticeDate2, confirmed: !!activeSnapshot.defectConfirmed2 });
+      if (activeSnapshot.defectNoticeDate3) activeDefects.push({ date: activeSnapshot.defectNoticeDate3, confirmed: !!activeSnapshot.defectConfirmed3 });
+      if (activeSnapshot.defectNoticeDate4) activeDefects.push({ date: activeSnapshot.defectNoticeDate4, confirmed: !!activeSnapshot.defectConfirmed4 });
+      if (activeSnapshot.defectNoticeDate5) activeDefects.push({ date: activeSnapshot.defectNoticeDate5, confirmed: !!activeSnapshot.defectConfirmed5 });
     }
     const parts = activeSnapshot.dept ? activeSnapshot.dept.split(' — ') : [];
     const col   = parts[0] || activeSnapshot.dept || '', dpt = parts[1] || '';
@@ -1402,6 +1438,7 @@ async function confirmSave() {
     date:              document.getElementById('field-date-filing').value,
     referenceId:       document.getElementById('field-ref').value.trim(),
     authors:           document.getElementById('field-author').value.split(',').map(a => a.trim()).filter(Boolean),
+    googleDriveLink:   document.getElementById('field-gdrive').value.trim(),
 
     // Pass the full array for the backend to handle > 2 defects
     defects:           activeDefects,
@@ -1409,8 +1446,15 @@ async function confirmSave() {
     // Kept for backwards compatibility with your current schema
     defectNoticeDate:  activeDefects[0]?.date || null,
     defectNoticeDate2: activeDefects[1]?.date || null,
-    defectConfirmed1:  !!activeDefects[0]?.confirmed,
+    defectNoticeDate3: activeDefects[2]?.date || null,
+    defectNoticeDate4: activeDefects[3]?.date || null,
+    defectNoticeDate5: activeDefects[4]?.date || null,
+    defectConfirmed:  !!activeDefects[0]?.confirmed,
     defectConfirmed2:  !!activeDefects[1]?.confirmed,
+    defectConfirmed3:  !!activeDefects[2]?.confirmed,
+    defectConfirmed4:  !!activeDefects[3]?.confirmed,
+    defectConfirmed5:  !!activeDefects[4]?.confirmed,
+
   };
   const btn = document.getElementById('btn-confirm-save');
   btn.disabled = true; btn.textContent = 'Saving…';
@@ -1420,7 +1464,7 @@ async function confirmSave() {
     if (!res.ok) throw new Error(await res.text());
     const updated = await res.json();
     console.log('🟢 API response:', JSON.stringify(updated, null, 2));
-    const merged  = mapRecord({ ...updated, _id: activeMongoId, ...payload, authors: updated.authors?.length ? updated.authors : payload.authors, defectConfirmed1: payload.defectConfirmed1, defectConfirmed2: payload.defectConfirmed2 });
+    const merged  = mapRecord({ ...updated, _id: activeMongoId, ...payload, authors: updated.authors?.length ? updated.authors : payload.authors, defectConfirmed: payload.defectConfirmed, defectConfirmed2: payload.defectConfirmed2, defectConfirmed3: payload.defectConfirmed3, defectConfirmed4: payload.defectConfirmed4, defectConfirmed5: payload.defectConfirmed5 });
     const idx     = ALL_RECORDS.findIndex(r => r._id === activeMongoId);
     if (idx !== -1) ALL_RECORDS[idx] = merged;
     activeSnapshot = { ...merged };
@@ -1462,10 +1506,10 @@ function getExportRecords() {
 }
 
 const previewSC = {
-  'Submitted to IPO': { bg:'#dbeafe', color:'#1e40af', border:'#bfdbfe' },
+  'Submitted to IPOPHL': { bg:'#dbeafe', color:'#1e40af', border:'#bfdbfe' },
   'Received E-SOA':   { bg:'#ede9fe', color:'#4338ca', border:'#c4b5fd' },
   'Paid':             { bg:'#d1fae5', color:'#065f46', border:'#6ee7b7' },
-  'Approved':         { bg:'#fef3c7', color:'#92400e', border:'#fcd34d' },
+  'Approved with Certificate':         { bg:'#fef3c7', color:'#92400e', border:'#fcd34d' },
 };
 
 function refreshPreview() {

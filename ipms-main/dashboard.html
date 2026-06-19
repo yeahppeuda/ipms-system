@@ -78,16 +78,18 @@
   .mp-month-btn.active { background:#0058be; color:#fff; font-weight:700; }
   .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; }
   .cal-day-label { font-size:9.5px; color:#727785; text-align:center; padding:3px 0 4px; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; }
-  .cal-day { font-size:11px; text-align:center; padding:5px 2px; border-radius:6px; cursor:pointer; color:#191b23; position:relative; transition:background 0.12s; line-height:1.2; }
+  .cal-day { font-size:11px; text-align:center; padding:5px 2px; border-radius:6px; cursor:pointer; color:#191b23; position:relative; transition:background 0.12s; line-height:1.2; box-sizing:border-box; }
   .cal-day:hover:not(.today) { background:#f2f3fd; }
   .cal-day.other-month { color:#c2c6d6; cursor:default; }
   .cal-day.other-month:hover { background:none; }
   .cal-day.today { background:#0058be; color:#fff; font-weight:700; border-radius:7px; }
-  .cal-day.has-note::after { content:''; position:absolute; bottom:2px; left:50%; transform:translateX(-50%); width:3px; height:3px; border-radius:50%; background:#6b38d4; }
-  .cal-day.today.has-note::after { background:#fff; }
+  .cal-day.has-note { background:#ede4ff; border:1.5px solid #b794f4; color:#4c1d95; font-weight:700; }
+  .cal-day.has-note:hover { background:#e0d0ff; }
+  .cal-day.today.has-note { background:#0058be; border-color:#0058be; color:#fff; box-shadow:0 0 0 2px #b794f4; }
   
   /* Added for Calendar updates */
-  .cal-day.is-holiday { color: #ef4444; font-weight: 700; background: #fef2f2; }
+  .cal-day.is-holiday { color: #ef4444; font-weight: 700; background: #fee2e2; border: 1.5px solid #fca5a5; }
+  .cal-day.is-holiday.has-note { background:#fde8e8; border:1.5px solid #f87171; color:#b91c1c; box-shadow:0 0 0 2px #b794f4 inset; }
   .cal-day.has-submission::before { content:''; position:absolute; top:2px; right:2px; width:4px; height:4px; border-radius:50%; background:#059669; }
 
   /* ── Note Modal ── */
@@ -144,6 +146,39 @@
   .review-value { font-size:13px; color:#191b23; font-weight:500; line-height:1.5; }
   .review-badge { display:inline-flex; align-items:center; gap:5px; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:20px; padding:3px 10px; font-size:12px; font-weight:600; }
   .cat-badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:600; }
+
+  /* ── Confirm dialog (compact corner popover, not a full-screen blocker) ── */
+  .confirm-overlay { position:fixed; inset:0; background:transparent; display:none; align-items:flex-end; justify-content:flex-end; z-index:10010; pointer-events:none; }
+  .confirm-modal { background:#fff; border-radius:14px; border:1px solid #e2e8f0; padding:16px; width:280px; box-shadow:0 12px 32px rgba(0,0,0,0.16); animation:confirmPopIn 0.16s ease; text-align:left; margin:0 24px 24px 0; pointer-events:auto; }
+  @keyframes confirmPopIn { from{opacity:0;transform:translateY(8px) scale(0.98)} to{opacity:1;transform:none} }
+  .confirm-modal-row { display:flex; align-items:flex-start; gap:10px; margin-bottom:12px; }
+  .confirm-icon { width:32px; height:32px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .confirm-icon.danger { background:#fee2e2; color:#ef4444; }
+  .confirm-icon.warn { background:#fef3c7; color:#b45309; }
+  .confirm-title { font-size:13.5px; font-weight:700; color:#191b23; margin-bottom:2px; }
+  .confirm-msg { font-size:12px; color:#727785; line-height:1.45; }
+  .confirm-btns { display:flex; gap:6px; justify-content:flex-end; }
+  .confirm-btns button { padding:7px 13px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif; transition:background 0.12s,opacity 0.12s; border:none; }
+  .btn-confirm-cancel { background:#f1f5f9; color:#424754; }
+  .btn-confirm-cancel:hover { background:#e6e7f2; }
+  .btn-confirm-danger { background:#ef4444; color:#fff; }
+  .btn-confirm-danger:hover { background:#dc2626; }
+  .btn-confirm-primary { background:#0058be; color:#fff; }
+  .btn-confirm-primary:hover { background:#004fa6; }
+
+  /* ── Toast notification ── */
+  .toast-stack { position:fixed; top:76px; right:24px; z-index:10020; display:flex; flex-direction:column; gap:10px; pointer-events:none; }
+  .toast-item { display:flex; align-items:flex-start; gap:10px; background:#fff; border-radius:12px; border:1px solid #e2e8f0; box-shadow:0 8px 28px rgba(0,0,0,0.12); padding:13px 16px; width:300px; pointer-events:auto; animation:toastIn 0.2s ease; }
+  @keyframes toastIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:none} }
+  .toast-item.leaving { animation:toastOut 0.18s ease forwards; }
+  @keyframes toastOut { from{opacity:1;transform:none} to{opacity:0;transform:translateX(20px)} }
+  .toast-icon { width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .toast-icon.error { background:#fee2e2; color:#ef4444; }
+  .toast-icon.warn { background:#fef3c7; color:#b45309; }
+  .toast-icon.success { background:#d1fae5; color:#059669; }
+  .toast-text { font-size:12.5px; color:#191b23; line-height:1.45; padding-top:3px; flex:1; }
+  .toast-close { background:none; border:none; cursor:pointer; color:#9aa0ad; font-size:16px; line-height:1; padding:2px; flex-shrink:0; }
+  .toast-close:hover { color:#424754; }
 
   /* ── Filter dropdown ── */
   .filter-dropdown { position:absolute; z-index:100; background:#fff; border:1px solid #e1e2ec; border-radius:14px; padding:6px; box-shadow:0 10px 36px rgba(0,0,0,0.13); animation:filterDropIn 0.15s ease; }
@@ -211,6 +246,7 @@
     <a class="nav-item" href="industrial-design.html"><i class="ti ti-vector-bezier-2"></i><span>Industrial Design</span></a>
     <div class="border-t border-slate-100 my-5"></div>
     <div class="nav-section-label">General</div>
+    <a class="nav-item" href="inventory-of-technology.html"><i class="ti ti-device-desktop-analytics"></i><span>Inventory of Technology</span></a>
     <a class="nav-item" href="event.html"><i class="ti ti-calendar-event"></i><span>Event</span></a>
   </nav>
 </aside>
@@ -279,11 +315,15 @@
       <div class="h-6 w-px bg-outline-variant"></div>
       
       <div class="relative shrink-0" id="profileMenuWrapper">
-        <div onclick="toggleProfileDropdown(event)" class="w-9 h-9 rounded-full bg-secondary-fixed flex items-center justify-center overflow-hidden border-2 border-surface-container-highest cursor-pointer hover:ring-2 hover:ring-primary/30 transition-all shadow-sm">
-          <img alt="User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtS5si_PKG24Rw7q2_w4G1LPgv4qZ0IDFv16X_sDHSIjKkiAvbUb3IIhf7YLBfH-7mHmFgZxUFTm08OHMNK-fJM39n7IMRjiQC0aLPn-iu_zUj9DSGvVH0k1zRrb2-Ff38yVqqujD62M_WBdGWAnjmztqqh7JKfgo6XB2iQiIhySjsanYZ0WHfMu-51IhL-6xuSrra_gVjemHRGltkhHYPY0qF7bPm_irHwKJB7jsWNq0A9KMjRrphtmHInv9EjHoOZ_dtL46pTA"/>
+        <div onclick="toggleProfileDropdown(event)" class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden border-2 border-surface-container-highest cursor-pointer hover:ring-2 hover:ring-primary/30 transition-all shadow-sm">
+          <span class="material-symbols-outlined text-on-surface-variant" style="font-size:22px;">person</span>
         </div>
         
-        <div id="profileDropdown" class="hidden absolute right-0 top-[calc(100%+8px)] min-w-[160px] bg-white border border-slate-200 rounded-xl p-1.5 shadow-xl z-50">
+        <div id="profileDropdown" class="hidden absolute right-0 top-[calc(100%+8px)] min-w-[200px] bg-white border border-slate-200 rounded-xl p-1.5 shadow-xl z-50">
+          <div class="px-3 py-2.5 mb-1 border-b border-slate-100">
+            <p class="text-[13.5px] font-bold text-on-surface leading-tight" id="profileName">Justine</p>
+            <p class="text-[11px] text-on-surface-variant mt-0.5" id="profileRole">Administrator</p>
+          </div>
           <button onclick="window.location.href='index.html'" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] font-semibold text-red-600 hover:bg-red-50 transition-colors text-left">
             <i class="ti ti-logout" style="font-size:16px;"></i><span>Log Out</span>
           </button>
@@ -291,6 +331,7 @@
       </div>
 
     </div>
+
 
   </div>
 </header>
@@ -545,6 +586,24 @@
   </div>
 </div>
 
+<div class="confirm-overlay" id="confirmOverlay" role="dialog" aria-modal="true">
+  <div class="confirm-modal">
+    <div class="confirm-modal-row">
+      <div class="confirm-icon" id="confirmIcon"><span class="material-symbols-outlined" style="font-size:18px;">help</span></div>
+      <div>
+        <div class="confirm-title" id="confirmTitle">Are you sure?</div>
+        <div class="confirm-msg" id="confirmMsg"></div>
+      </div>
+    </div>
+    <div class="confirm-btns">
+      <button class="btn-confirm-cancel" id="confirmCancelBtn">Cancel</button>
+      <button id="confirmOkBtn">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-stack" id="toastStack"></div>
+
 <div id="category-modal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 bg-slate-950/40 backdrop-blur-sm">
   <div class="relative w-full max-w-3xl rounded-2xl bg-white shadow-2xl overflow-hidden flex flex-col" style="animation:modalIn 0.22s ease;">
     <div class="px-8 py-6 border-b border-slate-100 flex items-start justify-between gap-4">
@@ -639,6 +698,21 @@
         </p>
         <p id="rm-author-hint" class="text-[11px] text-outline mt-2">Add at least one author (max 20). Paste multiple names on separate lines and they'll split automatically.</p>
       </div>
+
+      <!-- Google Drive Link Field -->
+      <div>
+        <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">
+          Google Drive Link
+          <span class="text-[10px] font-normal text-outline normal-case tracking-normal ml-1">(optional)</span>
+        </label>
+        <div class="relative">
+          <i class="ti ti-brand-google-drive absolute left-3.5 top-1/2 -translate-y-1/2" style="font-size:16px; color:#1a73e8;"></i>
+          <input id="rm-gdrive" type="url"
+            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 pl-10 text-[13px] text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/10 focus:bg-white outline-none transition-all placeholder:text-outline"
+            placeholder="https://drive.google.com/…"/>
+        </div>
+        <p class="text-[11px] text-outline mt-1.5">Paste a Google Drive folder or file link for related research documents.</p>
+      </div>
     </div>
     <div class="px-7 py-5 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-3">
       <p id="rm-error" class="text-[12px] text-red-500 hidden"></p>
@@ -674,6 +748,7 @@
         <div class="review-row"><span class="review-label">Department</span><span class="review-value" id="rv-dept">—</span></div>
         <div class="review-row"><span class="review-label">Status</span><span class="review-badge"><span class="material-symbols-outlined text-[13px]">send</span>Submitted to IPOPHL</span></div>
         <div class="review-row"><span class="review-label">Authors</span><div id="rv-authors" class="flex flex-wrap gap-1.5 mt-1"></div></div>
+        <div class="review-row"><span class="review-label">Google Drive Link</span><span class="review-value" id="rv-gdrive">—</span></div>
       </div>
     </div>
     <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex gap-3 justify-end">
@@ -1028,17 +1103,99 @@ async function loadCalendarNotes() {
   }
 }
 
+/* ═══════════════════════════════════════════
+   STYLED TOAST & CONFIRM DIALOG
+═══════════════════════════════════════════ */
+const TOAST_ICONS = {
+  error:   { icon:'error',         cls:'error'   },
+  warn:    { icon:'warning',       cls:'warn'    },
+  success: { icon:'check_circle',  cls:'success' }
+};
+
+function showToast(message, type = 'error', duration = 4500) {
+  const stack = document.getElementById('toastStack');
+  const conf = TOAST_ICONS[type] || TOAST_ICONS.error;
+
+  const item = document.createElement('div');
+  item.className = 'toast-item';
+  item.innerHTML = `
+    <div class="toast-icon ${conf.cls}"><span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1;">${conf.icon}</span></div>
+    <div class="toast-text">${message}</div>
+    <button class="toast-close" aria-label="Dismiss">×</button>
+  `;
+
+  const remove = () => {
+    item.classList.add('leaving');
+    setTimeout(() => item.remove(), 180);
+  };
+
+  item.querySelector('.toast-close').addEventListener('click', remove);
+  stack.appendChild(item);
+
+  if (duration > 0) setTimeout(remove, duration);
+  return item;
+}
+
+let _confirmResolve = null;
+function showConfirmDialog({ title = 'Are you sure?', message = '', confirmLabel = 'Confirm', cancelLabel = 'Cancel', tone = 'primary', icon = 'help' } = {}) {
+  return new Promise(resolve => {
+    _confirmResolve = resolve;
+    const overlay   = document.getElementById('confirmOverlay');
+    const iconEl    = document.getElementById('confirmIcon');
+    const titleEl   = document.getElementById('confirmTitle');
+    const msgEl     = document.getElementById('confirmMsg');
+    const okBtn     = document.getElementById('confirmOkBtn');
+    const cancelBtn = document.getElementById('confirmCancelBtn');
+
+    iconEl.className = `confirm-icon ${tone === 'danger' ? 'danger' : 'warn'}`;
+    iconEl.innerHTML  = `<span class="material-symbols-outlined" style="font-size:18px;">${icon}</span>`;
+    titleEl.textContent = title;
+    msgEl.textContent   = message;
+    okBtn.textContent    = confirmLabel;
+    cancelBtn.textContent = cancelLabel;
+    okBtn.className = tone === 'danger' ? 'btn-confirm-danger' : 'btn-confirm-primary';
+
+    const cleanup = (result) => {
+      overlay.style.display = 'none';
+      okBtn.removeEventListener('click', onOk);
+      cancelBtn.removeEventListener('click', onCancel);
+      overlay.removeEventListener('click', onOverlayClick);
+      if (_confirmResolve) { _confirmResolve(result); _confirmResolve = null; }
+    };
+    const onOk = () => cleanup(true);
+    const onCancel = () => cleanup(false);
+    const onOverlayClick = (e) => { if (e.target === overlay) cleanup(false); };
+
+    okBtn.addEventListener('click', onOk);
+    cancelBtn.addEventListener('click', onCancel);
+    overlay.addEventListener('click', onOverlayClick);
+
+    overlay.style.display = 'flex';
+  });
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    const overlay = document.getElementById('confirmOverlay');
+    if (overlay && overlay.style.display === 'flex' && _confirmResolve) {
+      overlay.style.display = 'none';
+      _confirmResolve(false);
+      _confirmResolve = null;
+    }
+  }
+});
+
 async function saveNote() {
   const noteTextarea = document.getElementById('noteTextarea');
   const noteValue = noteTextarea ? noteTextarea.value.trim() : '';
 
   if (!activeNoteKey) {
-    alert('Please select a date first.');
+    showToast('Please select a date first.', 'warn');
     return;
   }
 
   if (!noteValue) {
-    alert('Please enter a note before saving.');
+    showToast('Please enter a note before saving.', 'warn');
     return;
   }
 
@@ -1060,19 +1217,26 @@ async function saveNote() {
     calNotes[activeNoteKey] = noteValue;
     closeNoteModal();
     buildCalendar();
+    showToast('Reminder saved successfully.', 'success');
     
   } catch (error) {
     console.error('Error saving calendar note:', error);
-    alert('Failed to save reminder to the database.');
+    showToast('Failed to save reminder to the database.', 'error');
   }
 }
 
 async function deleteNote() {
   if (!activeNoteKey) return;
 
-  if (!confirm('Are you sure you want to delete the reminder for this day?')) {
-    return;
-  }
+  const confirmed = await showConfirmDialog({
+    title: 'Delete reminder?',
+    message: 'Are you sure you want to delete the reminder for this day? This action cannot be undone.',
+    confirmLabel: 'Delete',
+    cancelLabel: 'Cancel',
+    tone: 'danger',
+    icon: 'delete'
+  });
+  if (!confirmed) return;
 
   try {
     const response = await fetch(`${CALENDAR_API}/${activeNoteKey}`, {
@@ -1084,10 +1248,11 @@ async function deleteNote() {
     delete calNotes[activeNoteKey];
     closeNoteModal();
     buildCalendar();
+    showToast('Reminder deleted.', 'success');
     
   } catch (error) {
     console.error('Error deleting calendar note:', error);
-    alert('Failed to delete reminder from the database.');
+    showToast('Failed to delete reminder from the database.', 'error');
   }
 }
 
@@ -1629,6 +1794,7 @@ function openResearchFormFresh(){
   document.getElementById('rm-authors').innerHTML='';
   clearAuthorError();
   addAuthorField();
+  document.getElementById('rm-gdrive').value='';
   pendingSubmission=null;
   showResearchModal();
 }
@@ -1669,11 +1835,12 @@ function reviewResearchEntry(){
   const dept=college&&deptSel?college+' — '+deptSel:college||deptSel;
   const date=document.getElementById('rm-date').value;
   const authors=getAuthorValues();
+  const googleDriveLink=document.getElementById('rm-gdrive').value.trim();
   const errorEl=document.getElementById('rm-error');
   if(!title||!id||!date||!authors.length||!college){errorEl.textContent='Please fill in all required fields (including College) and add at least one author.';errorEl.classList.remove('hidden');return;}
   if(authors.length>MAX_AUTHORS){errorEl.textContent='Too many authors.';errorEl.classList.remove('hidden');return;}
   errorEl.classList.add('hidden');
-  pendingSubmission={title,id,department:dept,college,date,authors,category:selectedCategory,status:'Submitted to IPOPHL'};
+  pendingSubmission={title,id,department:dept,college,date,authors,googleDriveLink,category:selectedCategory,status:'Submitted to IPOPHL'};
   const cat=CATEGORIES.find(c=>c.id===selectedCategory);
   document.getElementById('rv-cat').innerHTML=`<span class="cat-badge" style="background:${cat.bg};color:${cat.color};border:1px solid ${cat.color}33;font-size:12px;"><i class="${cat.icon}" style="font-size:13px;"></i>${cat.label}</span>`;
   document.getElementById('rv-title').textContent=title;
@@ -1683,6 +1850,7 @@ function reviewResearchEntry(){
   document.getElementById('rv-date').textContent=new Date(yr,mo-1,dy).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
   const authorsEl=document.getElementById('rv-authors');authorsEl.innerHTML='';
   authors.forEach(a=>{const chip=document.createElement('span');chip.style.cssText='display:inline-flex;align-items:center;gap:4px;background:#f2f3fd;color:#191b23;border:1px solid #e1e2ec;border-radius:20px;padding:3px 10px;font-size:12px;font-weight:500;margin-right:4px;margin-bottom:4px;';chip.innerHTML=`<span class="material-symbols-outlined" style="font-size:12px;color:#6b38d4;font-variation-settings:'FILL' 1;">person</span>${a}`;authorsEl.appendChild(chip);});
+  document.getElementById('rv-gdrive').textContent=googleDriveLink||'—';
   hideResearchModal();
   const rm=document.getElementById('review-modal');rm.classList.remove('hidden');rm.classList.add('flex');
 }
@@ -1721,7 +1889,8 @@ async function confirmResearchEntry(){
         department:    pendingSubmission.department,
         authors:       pendingSubmission.authors,
         date:          pendingSubmission.date,
-        status:        pendingSubmission.status
+        status:        pendingSubmission.status,
+        googleDriveLink: pendingSubmission.googleDriveLink
       })
     });
     if(!response.ok) throw new Error(`Server error ${response.status}`);

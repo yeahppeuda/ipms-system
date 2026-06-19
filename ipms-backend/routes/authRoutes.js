@@ -1,72 +1,59 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/User");
+const User = require("../models/User"); // Gagamitin ang User model natin
+const bcrypt = require("bcryptjs"); // Para sa pag-verify ng hashed password
+const { createLog } = require("../utils/logger"); // Para ma-log ang activity ng pag-login
 
-/* =========================
-   LOGIN ROUTE
-========================= */
+// POST: http://localhost:5000/api/auth/login
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    console.log("🔐 LOGIN ATTEMPT:", email);
-
+    // 1. Siguraduhing may laman ang email at password
     if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "Missing credentials"
-      });
+      return res.status(400).json({ success: false, message: "Please enter email and password." });
     }
 
-    const user = await User.findOne({ email });
-
+    // 2. Hanapin ang user sa database gamit ang email
+    const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "User not found"
+      return res.status(401).json({ success: false, message: "Invalid email or password." });
+    }
+
+    // 3. I-verify kung "Active" ang status ng account
+    if (user.status !== "Active") {
+      return res.status(403).json({ 
+        success: false, 
+        message: `Your account is ${user.status}. Please contact the system administrator.` 
       });
     }
 
-    /* =========================
-       CHECK IF ACCOUNT IS ACTIVE
-    ========================= */
-    if (!user.isActive) {
-      return res.status(403).json({
-        success: false,
-        message: "Account is deactivated"
-      });
+    // 4. I-compare ang password gamit ang bcrypt kumpara sa naka-save na hash sa DB
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ success: false, message: "Invalid email or password." });
     }
 
-    /* =========================
-       PASSWORD CHECK (TEMP PLAIN TEXT)
-    ========================= */
-    if (user.password !== password) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid password"
-      });
-    }
+    // 5. Mag-record ng matagumpay na login sa iyong Activity Logs
+    await createLog({
+      user: user.email,
+      action: "Login",
+      module: "Authentication",
+      desc: `User ${user.email} successfully logged in.`,
+      ip: req.ip,
+      severity: "info"
+    });
 
-    /* =========================
-       SUCCESS RESPONSE
-    ========================= */
-    return res.json({
+    // 6. I-send ang tagumpay na tugon sa frontend
+    // Tandaan: Ang 'password' at '_id' ay awtomatikong matatago dahil sa toJSON transform sa User.js!
+    res.json({
       success: true,
-      user: {
-        id: user._id,
-        email: user.email,
-        role: user.role,
-        isActive: user.isActive
-      }
+      user
     });
 
   } catch (err) {
     console.error("🔥 LOGIN ERROR:", err);
-
-    return res.status(500).json({
-      success: false,
-      message: "Server error"
-    });
+    res.status(500).json({ success: false, message: "Internal Server Error", error: err.message });
   }
 });
 

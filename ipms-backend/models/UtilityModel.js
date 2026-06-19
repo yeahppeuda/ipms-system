@@ -6,7 +6,8 @@ const utilityModelSchema = new mongoose.Schema({
   creator: String,
   dept: String,
   status: String,
-  date: String
+  date: String,
+  googleDriveLink: { type: String, trim: true, default: '' }
 });
 
 module.exports = mongoose.model('UtilityModel', utilityModelSchema);

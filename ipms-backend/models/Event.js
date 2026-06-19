@@ -12,6 +12,7 @@ const EventSchema = new mongoose.Schema({
   profile: [String],
   sector: [String],
   ageRange: [String],
+  gdriveLink: { type: String, trim: true, default: "" }, 
   docs: [{
     name: String,
     type: { type: String }, 
@@ -21,7 +22,6 @@ const EventSchema = new mongoose.Schema({
   }]
 }, { timestamps: true });
 
-// Awtomatikong pinapalitan ang _id ng id para hindi mag-error sa HTML mo
 EventSchema.set('toJSON', {
   virtuals: true,
   versionKey: false,

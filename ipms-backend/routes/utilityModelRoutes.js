@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const UtilityModel = require('../models/UtilityModel');
+const { createLog } = require('../utils/logger');
 
 router.get('/', async (req, res) => {
   try {

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Calendar = require('../models/Calendar'); // Diretso sa calendar.js, 'Calendar' na rin ang variable
+const Calendar = require('../models/Calendar'); 
+const { createLog } = require('../utils/logger');
 
 // GET: Kunin lahat ng naka-save na notes
 router.get('/', async (req, res) => {

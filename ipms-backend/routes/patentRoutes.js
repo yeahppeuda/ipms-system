@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Patent = require('../models/Patent');
+const { createLog } = require('../utils/logger');
 
 /* GET ALL */
 router.get('/', async (req, res) => {

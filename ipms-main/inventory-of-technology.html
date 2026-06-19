@@ -32,12 +32,10 @@ body{font-family:'Inter',sans-serif;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:#c2c6d6;border-radius:10px;}
 
-/* ── Animations ── */
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes modalIn{from{opacity:0;transform:translateY(10px) scale(0.97)}to{opacity:1;transform:none}}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 @keyframes spin{100%{transform:rotate(360deg)}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 
 /* ── Nav ── */
 .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:all .15s;text-decoration:none;color:#424754;font-size:13.5px;font-weight:400;width:100%;}
@@ -48,11 +46,9 @@ body{font-family:'Inter',sans-serif;}
 .nav-section-label{font-size:10px;font-weight:700;color:#727785;text-transform:uppercase;letter-spacing:.08em;padding:0 12px;margin:12px 0 4px;}
 
 /* ── Table ── */
-.tbl-head{font-size:10px;font-weight:700;color:#727785;text-transform:uppercase;letter-spacing:.08em;padding:10px 14px;background:#f9f9ff;border-bottom:2px solid #e1e2ec;cursor:pointer;user-select:none;white-space:nowrap;position:sticky;top:0;z-index:1;}
-.tbl-head:hover{background:#f2f3fd;color:#191b23;}
-.tbl-head.sorted{color:#0058be;}
+.tbl-head{font-size:10px;font-weight:700;color:#727785;text-transform:uppercase;letter-spacing:.08em;padding:10px 14px;background:#f9f9ff;border-bottom:2px solid #e1e2ec;white-space:nowrap;position:sticky;top:0;z-index:1;}
 .tbl-cell{padding:11px 14px;font-size:13px;color:#191b23;border-bottom:1px solid #f2f3fd;vertical-align:middle;}
-.tbl-row{transition:background .1s;cursor:default;}
+.tbl-row{transition:background .1s;}
 .tbl-row:hover{background:#f4f6ff;}
 .tbl-row:last-child .tbl-cell{border-bottom:none;}
 
@@ -75,8 +71,7 @@ body{font-family:'Inter',sans-serif;}
 .form-input,.form-select,.form-textarea{width:100%;border:1.5px solid #e1e2ec;border-radius:9px;background:#f9f9ff;padding:8px 13px;font-size:13px;color:#191b23;font-family:'Inter',sans-serif;outline:none;transition:border-color .15s,background .15s,box-shadow .15s;}
 .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:#0058be;background:#fff;box-shadow:0 0 0 3px rgba(0,88,190,.08);}
 .form-input.err,.form-select.err,.form-textarea.err{border-color:#ef4444;background:#fff9f9;}
-.form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23727785' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-color:#f9f9ff;padding-right:34px;}
-.form-textarea{resize:vertical;min-height:80px;}
+.form-textarea{min-height:80px;resize:vertical;}
 .err-msg{font-size:11px;color:#ef4444;margin-top:4px;display:none;}
 .err-msg.show{display:block;}
 
@@ -87,7 +82,6 @@ body{font-family:'Inter',sans-serif;}
 .tab-content{display:none;}
 .tab-content.active{display:block;animation:fadeUp .18s ease;}
 
-/* ── Section headings inside modal ── */
 .section-heading{font-size:11px;font-weight:700;color:#0058be;text-transform:uppercase;letter-spacing:.1em;display:flex;align-items:center;gap:6px;padding-bottom:8px;border-bottom:2px solid #e8f0fd;margin-bottom:14px;}
 
 /* ── Buttons ── */
@@ -100,15 +94,9 @@ body{font-family:'Inter',sans-serif;}
 .btn-danger:hover{background:#ef4444;color:#fff;}
 
 /* ── Repeater rows ── */
-.repeater-row{background:#f9f9ff;border:1.5px solid #e1e2ec;border-radius:12px;padding:14px 14px 14px 14px;position:relative;}
-.repeater-row .rm-btn{position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:7px;border:1px solid #fca5a5;background:none;cursor:pointer;color:#ef4444;display:flex;align-items:center;justify-content:center;font-size:13px;transition:background .12s;}
+.repeater-row{background:#f9f9ff;border:1.5px solid #e1e2ec;border-radius:12px;padding:14px;position:relative;}
+.repeater-row .rm-btn{position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:7px;border:1px solid #fca5a5;background:#fff;cursor:pointer;color:#ef4444;display:flex;align-items:center;justify-content:center;font-size:13px;transition:background .12s;line-height:1;}
 .repeater-row .rm-btn:hover{background:#fef2f2;}
-
-/* ── Pagination ── */
-.page-btn{width:32px;height:32px;border-radius:7px;border:1.5px solid #e1e2ec;background:none;cursor:pointer;font-size:12px;font-weight:600;color:#424754;display:flex;align-items:center;justify-content:center;transition:all .12s;}
-.page-btn:hover{background:#f2f3fd;}
-.page-btn.active{background:#0058be;color:#fff;border-color:#0058be;}
-.page-btn:disabled{opacity:.35;cursor:not-allowed;}
 
 /* ── Filter dropdown ── */
 .filter-dropdown{position:absolute;z-index:100;background:#fff;border:1.5px solid #e1e2ec;border-radius:13px;padding:5px;box-shadow:0 12px 36px rgba(0,0,0,.12);animation:fadeUp .14s ease;min-width:210px;}
@@ -116,43 +104,27 @@ body{font-family:'Inter',sans-serif;}
 .filter-opt:hover{background:#f2f3fd;color:#191b23;}
 .filter-opt.active{background:#e8f0fd;color:#0058be;font-weight:700;}
 
-/* ── Skeleton ── */
-.skeleton{background:linear-gradient(90deg,#f2f3fd 25%,#e6e7f2 50%,#f2f3fd 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px;}
-
 /* ── Toast ── */
-#toast{position:fixed;bottom:24px;right:24px;z-index:99999;transform:translateY(16px);opacity:0;transition:all .22s ease;pointer-events:none;}
+#toast{position:fixed;bottom:24px;right:24px;z-index:99999;transform:translateY(16px);opacity:0;transition:all .22s ease;pointer-events:none;display:flex;align-items:center;gap:8px;min-width:240px;}
 #toast.show{transform:translateY(0);opacity:1;}
 
-/* ── View modal panels ── */
+/* ── View Modal Panel ── */
 .view-label{font-size:10px;font-weight:700;color:#727785;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px;}
 .view-value{font-size:13px;color:#191b23;font-weight:500;line-height:1.6;}
 .view-field{padding:10px 0;border-bottom:1px solid #f2f3fd;}
 .view-field:last-child{border-bottom:none;}
 
-/* ── Confirm modal ── */
 #confirmModal{position:fixed;inset:0;background:rgba(15,20,40,.5);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:99999;}
 #confirmModal.open{display:flex;}
+.spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block;}
 
-/* ── Progress steps ── */
-.step-dot{width:8px;height:8px;border-radius:50%;background:#e1e2ec;transition:all .2s;}
-.step-dot.done{background:#0058be;}
-.step-dot.active{background:#0058be;box-shadow:0 0 0 3px rgba(0,88,190,.2);}
-
-/* ── Responsive ── */
-@media(max-width:768px){
-  aside{transform:translateX(-100%);transition:transform .3s;z-index:60;}
-  aside.open{transform:translateX(0);}
-  header{left:0!important;padding-left:1rem!important;}
-  main{padding-left:1rem!important;}
-}
-
-/* ── Loading spinner ── */
-.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block;}
+/* ── Skeleton ── */
+.skeleton-row td{padding:12px 14px;}
+.skeleton-bar{height:13px;border-radius:6px;background:linear-gradient(90deg,#f2f3fd 25%,#e6e7f2 50%,#f2f3fd 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;}
 </style>
 </head>
 <body class="bg-background text-on-surface">
 
-<!-- ═══════════════ SIDEBAR ═══════════════ -->
 <aside class="w-[260px] h-screen fixed left-0 top-0 border-r border-outline-variant bg-surface-container-lowest flex flex-col z-50">
   <div class="flex items-center gap-3 px-5 py-5 border-b border-outline-variant">
     <div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white flex-shrink-0">
@@ -178,7 +150,6 @@ body{font-family:'Inter',sans-serif;}
   </nav>
 </aside>
 
-<!-- ═══════════════ HEADER ═══════════════ -->
 <header class="fixed top-0 left-0 right-0 pl-[260px] z-40 bg-surface/80 backdrop-blur-md border-b border-outline-variant">
   <div class="flex items-center justify-between h-[60px] w-full px-6 gap-4">
     <div class="flex items-center gap-2 text-[13px] text-on-surface-variant">
@@ -193,19 +164,13 @@ body{font-family:'Inter',sans-serif;}
         <i class="ti ti-clock text-primary" style="font-size:13px;"></i>
         <span id="liveClock" class="text-[12px] font-semibold text-on-surface-variant">--:-- --</span>
       </div>
-      <div class="h-5 w-px bg-outline-variant"></div>
-      <div class="w-9 h-9 rounded-full bg-secondary-fixed flex items-center justify-center border-2 border-surface-container-highest cursor-pointer hover:ring-2 hover:ring-primary/30 transition-all">
-        <span class="material-symbols-outlined text-[20px]" style="color:#6b38d4;">person</span>
-      </div>
     </div>
   </div>
 </header>
 
-<!-- ═══════════════ MAIN ═══════════════ -->
 <main class="pl-[280px] pt-[76px] min-h-screen">
   <div class="py-6 px-8 max-w-[1440px]">
 
-    <!-- Page Header -->
     <div class="flex justify-between items-start mb-6">
       <div>
         <div class="flex items-center gap-3 mb-1">
@@ -214,7 +179,7 @@ body{font-family:'Inter',sans-serif;}
           </div>
           <div>
             <h2 class="text-[22px] font-bold text-on-surface tracking-tight leading-tight">Inventory of Technology</h2>
-            <p class="text-[13px] text-on-surface-variant">Track technology records, readiness levels, and IP status.</p>
+            <p class="text-[13px] text-on-surface-variant">Subaybayan ang mga teknolohiya, antas ng kahandaan (TRL/IRL), at katayuan ng IP nito.</p>
           </div>
         </div>
       </div>
@@ -223,51 +188,45 @@ body{font-family:'Inter',sans-serif;}
       </button>
     </div>
 
-    <!-- Stats -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6" id="statsGrid">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
       <div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 shadow-sm" style="border-left:3px solid #0058be;">
         <div class="text-[10px] font-semibold uppercase tracking-widest text-on-surface-variant mb-1">Total Records</div>
-        <div class="text-[26px] font-bold text-on-surface" id="statTotal">—</div>
+        <div class="text-[26px] font-bold text-on-surface" id="statTotal">0</div>
       </div>
       <div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 shadow-sm" style="border-left:3px solid #059669;">
         <div class="text-[10px] font-semibold uppercase tracking-widest text-on-surface-variant mb-1">Commercialized</div>
-        <div class="text-[26px] font-bold text-on-surface" id="statCommercialized">—</div>
+        <div class="text-[26px] font-bold text-on-surface" id="statCommercialized">0</div>
       </div>
       <div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 shadow-sm" style="border-left:3px solid #6b38d4;">
         <div class="text-[10px] font-semibold uppercase tracking-widest text-on-surface-variant mb-1">Registered IP</div>
-        <div class="text-[26px] font-bold text-on-surface" id="statRegistered">—</div>
+        <div class="text-[26px] font-bold text-on-surface" id="statRegistered">0</div>
       </div>
       <div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 shadow-sm" style="border-left:3px solid #924700;">
         <div class="text-[10px] font-semibold uppercase tracking-widest text-on-surface-variant mb-1">Pilot / Testing</div>
-        <div class="text-[26px] font-bold text-on-surface" id="statPilot">—</div>
+        <div class="text-[26px] font-bold text-on-surface" id="statPilot">0</div>
       </div>
     </div>
 
-    <!-- Table Card -->
     <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
-
-      <!-- Toolbar -->
       <div class="px-5 py-3 border-b border-outline-variant flex flex-wrap items-center gap-3">
         <div class="relative flex-1 min-w-[200px]">
           <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[16px] pointer-events-none">search</span>
-          <input id="globalSearch" class="w-full h-[36px] bg-surface-container-low border border-outline-variant rounded-xl pl-9 pr-4 text-[13px] focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-on-surface-variant/50" placeholder="Search technology, sector, researcher…" autocomplete="off" oninput="handleSearch(this.value)"/>
+          <input id="globalSearch" class="w-full h-[36px] bg-surface-container-low border border-outline-variant rounded-xl pl-9 pr-4 text-[13px] focus:outline-none focus:border-primary transition-all placeholder:text-on-surface-variant/50" placeholder="Maghanap ng pangalan, sector, o mananaliksik..." autocomplete="off" oninput="handleSearch(this.value)"/>
         </div>
         <div class="relative shrink-0">
-          <button id="sectorFilterBtn" onclick="toggleDropdown('sectorDD',event)" class="h-[36px] flex items-center gap-2 px-3 bg-surface-container-low border border-outline-variant rounded-xl text-[13px] font-semibold text-on-surface-variant hover:bg-surface-container transition-all">
+          <button onclick="toggleDropdown('sectorDD',event)" class="h-[36px] flex items-center gap-2 px-3 bg-surface-container-low border border-outline-variant rounded-xl text-[13px] font-semibold text-on-surface-variant hover:bg-surface-container transition-all">
             <i class="ti ti-adjustments-horizontal text-[14px]"></i>
             <span id="sectorFilterLabel">All Sectors</span>
             <i class="ti ti-chevron-down text-[11px]"></i>
           </button>
           <div class="filter-dropdown hidden" id="sectorDD" style="top:calc(100% + 6px);left:0;max-height:280px;overflow-y:auto;">
-            <div style="padding:6px 10px 4px;font-size:10px;font-weight:700;color:#727785;text-transform:uppercase;letter-spacing:.08em;">Sector</div>
             <button class="filter-opt active" onclick="setSectorFilter('',this)">All Sectors</button>
             <button class="filter-opt" onclick="setSectorFilter('Agriculture and Horticulture',this)">Agriculture and Horticulture</button>
             <button class="filter-opt" onclick="setSectorFilter('Biotechnology',this)">Biotechnology</button>
             <button class="filter-opt" onclick="setSectorFilter('Chemicals',this)">Chemicals</button>
-            <button class="filter-opt" onclick="setSectorFilter('Electrical and Electronic Device/Service',this)">Electrical / Electronic</button>
+            <button class="filter-opt" onclick="setSectorFilter('Electrical and Electronic Device/Service',this)">Electrical & Electronic</button>
             <button class="filter-opt" onclick="setSectorFilter('Food and Beverage Products',this)">Food & Beverage</button>
             <button class="filter-opt" onclick="setSectorFilter('Food Processing',this)">Food Processing</button>
-            <button class="filter-opt" onclick="setSectorFilter('Furniture and GHD',this)">Furniture & GHD</button>
             <button class="filter-opt" onclick="setSectorFilter('Clean Technology and Energy',this)">Clean Tech & Energy</button>
             <button class="filter-opt" onclick="setSectorFilter('ICT and Software',this)">ICT & Software</button>
             <button class="filter-opt" onclick="setSectorFilter('Medical Devices and Digital Healthcare',this)">Medical Devices</button>
@@ -275,369 +234,261 @@ body{font-family:'Inter',sans-serif;}
             <button class="filter-opt" onclick="setSectorFilter('Pharmaceuticals',this)">Pharmaceuticals</button>
           </div>
         </div>
-        <button onclick="exportPDF()" class="btn-secondary shrink-0" style="height:36px;padding:0 14px;font-size:13px;">
-          <i class="ti ti-file-export text-[14px]"></i> Export PDF
-        </button>
-        <div class="flex items-center gap-2 ml-auto shrink-0">
-          <span class="text-[12px] text-on-surface-variant" id="paginationInfo"></span>
-          <div class="flex gap-1" id="paginationBtns"></div>
-        </div>
-      </div>
-
-      <div class="px-5 py-2 border-b border-outline-variant bg-surface-container-low/40 flex items-center justify-between">
-        <p class="text-[12px] text-on-surface-variant" id="tableSubtitle">Loading…</p>
-        <div id="loadingDot" class="hidden flex items-center gap-1.5 text-[11px] text-on-surface-variant">
-          <div class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></div> Syncing…
-        </div>
+        <span class="text-[12px] text-on-surface-variant ml-auto" id="tableSubtitle"></span>
       </div>
 
       <div class="overflow-x-auto">
         <table class="w-full border-collapse" id="techTable">
           <thead>
             <tr>
-              <th class="tbl-head" onclick="sortBy('name')" style="min-width:210px;">Name of Technology <i class="ti ti-selector text-[10px]"></i></th>
-              <th class="tbl-head" onclick="sortBy('sector')" style="min-width:150px;">Sector <i class="ti ti-selector text-[10px]"></i></th>
-              <th class="tbl-head" onclick="sortBy('mode')" style="min-width:150px;">Transfer Mode <i class="ti ti-selector text-[10px]"></i></th>
-              <th class="tbl-head text-center" onclick="sortBy('trl')" style="min-width:72px;">TRL <i class="ti ti-selector text-[10px]"></i></th>
-              <th class="tbl-head text-center" onclick="sortBy('irl')" style="min-width:72px;">IRL <i class="ti ti-selector text-[10px]"></i></th>
-              <th class="tbl-head" onclick="sortBy('deployStatus')" style="min-width:160px;">Status <i class="ti ti-selector text-[10px]"></i></th>
-              <th class="tbl-head" style="min-width:130px;">Lead Researcher</th>
-              <th class="tbl-head" style="min-width:120px;">Actions</th>
+              <th class="tbl-head" style="min-width:220px;">Name of Technology</th>
+              <th class="tbl-head" style="min-width:160px;">Sector</th>
+              <th class="tbl-head" style="min-width:140px;">Transfer Mode</th>
+              <th class="tbl-head text-center" style="min-width:72px;">TRL</th>
+              <th class="tbl-head text-center" style="min-width:72px;">IRL</th>
+              <th class="tbl-head" style="min-width:160px;">Status</th>
+              <th class="tbl-head" style="min-width:130px;">Actions</th>
             </tr>
           </thead>
           <tbody id="tableBody">
-            <tr><td colspan="8" class="py-6 text-center text-[13px] text-on-surface-variant">
-              <div class="flex items-center justify-center gap-2"><div class="skeleton h-4 w-4 rounded-full"></div> Loading records…</div>
-            </td></tr>
+            <tr class="skeleton-row"><td colspan="7"><div class="skeleton-bar"></div></td></tr>
+            <tr class="skeleton-row"><td colspan="7"><div class="skeleton-bar"></div></td></tr>
+            <tr class="skeleton-row"><td colspan="7"><div class="skeleton-bar"></div></td></tr>
           </tbody>
         </table>
       </div>
     </div>
-
   </div>
 </main>
 
-<!-- ═══════════════ ADD/EDIT MODAL ═══════════════ -->
 <div class="modal-overlay" id="techModal">
-  <div class="relative w-full max-w-4xl rounded-2xl bg-white shadow-2xl flex flex-col" style="max-height:92vh;animation:modalIn .22s ease;">
-
-    <!-- Modal Header -->
+  <div class="relative w-full max-w-4xl rounded-2xl bg-white shadow-2xl flex flex-col" style="max-height:92vh; animation:modalIn .2s ease;">
     <div class="px-6 py-4 border-b border-slate-100 flex items-start justify-between gap-4 flex-shrink-0">
       <div class="flex items-center gap-3">
         <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
           <i class="ti ti-device-desktop-analytics text-primary" style="font-size:18px;"></i>
         </div>
         <div>
-          <h2 class="text-[17px] font-bold text-on-surface" id="modalTitle">Add Technology</h2>
-          <p class="text-[11px] text-on-surface-variant">Required fields are marked <span class="text-red-500">*</span></p>
+          <h3 class="text-[16px] font-bold text-on-surface" id="modalTitle">Add New Technology</h3>
+          <p class="text-[11px] text-on-surface-variant">Punan ang mga impormasyon sa ibaba. Required fields <span class="text-red-500">*</span></p>
         </div>
       </div>
-      <button onclick="closeModal()" class="p-2 hover:bg-slate-100 rounded-full transition-colors text-outline flex-shrink-0" id="closeModalBtn">
+      <button onclick="closeModal()" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 transition-all text-slate-400 hover:text-slate-600 flex-shrink-0">
         <span class="material-symbols-outlined text-[20px]">close</span>
       </button>
     </div>
 
-    <!-- Step progress -->
-    <div class="px-6 pt-3 pb-0 flex-shrink-0">
-      <div class="flex items-center justify-between mb-2">
-        <div class="flex gap-1" id="stepDots">
-          <div class="step-dot active" id="dot-0"></div>
-          <div class="h-px flex-1 bg-outline-variant self-center mx-1"></div>
-          <div class="step-dot" id="dot-1"></div>
-          <div class="h-px flex-1 bg-outline-variant self-center mx-1"></div>
-          <div class="step-dot" id="dot-2"></div>
-          <div class="h-px flex-1 bg-outline-variant self-center mx-1"></div>
-          <div class="step-dot" id="dot-3"></div>
-          <div class="h-px flex-1 bg-outline-variant self-center mx-1"></div>
-          <div class="step-dot" id="dot-4"></div>
-        </div>
-        <span class="text-[11px] text-on-surface-variant font-semibold" id="stepLabel">Step 1 of 5</span>
-      </div>
+    <div class="px-6 py-2 bg-slate-50 border-b border-slate-100 flex gap-2 overflow-x-auto shrink-0">
+      <button type="button" onclick="applyTab(0)" id="formTab-0" class="tab-btn active"><i class="ti ti-info-circle text-[14px]"></i> General Info</button>
+      <button type="button" onclick="applyTab(1)" id="formTab-1" class="tab-btn"><i class="ti ti-cash text-[14px]"></i> Deployment & Funding</button>
+      <button type="button" onclick="applyTab(2)" id="formTab-2" class="tab-btn"><i class="ti ti-users text-[14px]"></i> Researchers & Readiness</button>
+      <button type="button" onclick="applyTab(3)" id="formTab-3" class="tab-btn"><i class="ti ti-file-text text-[14px]"></i> IP & Reports</button>
     </div>
 
-    <!-- Tab nav -->
-    <div class="flex gap-1 px-6 pt-2 pb-0 flex-shrink-0 overflow-x-auto border-b border-slate-100">
-      <button class="tab-btn active" onclick="switchTab(0)" id="btn-tab-0"><i class="ti ti-info-circle text-[14px]"></i> Basic Info</button>
-      <button class="tab-btn" onclick="switchTab(1)" id="btn-tab-1"><i class="ti ti-users text-[14px]"></i> Researchers</button>
-      <button class="tab-btn" onclick="switchTab(2)" id="btn-tab-2"><i class="ti ti-chart-bar text-[14px]"></i> Readiness</button>
-      <button class="tab-btn" onclick="switchTab(3)" id="btn-tab-3"><i class="ti ti-shield text-[14px]"></i> IP Records</button>
-      <button class="tab-btn" onclick="switchTab(4)" id="btn-tab-4"><i class="ti ti-file-text text-[14px]"></i> Reports</button>
-    </div>
+    <form id="techForm" onsubmit="saveRecord(event)" class="flex-1 overflow-y-auto p-6 space-y-6">
 
-    <!-- Tab Contents -->
-    <div class="flex-1 overflow-y-auto px-6 py-5">
-
-      <!-- TAB 0: Basic Info -->
-      <div class="tab-content active" id="tab-0">
-        <div class="section-heading"><i class="ti ti-info-circle text-[13px]"></i> Technology Information</div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-          <div class="md:col-span-2">
+      <div class="tab-content active">
+        <div class="section-heading"><i class="ti ti-info-circle"></i> Pangunahing Impormasyon</div>
+        <div class="space-y-4">
+          <div>
             <label class="form-label">Name of Technology <span class="text-red-500">*</span></label>
-            <input type="text" id="f-name" class="form-input" placeholder="e.g. Smart Aquaponics Monitoring System"/>
-            <div class="err-msg" id="err-name">This field is required.</div>
+            <input type="text" id="f-name" class="form-input" required placeholder="Hal. Electronic Pharmacy Management System"/>
+            <div class="err-msg" id="err-name">Kailangan ng pangalan ng teknolohiya.</div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="form-label">Sector <span class="text-red-500">*</span></label>
+              <select id="f-sector" class="form-select" required>
+                <option value="">-- Piliin ang Sektor --</option>
+                <option value="Agriculture and Horticulture">Agriculture and Horticulture</option>
+                <option value="Biotechnology">Biotechnology</option>
+                <option value="Chemicals">Chemicals</option>
+                <option value="Electrical and Electronic Device/Service">Electrical and Electronic Device/Service</option>
+                <option value="Food and Beverage Products">Food and Beverage Products</option>
+                <option value="Food Processing">Food Processing</option>
+                <option value="Clean Technology and Energy">Clean Technology and Energy</option>
+                <option value="ICT and Software">ICT and Software</option>
+                <option value="Medical Devices and Digital Healthcare">Medical Devices and Digital Healthcare</option>
+                <option value="Metals and Engineering">Metals and Engineering</option>
+                <option value="Pharmaceuticals">Pharmaceuticals</option>
+              </select>
+              <div class="err-msg" id="err-sector">Kailangan piliin ang sektor.</div>
+            </div>
+            <div>
+              <label class="form-label">Mode of Technology Transfer <span class="text-red-500">*</span></label>
+              <select id="f-mode" class="form-select" required>
+                <option value="">-- Piliin ang Transfer Mode --</option>
+                <option value="Commercialization">Commercialization</option>
+                <option value="Extension">Extension</option>
+                <option value="Pre-Commercialization">Pre-Commercialization</option>
+                <option value="Public Good">Public Good</option>
+              </select>
+              <div class="err-msg" id="err-mode">Kailangan piliin ang transfer mode.</div>
+            </div>
           </div>
           <div>
-            <label class="form-label">Sector <span class="text-red-500">*</span></label>
-            <select id="f-sector" class="form-select">
-              <option value="">Select sector…</option>
-              <option>Agriculture and Horticulture</option>
-              <option>Biotechnology</option>
-              <option>Chemicals</option>
-              <option>Electrical and Electronic Device/Service</option>
-              <option>Food and Beverage Products</option>
-              <option>Food Processing</option>
-              <option>Furniture and GHD</option>
-              <option>Clean Technology and Energy</option>
-              <option>ICT and Software</option>
-              <option>Medical Devices and Digital Healthcare</option>
-              <option>Metals and Engineering</option>
-              <option>Pharmaceuticals</option>
-            </select>
-            <div class="err-msg" id="err-sector">Sector is required.</div>
-          </div>
-          <div>
-            <label class="form-label">Mode of Technology Transfer <span class="text-red-500">*</span></label>
-            <select id="f-mode" class="form-select">
-              <option value="">Select mode…</option>
-              <option>Commercialization</option>
-              <option>Extension</option>
-              <option>Pre-Commercialization</option>
-              <option>Public Good</option>
-            </select>
-            <div class="err-msg" id="err-mode">Mode is required.</div>
-          </div>
-          <div class="md:col-span-2">
-            <label class="form-label">Brief Description <span class="text-red-500">*</span></label>
-            <textarea id="f-description" class="form-textarea" placeholder="Describe the technology, its purpose, and key features…"></textarea>
-            <div class="err-msg" id="err-description">Description is required.</div>
-          </div>
-          <div>
-            <label class="form-label">Deployment Status</label>
-            <select id="f-deployStatus" class="form-select">
-              <option value="">Select status…</option>
-              <option>Partially Deployed – Limited Use</option>
-              <option>Pilot Deployment/Testing Stage</option>
-            </select>
+            <label class="form-label">Description <span class="text-red-500">*</span></label>
+            <textarea id="f-description" class="form-textarea" required placeholder="Isulat ang maikling detalye o sakop ng teknolohiya..."></textarea>
+            <div class="err-msg" id="err-description">Kailangan ng deskripsyon.</div>
           </div>
           <div>
             <label class="form-label">Current Development Status</label>
-            <input type="text" id="f-currentDev" class="form-input" placeholder="e.g. Under field testing at partner LGU"/>
+            <input type="text" id="f-currentDev" class="form-input" placeholder="Hal. Version 2.0 Deployment Phase"/>
           </div>
-        </div>
-
-        <div class="section-heading"><i class="ti ti-building text-[13px]"></i> Adopter / Potential Adopter</div>
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-2 mb-3">
-          <label class="flex items-center gap-2 text-[13px] cursor-pointer px-3 py-2 rounded-lg border border-outline-variant hover:bg-surface-container-low transition-all select-none">
-            <input type="checkbox" value="LGU" class="adopter-check" onchange="toggleAdopterSpecify()"> LGU
-          </label>
-          <label class="flex items-center gap-2 text-[13px] cursor-pointer px-3 py-2 rounded-lg border border-outline-variant hover:bg-surface-container-low transition-all select-none">
-            <input type="checkbox" value="MSME" class="adopter-check" onchange="toggleAdopterSpecify()"> MSME
-          </label>
-          <label class="flex items-center gap-2 text-[13px] cursor-pointer px-3 py-2 rounded-lg border border-outline-variant hover:bg-surface-container-low transition-all select-none">
-            <input type="checkbox" value="Academe" class="adopter-check" onchange="toggleAdopterSpecify()"> Academe
-          </label>
-          <label class="flex items-center gap-2 text-[13px] cursor-pointer px-3 py-2 rounded-lg border border-outline-variant hover:bg-surface-container-low transition-all select-none">
-            <input type="checkbox" value="Community" class="adopter-check" onchange="toggleAdopterSpecify()"> Community
-          </label>
-          <label class="flex items-center gap-2 text-[13px] cursor-pointer px-3 py-2 rounded-lg border border-outline-variant hover:bg-surface-container-low transition-all select-none">
-            <input type="checkbox" value="Other" class="adopter-check" onchange="toggleAdopterSpecify()"> Other
-          </label>
-        </div>
-        <div id="adopterSpecifyWrap" class="hidden mb-4">
-          <input type="text" id="f-adopterSpecify" class="form-input" placeholder="Specify adopter type…"/>
-        </div>
-
-        <div class="section-heading mt-2"><i class="ti ti-coin text-[13px]"></i> Funding Source</div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="form-label">Funding Source</label>
-            <select id="f-funding" class="form-select" onchange="toggleFundingSpecify()">
-              <option value="">Select funding source…</option>
-              <option>SUC Funded</option>
-              <option>DOST-PCIEERD</option>
-              <option>DOST-PCAARRD</option>
-              <option>DOST-PCHRD</option>
-              <option>DOST Central</option>
-              <option>DOST Regional Office</option>
-              <option>Other GFA</option>
-            </select>
-          </div>
-          <div id="fundingSpecifyWrap" class="hidden">
-            <label class="form-label">Specify Other GFA</label>
-            <input type="text" id="f-fundingSpecify" class="form-input" placeholder="Enter funding source name…"/>
+            <label class="form-label">Google Drive Link</label>
+            <input type="url" id="f-gdrive" class="form-input" placeholder="https://drive.google.com/..." />
+            <p class="text-[11px] text-on-surface-variant mt-1">Optional. Paste a Google Drive folder or file link for related technology documents.</p>
           </div>
         </div>
       </div>
 
-      <!-- TAB 1: Researchers -->
-      <div class="tab-content" id="tab-1">
-        <div class="section-heading"><i class="ti ti-user-star text-[13px]"></i> Technology Generator(s) / Researcher(s)</div>
-        <div class="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 mb-4 text-[12px] text-blue-700 flex items-start gap-2">
+      <div class="tab-content">
+        <div class="section-heading"><i class="ti ti-cash"></i> Deployment at Pagpopondo</div>
+        <div class="space-y-4">
+          <div>
+            <label class="form-label">Deployment Status</label>
+            <select id="f-deployStatus" class="form-select">
+              <option value="">-- Wala / Di Tukoy --</option>
+              <option value="Partially Deployed – Limited Use">Partially Deployed – Limited Use</option>
+              <option value="Pilot Deployment/Testing Stage">Pilot Deployment/Testing Stage</option>
+            </select>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="form-label">Funding Agency Category</label>
+              <select id="f-funding" class="form-select">
+                <option value="">-- Piliin ang Uri ng Pondo --</option>
+                <option value="SUC Funded">SUC Funded</option>
+                <option value="DOST-PCIEERD">DOST-PCIEERD</option>
+                <option value="DOST-PCAARRD">DOST-PCAARRD</option>
+                <option value="DOST-PCHRD">DOST-PCHRD</option>
+                <option value="DOST Central">DOST Central</option>
+                <option value="DOST Regional Office">DOST Regional Office</option>
+                <option value="Other GFA">Other GFA</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Specific Funding Agency / Institution</label>
+              <input type="text" id="f-fundingSpecify" class="form-input" placeholder="Hal. Quezon City University Internal R&D Fund"/>
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Adopter Specification <span class="text-on-surface-variant font-normal" style="text-transform:none;letter-spacing:0;">(Hiwalayin ng kuwit/comma)</span></label>
+            <input type="text" id="f-adopterSpecify" class="form-input" placeholder="Hal. Generika, Mercury Drug, Local Health Unit"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content">
+        <div class="section-heading"><i class="ti ti-chart-arrows-vertical"></i> Readiness Levels</div>
+        <div class="space-y-4 mb-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="form-label">Technology Readiness Level (TRL)</label>
+              <select id="f-trl" class="form-select" onchange="updateReadinessBar('trl')">
+                <option value="">-- Piliin ang TRL Level --</option>
+                <option value="TRL 1">TRL 1 - Basic Principles Observed</option>
+                <option value="TRL 2">TRL 2 - Technology Concept Formulated</option>
+                <option value="TRL 3">TRL 3 - Experimental Proof of Concept</option>
+                <option value="TRL 4">TRL 4 - Technology Validated in Lab</option>
+                <option value="TRL 5">TRL 5 - Validated in Relevant Environment</option>
+                <option value="TRL 6">TRL 6 - Demonstrated in Relevant Environment</option>
+                <option value="TRL 7">TRL 7 - System Prototype Demonstration</option>
+                <option value="TRL 8">TRL 8 - System Complete and Qualified</option>
+                <option value="TRL 9">TRL 9 - Actual System Proven Operational</option>
+              </select>
+              <div class="flex gap-1 mt-2" id="trlBar"></div>
+            </div>
+            <div>
+              <label class="form-label">Investment Readiness Level (IRL)</label>
+              <select id="f-irl" class="form-select" onchange="updateReadinessBar('irl')">
+                <option value="">-- Piliin ang IRL Level --</option>
+                <option value="IRL 1">IRL 1 - Peer Review / Pitch</option>
+                <option value="IRL 2">IRL 2 - Market Interest Validated</option>
+                <option value="IRL 3">IRL 3 - Business Model Developed</option>
+                <option value="IRL 4">IRL 4 - Prototype Commercial Potential</option>
+                <option value="IRL 5">IRL 5 - Customer Validation Done</option>
+                <option value="IRL 6">IRL 6 - Scalable Model Defined</option>
+                <option value="IRL 7">IRL 7 - Strategic Partners Engaged</option>
+                <option value="IRL 8">IRL 8 - Financial Proof Realized</option>
+                <option value="IRL 9">IRL 9 - Widespread Launch Executed</option>
+              </select>
+              <div class="flex gap-1 mt-2" id="irlBar"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-heading"><i class="ti ti-users-group"></i> Researchers Roster</div>
+        <div class="bg-blue-50 border border-blue-100 rounded-xl px-4 py-2.5 mb-4 text-[12px] text-blue-700 flex items-start gap-2">
           <i class="ti ti-info-circle text-[14px] mt-0.5 flex-shrink-0"></i>
-          The <strong>first entry</strong> is the Lead Researcher. Additional entries are team members.
+          Ang <strong>unang entry</strong> ay ituturing na Lead Researcher.
         </div>
         <div id="researcherRows" class="space-y-3 mb-4"></div>
-        <button type="button" onclick="addResearcher()" class="btn-secondary" style="font-size:12px;padding:7px 14px;">
-          <span class="material-symbols-outlined text-[14px]">add</span> Add Researcher
+        <button type="button" onclick="addResearcherRow()" class="btn-secondary text-[12px] py-1.5 px-3">
+          <span class="material-symbols-outlined text-[14px]">add</span> Dagdag Researcher
         </button>
       </div>
 
-      <!-- TAB 2: Readiness Levels -->
-      <div class="tab-content" id="tab-2">
-        <div class="section-heading"><i class="ti ti-chart-arrows-vertical text-[13px]"></i> Technology Readiness Level (TRL)</div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div class="tab-content">
+        <div class="section-heading"><i class="ti ti-file-text"></i> Reports Availability Status</div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div>
-            <label class="form-label">TRL Level</label>
-            <select id="f-trl" class="form-select" onchange="updateReadinessBar('trl')">
-              <option value="">Select TRL…</option>
-              <option value="TRL 1">TRL 1 – Basic Research</option>
-              <option value="TRL 2">TRL 2 – Technology Formulation</option>
-              <option value="TRL 3">TRL 3 – Applied Research</option>
-              <option value="TRL 4">TRL 4 – Functional/Ugly Prototype</option>
-              <option value="TRL 5">TRL 5 – Large Prototype</option>
-              <option value="TRL 6">TRL 6 – Open Water Testing</option>
-              <option value="TRL 7">TRL 7 – Demonstration</option>
-              <option value="TRL 8">TRL 8 – Manufacturing Issues Solved</option>
-              <option value="TRL 9">TRL 9 – Full Commercialization</option>
+            <label class="form-label">Evaluation Report</label>
+            <select id="f-evalReport" class="form-select">
+              <option value="">-- Wala / Di Tukoy --</option>
+              <option value="Available – Drafted by the SUC">Available – Drafted by the SUC</option>
+              <option value="Available – Drafted by IP Firm">Available – Drafted by IP Firm</option>
+              <option value="Not Yet Available">Not Yet Available</option>
             </select>
           </div>
-          <div class="bg-surface-container-low rounded-xl p-4 flex flex-col justify-center">
-            <div class="flex gap-1 mb-2" id="trlBar">
-              <div class="h-2.5 flex-1 rounded-full bg-outline-variant transition-all"></div>
-              <div class="h-2.5 flex-1 rounded-full bg-outline-variant transition-all"></div>
-              <div class="h-2.5 flex-1 rounded-full bg-outline-variant transition-all"></div>
-              <div class="h-2.5 flex-1 rounded-full bg-outline-variant transition-all"></div>
-              <div class="h-2.5 flex-1 rounded-full bg-outline-variant transition-all"></div>
-              <div class="h-2.5 flex-1 rounded-full bg-outline-variant transition-all"></div>
-              <div class="h-2.5 flex-1 rounded-full bg-outline-variant transition-all"></div>
-              <div class="h-2.5 flex-1 rounded-full bg-outline-variant transition-all"></div>
-              <div class="h-2.5 flex-1 rounded-full bg-outline-variant transition-all"></div>
-            </div>
-            <p class="text-[11px] text-on-surface-variant" id="trlDesc">Select a TRL to see its description.</p>
+          <div>
+            <label class="form-label">FTO Report</label>
+            <select id="f-ftoReport" class="form-select">
+              <option value="">-- Wala / Di Tukoy --</option>
+              <option value="Available – Drafted by the SUC">Available – Drafted by the SUC</option>
+              <option value="Available – Drafted by IP Firm">Available – Drafted by IP Firm</option>
+              <option value="Not Yet Available">Not Yet Available</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Commercialization Plan</label>
+            <select id="f-commPlan" class="form-select">
+              <option value="">-- Wala / Di Tukoy --</option>
+              <option value="Available – Drafted by the SUC">Available – Drafted by the SUC</option>
+              <option value="Available – Drafted by IP Firm">Available – Drafted by IP Firm</option>
+              <option value="Not Yet Available">Not Yet Available</option>
+            </select>
           </div>
         </div>
 
-        <div class="section-heading mt-2"><i class="ti ti-trending-up text-[13px]"></i> Investment Readiness Level (IRL)</div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="form-label">IRL Level</label>
-            <select id="f-irl" class="form-select" onchange="updateReadinessBar('irl')">
-              <option value="">Select IRL…</option>
-              <option value="IRL 1">IRL 1 – Problem-Solution Fit</option>
-              <option value="IRL 2">IRL 2 – Market Size</option>
-              <option value="IRL 3">IRL 3 – First Pass Business Model</option>
-              <option value="IRL 4">IRL 4 – Prototype MVP</option>
-              <option value="IRL 5">IRL 5 – Product-Market Fit</option>
-              <option value="IRL 6">IRL 6 – Validated Revenue Model</option>
-              <option value="IRL 7">IRL 7 – Second Prototype</option>
-              <option value="IRL 8">IRL 8 – Validated Market and Partner</option>
-              <option value="IRL 9">IRL 9 – Validated Metrics</option>
-            </select>
-          </div>
-          <div class="bg-surface-container-low rounded-xl p-4 flex flex-col justify-center">
-            <div class="flex gap-1 mb-2" id="irlBar">
-              <div class="h-2.5 flex-1 rounded-full bg-outline-variant transition-all"></div>
-              <div class="h-2.5 flex-1 rounded-full bg-outline-variant transition-all"></div>
-              <div class="h-2.5 flex-1 rounded-full bg-outline-variant transition-all"></div>
-              <div class="h-2.5 flex-1 rounded-full bg-outline-variant transition-all"></div>
-              <div class="h-2.5 flex-1 rounded-full bg-outline-variant transition-all"></div>
-              <div class="h-2.5 flex-1 rounded-full bg-outline-variant transition-all"></div>
-              <div class="h-2.5 flex-1 rounded-full bg-outline-variant transition-all"></div>
-              <div class="h-2.5 flex-1 rounded-full bg-outline-variant transition-all"></div>
-              <div class="h-2.5 flex-1 rounded-full bg-outline-variant transition-all"></div>
-            </div>
-            <p class="text-[11px] text-on-surface-variant" id="irlDesc">Select an IRL to see its description.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- TAB 3: IP Records -->
-      <div class="tab-content" id="tab-3">
-        <div class="section-heading"><i class="ti ti-shield text-[13px]"></i> Intellectual Property Records</div>
-        <div class="bg-purple-50 border border-purple-100 rounded-xl px-4 py-3 mb-4 text-[12px] text-purple-700 flex items-start gap-2">
-          <i class="ti ti-shield text-[14px] mt-0.5 flex-shrink-0"></i>
-          Add all IP records associated with this technology. Leave empty if none exist.
-        </div>
+        <div class="section-heading"><i class="ti ti-certificate"></i> Intellectual Property (IP) Records</div>
         <div id="ipRows" class="space-y-3 mb-4"></div>
-        <button type="button" onclick="addIP()" class="btn-secondary" style="font-size:12px;padding:7px 14px;">
-          <span class="material-symbols-outlined text-[14px]">add</span> Add IP Record
+        <button type="button" onclick="addIPRow()" class="btn-secondary text-[12px] py-1.5 px-3">
+          <span class="material-symbols-outlined text-[14px]">add</span> Dagdag IP Record
         </button>
       </div>
 
-      <!-- TAB 4: Reports & Plans -->
-      <div class="tab-content" id="tab-4">
-        <div class="section-heading"><i class="ti ti-file-analytics text-[13px]"></i> Reports & Plans Availability</div>
-        <div class="space-y-5">
-          <div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant">
-            <div class="flex items-center gap-2 mb-3">
-              <div class="w-7 h-7 rounded-lg bg-blue-100 flex items-center justify-center">
-                <i class="ti ti-file-analytics text-primary" style="font-size:14px;"></i>
-              </div>
-              <span class="text-[13px] font-semibold text-on-surface">Technology / IP Evaluation Report</span>
-            </div>
-            <select id="f-evalReport" class="form-select" style="max-width:380px;">
-              <option value="">Select availability…</option>
-              <option>Available – Drafted by the SUC</option>
-              <option>Available – Drafted by IP Firm</option>
-              <option>Not Yet Available</option>
-            </select>
-          </div>
-          <div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant">
-            <div class="flex items-center gap-2 mb-3">
-              <div class="w-7 h-7 rounded-lg bg-green-100 flex items-center justify-center">
-                <i class="ti ti-license text-green-700" style="font-size:14px;"></i>
-              </div>
-              <span class="text-[13px] font-semibold text-on-surface">Freedom to Operate (FTO) Report</span>
-            </div>
-            <select id="f-ftoReport" class="form-select" style="max-width:380px;">
-              <option value="">Select availability…</option>
-              <option>Available – Drafted by the SUC</option>
-              <option>Available – Drafted by IP Firm</option>
-              <option>Not Yet Available</option>
-            </select>
-          </div>
-          <div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant">
-            <div class="flex items-center gap-2 mb-3">
-              <div class="w-7 h-7 rounded-lg bg-orange-100 flex items-center justify-center">
-                <i class="ti ti-chart-dots text-orange-700" style="font-size:14px;"></i>
-              </div>
-              <span class="text-[13px] font-semibold text-on-surface">Technology / IP Commercialization Plan</span>
-            </div>
-            <select id="f-commPlan" class="form-select" style="max-width:380px;">
-              <option value="">Select availability…</option>
-              <option>Available – Drafted by the SUC</option>
-              <option>Available – Drafted by IP Firm</option>
-              <option>Not Yet Available</option>
-            </select>
-          </div>
+      <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-2 bg-white sticky bottom-0">
+        <div class="flex gap-1.5" id="formStepDots">
+          <span class="w-2 h-2 rounded-full bg-primary" data-dot="0"></span>
+          <span class="w-2 h-2 rounded-full bg-slate-200" data-dot="1"></span>
+          <span class="w-2 h-2 rounded-full bg-slate-200" data-dot="2"></span>
+          <span class="w-2 h-2 rounded-full bg-slate-200" data-dot="3"></span>
+        </div>
+        <div class="flex gap-2">
+          <button type="button" onclick="closeModal()" class="btn-secondary">Cancel</button>
+          <button type="submit" id="btnSave" class="btn-primary">
+            <span class="material-symbols-outlined text-[15px]">save</span> I-save ang Teknolohiya
+          </button>
         </div>
       </div>
-
-    </div>
-
-    <!-- Modal Footer -->
-    <div class="px-6 py-4 border-t border-slate-100 flex items-center justify-between gap-3 flex-shrink-0 bg-surface-container-lowest rounded-b-2xl">
-      <div class="flex gap-2">
-        <button onclick="prevTab()" class="btn-secondary" id="btnPrev" style="display:none;">
-          <i class="ti ti-arrow-left text-[13px]"></i> Back
-        </button>
-        <button onclick="nextTab()" class="btn-secondary" id="btnNext">
-          Next <i class="ti ti-arrow-right text-[13px]"></i>
-        </button>
-      </div>
-      <div class="flex gap-2">
-        <button onclick="closeModal()" class="btn-secondary">Cancel</button>
-        <button onclick="saveRecord()" class="btn-primary" id="btnSave">
-          <span class="material-symbols-outlined text-[15px]">save</span> Save Technology
-        </button>
-      </div>
-    </div>
+    </form>
   </div>
 </div>
 
-<!-- ═══════════════ VIEW MODAL ═══════════════ -->
 <div class="modal-overlay" id="viewModal">
-  <div class="relative w-full max-w-3xl rounded-2xl bg-white shadow-2xl flex flex-col" style="max-height:92vh;animation:modalIn .22s ease;">
+  <div class="relative w-full max-w-3xl rounded-2xl bg-white shadow-2xl flex flex-col" style="max-height:92vh;animation:modalIn .2s ease;">
     <div class="px-6 py-4 border-b border-slate-100 flex-shrink-0">
       <div class="flex items-start justify-between gap-3">
         <div class="flex-1 min-w-0">
@@ -659,569 +510,416 @@ body{font-family:'Inter',sans-serif;}
   </div>
 </div>
 
-<!-- ═══════════════ CONFIRM DELETE ═══════════════ -->
 <div id="confirmModal">
-  <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full mx-4" style="animation:modalIn .2s ease;">
-    <div class="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center mb-4">
-      <i class="ti ti-trash text-red-500" style="font-size:22px;"></i>
+  <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full mx-4 text-center" style="animation:modalIn .2s ease;">
+    <div class="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-3">
+      <span class="material-symbols-outlined text-[24px]">delete_forever</span>
     </div>
-    <h3 class="text-[16px] font-bold text-on-surface mb-1">Delete Technology?</h3>
-    <p class="text-[13px] text-on-surface-variant mb-6">This action cannot be undone. The record will be permanently removed.</p>
-    <div class="flex gap-3 justify-end">
-      <button onclick="closeConfirm()" class="btn-secondary">Cancel</button>
-      <button onclick="confirmDelete()" class="btn-danger" id="btnConfirmDelete">
-        <i class="ti ti-trash text-[14px]"></i> Delete
-      </button>
+    <h4 class="text-sm font-bold text-on-surface mb-1">Sigurado ka ba na buburahin ito?</h4>
+    <p class="text-[12px] text-on-surface-variant mb-4">Ang aksyong ito ay permanenteng aalisin ang talaan mula sa database at hindi na maibabalik.</p>
+    <div class="flex justify-center gap-2">
+      <button onclick="closeConfirm()" class="btn-secondary py-1.5 px-4 text-[12px]">I-cancel</button>
+      <button id="btnConfirmDelete" onclick="confirmDelete()" class="btn-danger bg-red-600 text-white py-1.5 px-4 text-[12px]" style="border-color:#dc2626;">Oo, Burahin</button>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════ TOAST ═══════════════ -->
-<div id="toast" class="bg-on-surface text-white rounded-xl px-4 py-3 text-[13px] font-semibold shadow-2xl flex items-center gap-2 min-w-[220px]">
-  <span class="material-symbols-outlined text-[16px]" id="toastIcon">check_circle</span>
-  <span id="toastMsg">Saved successfully</span>
+<div id="toast" class="bg-inverse-surface text-white px-4 py-2.5 rounded-xl shadow-lg text-[13px]">
+  <span id="toastIcon" class="material-symbols-outlined text-[18px] text-green-400">check_circle</span>
+  <span id="toastMsg">Matagumpay na naisagawa!</span>
 </div>
 
 <script>
-/* ══════════════════════════════════════════
-   CONFIG — swap BASE_URL to your API endpoint
-══════════════════════════════════════════ */
-const BASE_URL = '/api/inventory-of-technology'; // Set to '' to use localStorage fallback
-const USE_API  = false; // ← flip to true when backend is ready
-
-/* ══════════════════════════════════════════
-   IN-MEMORY STORE (fallback when USE_API=false)
-══════════════════════════════════════════ */
+// Naka-point sa absolute localhost URL ng iyong Express API
+const API_BASE = 'http://localhost:5000/api/inventory-of-technology';
 let records = [];
 let editingId = null;
-let deleteId  = null;
 let viewingId = null;
-let currentPage = 1;
-const PAGE_SIZE = 10;
-let sortKey = 'name';
-let sortDir = 1;
-let filterSector = '';
-let searchQuery  = '';
+let deleteId = null;
 let currentTabIdx = 0;
-let isDirty = false;
-let researcherCount = 0;
-let ipCount = 0;
 
-/* ══════════════════════════════════════════
-   CLOCK
-══════════════════════════════════════════ */
+let searchQuery = "";
+let filterSector = "";
+
+const SECTOR_BADGE={'Agriculture and Horticulture':'badge-green','Biotechnology':'badge-teal','Chemicals':'badge-orange','Electrical and Electronic Device/Service':'badge-blue','Food and Beverage Products':'badge-orange','Food Processing':'badge-orange','Clean Technology and Energy':'badge-teal','ICT and Software':'badge-blue','Medical Devices and Digital Healthcare':'badge-purple','Metals and Engineering':'badge-gray','Pharmaceuticals':'badge-purple'};
+const MODE_BADGE={'Commercialization':'badge-green','Extension':'badge-blue','Pre-Commercialization':'badge-orange','Public Good':'badge-teal'};
+const STATUS_BADGE={'Partially Deployed – Limited Use':'badge-orange','Pilot Deployment/Testing Stage':'badge-purple'};
+const TRL_DESC=['','Basic Principles Observed','Technology Concept Formulated','Experimental Proof of Concept','Technology Validated in Lab','Validated in Relevant Environment','Demonstrated in Relevant Environment','System Prototype Demonstration','System Complete and Qualified','Actual System Proven Operational'];
+const IRL_DESC=['','Peer Review / Pitch','Market Interest Validated','Business Model Developed','Prototype Commercial Potential','Customer Validation Done','Scalable Model Defined','Strategic Partners Engaged','Financial Proof Realized','Widespread Launch Executed'];
+
+/* ── CLOCK ── */
 function updateClock(){
   const d=new Date(),h=d.getHours()%12||12,m=d.getMinutes(),s=d.getSeconds(),ap=d.getHours()>=12?'PM':'AM';
   document.getElementById('liveClock').textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')} ${ap}`;
 }
 updateClock(); setInterval(updateClock,1000);
 
-/* ══════════════════════════════════════════
-   API LAYER
-══════════════════════════════════════════ */
-async function apiGet(params={}){
-  if(!USE_API) return localGet(params);
-  const qs = new URLSearchParams({...params, page:currentPage, limit:PAGE_SIZE, sortKey, sortDir:sortDir>0?'asc':'desc',...(filterSector?{sector:filterSector}:{}),...(searchQuery?{search:searchQuery}:{})}).toString();
-  const r = await fetch(`${BASE_URL}?${qs}`);
-  return r.json();
-}
-async function apiPost(data){
-  if(!USE_API) return localPost(data);
-  const r = await fetch(BASE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
-  const json = await r.json();
-  if(!r.ok) throw json;
-  return json;
-}
-async function apiPut(id,data){
-  if(!USE_API) return localPut(id,data);
-  const r = await fetch(`${BASE_URL}/${id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
-  const json = await r.json();
-  if(!r.ok) throw json;
-  return json;
-}
-async function apiDelete(id){
-  if(!USE_API) return localDelete(id);
-  const r = await fetch(`${BASE_URL}/${id}`,{method:'DELETE'});
-  if(!r.ok) throw await r.json();
-}
-
-/* ── Local fallback ── */
-function localGet(){
-  let data=[...records];
-  if(searchQuery) data=data.filter(r=>
-    r.name?.toLowerCase().includes(searchQuery)||
-    (r.sector||'').toLowerCase().includes(searchQuery)||
-    (r.description||'').toLowerCase().includes(searchQuery)||
-    (r.researchers||[]).some(x=>(x.name||'').toLowerCase().includes(searchQuery))
-  );
-  if(filterSector) data=data.filter(r=>r.sector===filterSector);
-  data.sort((a,b)=>{
-    const av=(a[sortKey]||'').toString().toLowerCase();
-    const bv=(b[sortKey]||'').toString().toLowerCase();
-    return av<bv?-sortDir:av>bv?sortDir:0;
-  });
-  const total=data.length,totalPages=Math.max(1,Math.ceil(total/PAGE_SIZE)),start=(currentPage-1)*PAGE_SIZE;
-  return {
-    data:data.slice(start,start+PAGE_SIZE),total,totalPages,
-    statCommercialized:records.filter(r=>r.mode==='Commercialization').length,
-    statRegistered:records.filter(r=>(r.ipRecords||[]).some(ip=>ip.regStatus==='Registered')).length,
-    statPilot:records.filter(r=>r.deployStatus==='Pilot Deployment/Testing Stage').length
-  };
-}
-function localPost(data){
-  const doc={...data,_id:'local-'+Date.now(),createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
-  records.push(doc); return doc;
-}
-function localPut(id,data){
-  const i=records.findIndex(r=>r._id===id);
-  if(i<0) throw {error:'Not found'};
-  records[i]={...records[i],...data,updatedAt:new Date().toISOString()};
-  return records[i];
-}
-function localDelete(id){
-  const i=records.findIndex(r=>r._id===id);
-  if(i<0) throw {error:'Not found'};
-  records.splice(i,1);
-}
-
-/* ══════════════════════════════════════════
-   RENDER TABLE
-══════════════════════════════════════════ */
-const SECTOR_BADGE={'Agriculture and Horticulture':'badge-green','Biotechnology':'badge-teal','Chemicals':'badge-orange','Electrical and Electronic Device/Service':'badge-blue','Food and Beverage Products':'badge-orange','Food Processing':'badge-orange','Furniture and GHD':'badge-gray','Clean Technology and Energy':'badge-teal','ICT and Software':'badge-blue','Medical Devices and Digital Healthcare':'badge-purple','Metals and Engineering':'badge-gray','Pharmaceuticals':'badge-purple'};
-const MODE_BADGE={'Commercialization':'badge-green','Extension':'badge-blue','Pre-Commercialization':'badge-orange','Public Good':'badge-teal'};
-const STATUS_BADGE={'Partially Deployed – Limited Use':'badge-orange','Pilot Deployment/Testing Stage':'badge-purple'};
-const SHORT_SECTOR={'Agriculture and Horticulture':'Agriculture','Electrical and Electronic Device/Service':'Electrical/Electronic','Medical Devices and Digital Healthcare':'Medical Devices','Clean Technology and Energy':'Clean Tech & Energy','Food and Beverage Products':'Food & Beverage'};
-
-async function renderTable(){
-  document.getElementById('loadingDot').classList.remove('hidden');
-  try {
-    const res = await apiGet();
-    const {data,total,totalPages,statCommercialized,statRegistered,statPilot} = res;
-
-    document.getElementById('statTotal').textContent=total??records.length;
-    document.getElementById('statCommercialized').textContent=statCommercialized??0;
-    document.getElementById('statRegistered').textContent=statRegistered??0;
-    document.getElementById('statPilot').textContent=statPilot??0;
-
-    const start=(currentPage-1)*PAGE_SIZE;
-    document.getElementById('tableSubtitle').textContent=
-      total===0?'No records match your filters.':
-      `Showing ${start+1}–${Math.min(start+PAGE_SIZE,total)} of ${total} record${total!==1?'s':''}`;
-    document.getElementById('paginationInfo').textContent=totalPages>1?`Page ${currentPage} of ${totalPages}`:'';
-
-    const tbody=document.getElementById('tableBody');
-    if(!data.length){
-      tbody.innerHTML=`<tr><td colspan="8"><div class="empty-state flex flex-col items-center justify-center gap-3 py-16">
-        <div class="w-14 h-14 rounded-xl bg-surface-container-low flex items-center justify-center">
-          <i class="ti ti-device-desktop-analytics" style="font-size:24px;color:#0058be;"></i>
-        </div>
-        <div class="text-center">
-          <h4 class="text-[14px] font-semibold text-on-surface">${searchQuery||filterSector?'No results found':'No technologies recorded yet'}</h4>
-          <p class="text-[12px] text-on-surface-variant mt-1">${searchQuery||filterSector?'Try adjusting your search or filters.':'Click "Add Technology" to log your first entry.'}</p>
-        </div>
-        ${!(searchQuery||filterSector)?`<button onclick="openAddModal()" class="btn-primary mt-1" style="font-size:12px;padding:7px 16px;"><span class="material-symbols-outlined text-[14px]">add</span> Add Technology</button>`:''}
-      </div></td></tr>`;
-    } else {
-      tbody.innerHTML=data.map(r=>{
-        const lead=(r.researchers&&r.researchers[0])?r.researchers[0].name:'—';
-        const sB=SECTOR_BADGE[r.sector]||'badge-gray';
-        const mB=MODE_BADGE[r.mode]||'badge-gray';
-        const stB=STATUS_BADGE[r.deployStatus]||'badge-gray';
-        const shortSt=r.deployStatus==='Partially Deployed – Limited Use'?'Partially Deployed':(r.deployStatus||'—');
-        const trlN=r.trl?r.trl.replace(/[^0-9]/g,''):'';
-        const irlN=r.irl?r.irl.replace(/[^0-9]/g,''):'';
-        return `<tr class="tbl-row">
-          <td class="tbl-cell font-semibold" style="max-width:220px;">
-            <div class="truncate" title="${esc(r.name)}">${esc(r.name)}</div>
-          </td>
-          <td class="tbl-cell"><span class="badge ${sB}">${esc(SHORT_SECTOR[r.sector]||r.sector||'—')}</span></td>
-          <td class="tbl-cell"><span class="badge ${mB}">${esc(r.mode||'—')}</span></td>
-          <td class="tbl-cell text-center">${trlN?`<span class="badge badge-blue" style="font-size:10px;">TRL ${trlN}</span>`:'<span class="text-on-surface-variant text-[12px]">—</span>'}</td>
-          <td class="tbl-cell text-center">${irlN?`<span class="badge badge-purple" style="font-size:10px;">IRL ${irlN}</span>`:'<span class="text-on-surface-variant text-[12px]">—</span>'}</td>
-          <td class="tbl-cell"><span class="badge ${stB}" style="max-width:130px;white-space:normal;line-height:1.3;text-align:center;">${esc(shortSt)}</span></td>
-          <td class="tbl-cell text-on-surface-variant text-[12px]">${esc(lead)}</td>
-          <td class="tbl-cell">
-            <div class="flex gap-1">
-              <button onclick="viewRecord('${r._id}')" title="View" class="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-blue-50 hover:border-blue-200 text-on-surface-variant hover:text-primary transition-all">
-                <i class="ti ti-eye" style="font-size:13px;"></i>
-              </button>
-              <button onclick="editRecord('${r._id}')" title="Edit" class="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-amber-50 hover:border-amber-200 text-on-surface-variant hover:text-amber-600 transition-all">
-                <i class="ti ti-pencil" style="font-size:13px;"></i>
-              </button>
-              <button onclick="deleteRecord('${r._id}')" title="Delete" class="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-red-50 hover:border-red-200 text-on-surface-variant hover:text-red-500 transition-all">
-                <i class="ti ti-trash" style="font-size:13px;"></i>
-              </button>
-            </div>
-          </td>
-        </tr>`;
-      }).join('');
-    }
-    renderPagination(totalPages||1);
-  } catch(e){ showToast('Failed to load records.','error'); console.error(e); }
-  finally{ document.getElementById('loadingDot').classList.add('hidden'); }
-}
-
-function renderPagination(total){
-  const c=document.getElementById('paginationBtns');
-  if(total<=1){ c.innerHTML=''; return; }
-  let h=`<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
-  for(let i=1;i<=total;i++){
-    if(total>7&&i>2&&i<total-1&&Math.abs(i-currentPage)>1){
-      if(i===3||i===total-2) h+=`<span class="page-btn" style="cursor:default;border:none;font-size:14px;">…</span>`;
-      continue;
-    }
-    h+=`<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+/* ── Init readiness bars (9 segments each) ── */
+function buildBar(id){
+  const el=document.getElementById(id);
+  el.innerHTML='';
+  for(let i=0;i<9;i++){
+    const seg=document.createElement('div');
+    seg.className='h-2 flex-1 rounded-full bg-slate-200 transition-all';
+    el.appendChild(seg);
   }
-  h+=`<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===total?'disabled':''}>›</button>`;
-  c.innerHTML=h;
 }
-
-function goPage(p){ currentPage=p; renderTable(); }
-function handleSearch(v){ searchQuery=v.toLowerCase().trim(); currentPage=1; renderTable(); }
-function sortBy(k){ if(sortKey===k) sortDir*=-1; else{sortKey=k;sortDir=1;} renderTable(); }
-
-/* ══════════════════════════════════════════
-   FILTER DROPDOWN
-══════════════════════════════════════════ */
-function toggleDropdown(id,e){
-  e&&e.stopPropagation();
-  document.getElementById(id).classList.toggle('hidden');
-}
-function setSectorFilter(val,btn){
-  filterSector=val;
-  document.getElementById('sectorFilterLabel').textContent=val||'All Sectors';
-  document.querySelectorAll('#sectorDD .filter-opt').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('sectorDD').classList.add('hidden');
-  currentPage=1; renderTable();
-}
-document.addEventListener('click',()=>{ document.getElementById('sectorDD').classList.add('hidden'); });
-
-/* ══════════════════════════════════════════
-   MODAL OPEN/CLOSE
-══════════════════════════════════════════ */
-function openAddModal(){
-  editingId=null; isDirty=false; currentTabIdx=0;
-  document.getElementById('modalTitle').textContent='Add Technology';
-  resetForm(); applyTab(0);
-  document.getElementById('techModal').classList.add('open');
-}
-function closeModal(){
-  if(isDirty && !confirm('You have unsaved changes. Discard them?')) return;
-  document.getElementById('techModal').classList.remove('open');
-  editingId=null; isDirty=false;
-}
-function closeViewModal(){
-  document.getElementById('viewModal').classList.remove('open');
-  viewingId=null;
-}
-
-/* ── Mark dirty on any input ── */
-document.getElementById('techModal').addEventListener('input',()=>{ isDirty=true; });
-document.getElementById('techModal').addEventListener('change',()=>{ isDirty=true; });
-
-/* ══════════════════════════════════════════
-   TABS
-══════════════════════════════════════════ */
-function switchTab(idx){ currentTabIdx=idx; applyTab(idx); }
-function applyTab(idx){
-  document.querySelectorAll('.tab-content').forEach((el,i)=>el.classList.toggle('active',i===idx));
-  document.querySelectorAll('.tab-btn').forEach((el,i)=>el.classList.toggle('active',i===idx));
-  for(let i=0;i<5;i++){
-    const d=document.getElementById('dot-'+i);
-    d.classList.remove('active','done');
-    if(i<idx) d.classList.add('done');
-    else if(i===idx) d.classList.add('active');
-  }
-  document.getElementById('stepLabel').textContent=`Step ${idx+1} of 5`;
-  document.getElementById('btnPrev').style.display=idx>0?'':'none';
-  document.getElementById('btnNext').style.display=idx<4?'':'none';
-}
-function nextTab(){ if(currentTabIdx<4){ currentTabIdx++; applyTab(currentTabIdx); } }
-function prevTab(){ if(currentTabIdx>0){ currentTabIdx--; applyTab(currentTabIdx); } }
-
-/* ══════════════════════════════════════════
-   READINESS BARS
-══════════════════════════════════════════ */
-const TRL_DESC=['','Basic research — fundamental principles observed.','Technology Formulation — concept and potential applications identified.','Applied Research — proof-of-concept experiments conducted.','Functional/Ugly Prototype — early prototype built in a lab.','Large Prototype — validated in a relevant environment.','Open Water Testing — demonstrated in relevant environment.','Demonstration — full-scale prototype in operational environment.','Manufacturing Issues Solved — ready for production.','Full Commercialization — proven and commercially available.'];
-const IRL_DESC=['','Problem-Solution Fit — initial hypothesis validated.','Market Size — target market identified.','First Pass Business Model — preliminary model drafted.','Prototype MVP — minimal viable product developed.','Product-Market Fit — validated with real users.','Validated Revenue Model — revenue streams confirmed.','Second Prototype — refined with market feedback.','Validated Market and Partner — confirmed.','Validated Metrics — KPIs proven.'];
+buildBar('trlBar'); buildBar('irlBar');
 
 function updateReadinessBar(type){
   const sel=document.getElementById('f-'+type);
   const n=parseInt((sel.value||'').replace(/[^0-9]/g,''))||0;
   const color=type==='trl'?'#0058be':'#6b38d4';
-  const bar=document.getElementById(type+'Bar');
-  bar.querySelectorAll('div').forEach((d,i)=>{ d.style.background=i<n?color:'#e1e2ec'; });
-  document.getElementById(type+'Desc').textContent=(type==='trl'?TRL_DESC:IRL_DESC)[n]||'Select a level to see its description.';
+  document.getElementById(type+'Bar').querySelectorAll('div').forEach((d,i)=>{ d.style.background=i<n?color:'#e2e8f0'; });
 }
 
-/* ══════════════════════════════════════════
-   RESEARCHERS REPEATER
-══════════════════════════════════════════ */
-function addResearcher(data){
-  researcherCount++;
-  const idx=researcherCount;
-  const isLead=document.getElementById('researcherRows').children.length===0;
-  const row=document.createElement('div');
-  row.className='repeater-row'; row.id='res-'+idx;
-  row.innerHTML=`
-    <div class="flex items-center gap-2 mb-3">
-      <span class="badge ${isLead?'badge-blue':'badge-gray'}">${isLead?'★ Lead Researcher':'Member '+(document.getElementById('researcherRows').children.length)}</span>
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-      <div><label class="form-label">Name <span class="text-red-500">*</span></label>
-        <input type="text" class="form-input r-name" placeholder="Full name" value="${esc(data?.name||'')}"/></div>
-      <div><label class="form-label">Contact Number</label>
-        <input type="text" class="form-input r-contact" placeholder="+63 9XX XXX XXXX" value="${esc(data?.contact||'')}"/></div>
-      <div><label class="form-label">Email Address</label>
-        <input type="email" class="form-input r-email" placeholder="email@university.edu.ph" value="${esc(data?.email||'')}"/></div>
-    </div>
-    ${!isLead?`<button class="rm-btn" onclick="removeRow('res-${idx}')" title="Remove"><i class="ti ti-x" style="font-size:12px;"></i></button>`:''}
-  `;
-  document.getElementById('researcherRows').appendChild(row);
-}
-function initResearchers(){ researcherCount=0; document.getElementById('researcherRows').innerHTML=''; addResearcher(); }
-
-/* ══════════════════════════════════════════
-   IP REPEATER
-══════════════════════════════════════════ */
-function addIP(data){
-  ipCount++;
-  const idx=ipCount;
-  const num=document.getElementById('ipRows').children.length+1;
-  const row=document.createElement('div');
-  row.className='repeater-row'; row.id='ip-'+idx;
-  const tv=data?.type||'', rv=data?.regNum||'', sv=data?.regStatus||'';
-  row.innerHTML=`
-    <div class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-3">IP Record #${num}</div>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-      <div><label class="form-label">Type of IP <span class="text-red-500">*</span></label>
-        <select class="form-select ip-type">
-          <option value="">Select type…</option>
-          ${['Patent/Invention','Utility Model','Industrial Design','Trademark','Copyright','Trade Secret'].map(t=>`<option ${tv===t?'selected':''}>${t}</option>`).join('')}
-        </select></div>
-      <div><label class="form-label">Registration Number</label>
-        <input type="text" class="form-input ip-regnum" placeholder="e.g. PH-1-2024-00123" value="${esc(rv)}"/></div>
-      <div><label class="form-label">Registration Status</label>
-        <select class="form-select ip-regstatus">
-          <option value="">Select status…</option>
-          ${['Registered','Ongoing Registration','Expired Protection'].map(s=>`<option ${sv===s?'selected':''}>${s}</option>`).join('')}
-        </select></div>
-    </div>
-    <button class="rm-btn" onclick="removeRow('ip-${idx}')" title="Remove"><i class="ti ti-x" style="font-size:12px;"></i></button>
-  `;
-  document.getElementById('ipRows').appendChild(row);
-}
-function initIP(){ ipCount=0; document.getElementById('ipRows').innerHTML=''; }
-function removeRow(id){ const el=document.getElementById(id); if(el) el.remove(); }
-
-/* ══════════════════════════════════════════
-   DYNAMIC FIELDS
-══════════════════════════════════════════ */
-function toggleFundingSpecify(){
-  document.getElementById('fundingSpecifyWrap').classList.toggle('hidden', document.getElementById('f-funding').value!=='Other GFA');
-}
-function toggleAdopterSpecify(){
-  const hasOther=Array.from(document.querySelectorAll('.adopter-check')).some(c=>c.value==='Other'&&c.checked);
-  document.getElementById('adopterSpecifyWrap').classList.toggle('hidden',!hasOther);
-}
-
-/* ══════════════════════════════════════════
-   FORM RESET / POPULATE
-══════════════════════════════════════════ */
-const FIELD_IDS=['f-name','f-sector','f-mode','f-description','f-deployStatus','f-currentDev','f-funding','f-fundingSpecify','f-adopterSpecify','f-trl','f-irl','f-evalReport','f-ftoReport','f-commPlan'];
-
-function resetForm(){
-  FIELD_IDS.forEach(id=>{ const el=document.getElementById(id); if(el){el.value='';el.classList.remove('err');} });
-  document.querySelectorAll('.err-msg').forEach(e=>e.classList.remove('show'));
-  document.querySelectorAll('.adopter-check').forEach(c=>c.checked=false);
-  document.getElementById('adopterSpecifyWrap').classList.add('hidden');
-  document.getElementById('fundingSpecifyWrap').classList.add('hidden');
-  ['trl','irl'].forEach(t=>{ updateReadinessBar(t);
-    const d=document.getElementById(t+'Desc'); if(d) d.textContent=`Select a ${t.toUpperCase()} to see its description.`;
+document.addEventListener('DOMContentLoaded', () => {
+  fetchRecords();
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape') {
+      if(document.getElementById('confirmModal').classList.contains('open')) closeConfirm();
+      else if(document.getElementById('viewModal').classList.contains('open')) closeViewModal();
+      else closeModal();
+    }
   });
-  initResearchers(); initIP();
+  document.addEventListener('click', () => document.getElementById('sectorDD').classList.add('hidden'));
+});
+
+/* ── FETCH ── */
+async function fetchRecords() {
+  try {
+    const res = await fetch(API_BASE);
+    if(!res.ok) throw new Error('May error sa koneksyon sa server.');
+    records = await res.json();
+    renderTable();
+    calculateStats();
+  } catch(err) {
+    showToast(err.message, 'error');
+    document.getElementById('tableBody').innerHTML = `<tr><td colspan="7" class="py-10 text-center text-[13px] text-red-500">Hindi makonekta sa database. Subukan muli.</td></tr>`;
+  }
 }
 
-function populateForm(r){
-  const set=(id,v)=>{ const el=document.getElementById(id); if(el) el.value=v||''; };
-  set('f-name',r.name); set('f-sector',r.sector); set('f-mode',r.mode);
-  set('f-description',r.description); set('f-deployStatus',r.deployStatus);
-  set('f-currentDev',r.currentDev); set('f-funding',r.funding);
-  set('f-fundingSpecify',r.fundingSpecify); set('f-adopterSpecify',r.adopterSpecify);
-  set('f-trl',r.trl); set('f-irl',r.irl);
-  set('f-evalReport',r.evalReport); set('f-ftoReport',r.ftoReport); set('f-commPlan',r.commPlan);
+/* ── RENDER TABLE ── */
+function renderTable() {
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
 
-  document.querySelectorAll('.adopter-check').forEach(c=>{ c.checked=!!(r.adopters&&r.adopters.includes(c.value)); });
-  toggleAdopterSpecify(); toggleFundingSpecify();
-  ['trl','irl'].forEach(t=>updateReadinessBar(t));
+  let filtered = records.filter(r => {
+    const q = searchQuery;
+    const matchesSearch = !q ||
+      r.name?.toLowerCase().includes(q) ||
+      r.sector?.toLowerCase().includes(q) ||
+      r.description?.toLowerCase().includes(q) ||
+      (r.researchers||[]).some(x=>(x.name||'').toLowerCase().includes(q));
+    const matchesSector = !filterSector || r.sector === filterSector;
+    return matchesSearch && matchesSector;
+  });
 
-  researcherCount=0; document.getElementById('researcherRows').innerHTML='';
-  (r.researchers?.length?r.researchers:[{}]).forEach(x=>addResearcher(x));
-  initIP(); (r.ipRecords||[]).forEach(x=>addIP(x));
+  document.getElementById('tableSubtitle').textContent =
+    filtered.length === records.length
+      ? `${records.length} record${records.length!==1?'s':''}`
+      : `Showing ${filtered.length} of ${records.length}`;
+
+  if(filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7">
+      <div class="flex flex-col items-center justify-center gap-2 py-14 text-center">
+        <div class="w-14 h-14 rounded-xl bg-surface-container-low flex items-center justify-center">
+          <i class="ti ti-device-desktop-analytics" style="font-size:24px;color:#0058be;"></i>
+        </div>
+        <h4 class="text-[14px] font-semibold text-on-surface">${searchQuery||filterSector?'Walang nakitang tugma':'Walang teknolohiya pa'}</h4>
+        <p class="text-[12px] text-on-surface-variant">${searchQuery||filterSector?'Subukan ibang search term o filter.':'I-click ang "Add Technology" para sa unang entry.'}</p>
+      </div>
+    </td></tr>`;
+    return;
+  }
+
+  filtered.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.className = 'tbl-row';
+    const sB = SECTOR_BADGE[r.sector]||'badge-gray';
+    const mB = MODE_BADGE[r.mode]||'badge-gray';
+    const stB = STATUS_BADGE[r.deployStatus]||'badge-gray';
+    tr.innerHTML = `
+      <td class="tbl-cell font-semibold" style="max-width:240px;">
+        <div class="truncate cursor-pointer hover:text-primary transition-colors" title="${escapeHTML(r.name)}" onclick="viewRecord('${r._id}')">${escapeHTML(r.name)}</div>
+      </td>
+      <td class="tbl-cell"><span class="badge ${sB}">${escapeHTML(r.sector||'—')}</span></td>
+      <td class="tbl-cell"><span class="badge ${mB}">${escapeHTML(r.mode||'—')}</span></td>
+      <td class="tbl-cell text-center">${r.trl?`<span class="badge badge-blue" style="font-size:10px;">${escapeHTML(r.trl)}</span>`:'<span class="text-on-surface-variant text-[12px]">—</span>'}</td>
+      <td class="tbl-cell text-center">${r.irl?`<span class="badge badge-purple" style="font-size:10px;">${escapeHTML(r.irl)}</span>`:'<span class="text-on-surface-variant text-[12px]">—</span>'}</td>
+      <td class="tbl-cell"><span class="badge ${stB}" style="max-width:140px;white-space:normal;line-height:1.3;">${escapeHTML(r.deployStatus || 'Not Deployed')}</span></td>
+      <td class="tbl-cell">
+        <div class="flex gap-1">
+          <button type="button" onclick="viewRecord('${r._id}')" title="View" class="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-blue-50 hover:border-blue-200 text-on-surface-variant hover:text-primary transition-all"><i class="ti ti-eye" style="font-size:13px;"></i></button>
+          <button type="button" onclick="editRecord('${r._id}')" title="Edit" class="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-amber-50 hover:border-amber-200 text-on-surface-variant hover:text-amber-600 transition-all"><i class="ti ti-pencil" style="font-size:13px;"></i></button>
+          <button type="button" onclick="deleteRecord('${r._id}')" title="Delete" class="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-red-50 hover:border-red-200 text-on-surface-variant hover:text-red-500 transition-all"><i class="ti ti-trash" style="font-size:13px;"></i></button>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
 }
 
-/* ══════════════════════════════════════════
-   COLLECT FORM
-══════════════════════════════════════════ */
-function collectForm(){
-  return {
-    name:   document.getElementById('f-name').value.trim(),
-    sector: document.getElementById('f-sector').value,
-    mode:   document.getElementById('f-mode').value,
-    description:  document.getElementById('f-description').value.trim(),
-    deployStatus: document.getElementById('f-deployStatus').value,
-    currentDev:   document.getElementById('f-currentDev').value.trim(),
-    adopters:     Array.from(document.querySelectorAll('.adopter-check:checked')).map(c=>c.value),
-    adopterSpecify: document.getElementById('f-adopterSpecify').value.trim(),
-    funding:        document.getElementById('f-funding').value,
-    fundingSpecify: document.getElementById('f-fundingSpecify').value.trim(),
-    trl: document.getElementById('f-trl').value,
-    irl: document.getElementById('f-irl').value,
-    evalReport: document.getElementById('f-evalReport').value,
-    ftoReport:  document.getElementById('f-ftoReport').value,
-    commPlan:   document.getElementById('f-commPlan').value,
-    researchers: Array.from(document.querySelectorAll('#researcherRows .repeater-row')).map(row=>({
-      name:    (row.querySelector('.r-name')?.value||'').trim(),
-      contact: (row.querySelector('.r-contact')?.value||'').trim(),
-      email:   (row.querySelector('.r-email')?.value||'').trim()
-    })).filter(r=>r.name),
-    ipRecords: Array.from(document.querySelectorAll('#ipRows .repeater-row')).map(row=>({
-      type:      row.querySelector('.ip-type')?.value||'',
-      regNum:    (row.querySelector('.ip-regnum')?.value||'').trim(),
-      regStatus: row.querySelector('.ip-regstatus')?.value||''
-    })).filter(r=>r.type)
-  };
+function calculateStats() {
+  document.getElementById('statTotal').textContent = records.length;
+  document.getElementById('statCommercialized').textContent = records.filter(x => x.mode === 'Commercialization').length;
+  document.getElementById('statPilot').textContent = records.filter(x => x.deployStatus === 'Pilot Deployment/Testing Stage').length;
+
+  let registeredCount = 0;
+  records.forEach(r => {
+    if(Array.isArray(r.ipRecords)) {
+      registeredCount += r.ipRecords.filter(ip => ip.regStatus === 'Registered').length;
+    }
+  });
+  document.getElementById('statRegistered').textContent = registeredCount;
 }
 
-/* ══════════════════════════════════════════
-   VALIDATE
-══════════════════════════════════════════ */
-function validateForm(data){
-  let ok=true;
-  const check=(id,errId,cond)=>{
-    const el=document.getElementById(id), er=document.getElementById(errId);
-    if(!cond){ el?.classList.add('err'); er?.classList.add('show'); ok=false; }
+/* ── ADD/EDIT MODAL ── */
+function openAddModal() {
+  editingId = null;
+  document.getElementById('modalTitle').textContent = 'Add New Technology';
+  document.getElementById('techForm').reset();
+  clearFormErrors();
+
+  document.getElementById('researcherRows').innerHTML = '';
+  document.getElementById('ipRows').innerHTML = '';
+  addResearcherRow();
+  addIPRow();
+  buildBar('trlBar'); buildBar('irlBar');
+
+  applyTab(0);
+  document.getElementById('techModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('techModal').classList.remove('open');
+}
+
+function clearFormErrors(){
+  document.querySelectorAll('.err-msg').forEach(e=>e.classList.remove('show'));
+  document.querySelectorAll('.form-input.err,.form-select.err,.form-textarea.err').forEach(e=>e.classList.remove('err'));
+}
+
+function validateForm(p){
+  let ok = true;
+  const mark = (id, errId, cond) => {
+    const el = document.getElementById(id), er = document.getElementById(errId);
+    if(!cond){ el?.classList.add('err'); er?.classList.add('show'); ok = false; }
     else { el?.classList.remove('err'); er?.classList.remove('show'); }
   };
-  check('f-name','err-name',!!data.name);
-  check('f-sector','err-sector',!!data.sector);
-  check('f-mode','err-mode',!!data.mode);
-  check('f-description','err-description',!!data.description);
-  if(!ok){ switchTab(0); showToast('Please fill in all required fields.','error'); }
+  mark('f-name','err-name', !!p.name);
+  mark('f-sector','err-sector', !!p.sector);
+  mark('f-mode','err-mode', !!p.mode);
+  mark('f-description','err-description', !!p.description);
+  if(!ok){ applyTab(0); showToast('Punan ang lahat ng required fields.', 'error'); }
   return ok;
 }
 
-/* ══════════════════════════════════════════
-   SAVE
-══════════════════════════════════════════ */
-async function saveRecord(){
-  const data=collectForm();
-  if(!validateForm(data)) return;
-  const btn=document.getElementById('btnSave');
-  btn.disabled=true; btn.innerHTML='<div class="spinner"></div> Saving…';
+/* ── SAVE (POST/PUT) ── */
+async function saveRecord(e) {
+  e.preventDefault();
+  clearFormErrors();
+
+  const researchers = [];
+  document.querySelectorAll('.researcher-item').forEach(row => {
+    const name = row.querySelector('.r-name').value.trim();
+    if (name) {
+      researchers.push({
+        name: name,
+        contact: row.querySelector('.r-contact').value.trim(),
+        email: row.querySelector('.r-email').value.trim()
+      });
+    }
+  });
+
+  const ipRecords = [];
+  document.querySelectorAll('.ip-item').forEach(row => {
+    const type = row.querySelector('.ip-type').value;
+    if (type) {
+      ipRecords.push({
+        type: type,
+        regNum: row.querySelector('.ip-regNum').value.trim(),
+        regStatus: row.querySelector('.ip-regStatus').value
+      });
+    }
+  });
+
+  const payload = {
+    name: document.getElementById('f-name').value.trim(),
+    sector: document.getElementById('f-sector').value,
+    mode: document.getElementById('f-mode').value,
+    description: document.getElementById('f-description').value.trim(),
+    deployStatus: document.getElementById('f-deployStatus').value,
+    currentDev: document.getElementById('f-currentDev').value.trim(),
+    googleDriveLink: document.getElementById('f-gdrive').value.trim(),
+    funding: document.getElementById('f-funding').value,
+    fundingSpecify: document.getElementById('f-fundingSpecify').value.trim(),
+    adopterSpecify: document.getElementById('f-adopterSpecify').value.trim(),
+    trl: document.getElementById('f-trl').value,
+    irl: document.getElementById('f-irl').value,
+    evalReport: document.getElementById('f-evalReport').value,
+    ftoReport: document.getElementById('f-ftoReport').value,
+    commPlan: document.getElementById('f-commPlan').value,
+    researchers,
+    ipRecords
+  };
+
+  if(!validateForm(payload)) return;
+
+  const btn = document.getElementById('btnSave');
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span> Sinesave...`;
+
   try {
-    if(editingId){ await apiPut(editingId,data); showToast('Technology updated successfully.'); }
-    else { await apiPost(data); showToast('Technology added successfully.'); }
-    isDirty=false; closeModal(); renderTable();
-  } catch(e){
-    const msgs=(e.errors||[e.error||'An error occurred.']).join(' ');
-    showToast(msgs,'error');
-  } finally { btn.disabled=false; btn.innerHTML='<span class="material-symbols-outlined text-[15px]">save</span> Save Technology'; }
+    const url = editingId ? `${API_BASE}/${editingId}` : API_BASE;
+    const method = editingId ? 'PUT' : 'POST';
+
+    const response = await fetch(url, {
+      method: method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+
+    // Sumalo ng error na ipinadala mula sa Mongoose validation
+    if(!response.ok) {
+      if (data.errors && Array.isArray(data.errors)) {
+        throw new Error(data.errors.join(' | '));
+      } else {
+        throw new Error(data.error || 'Nabigong i-save ang data.');
+      }
+    }
+
+    showToast(editingId ? 'Na-update na ang teknolohiya!' : 'Matagumpay na naidagdag ang bagong teknolohiya!');
+    closeModal();
+    fetchRecords();
+  } catch(err) {
+    showToast(err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<span class="material-symbols-outlined text-[15px]">save</span> I-save ang Teknolohiya`;
+  }
 }
 
-/* ══════════════════════════════════════════
-   CRUD
-══════════════════════════════════════════ */
-function editRecord(id){
-  const r=records.find(x=>x._id===id); if(!r) return;
-  editingId=id; isDirty=false;
-  document.getElementById('modalTitle').textContent='Edit Technology';
-  resetForm(); populateForm(r); currentTabIdx=0; applyTab(0);
+/* ── EDIT ── */
+function editRecord(id) {
+  const r = records.find(x => x._id === id);
+  if(!r) return;
+
+  editingId = id;
+  clearFormErrors();
+  document.getElementById('modalTitle').textContent = 'Edit Technology Record';
+
+  document.getElementById('f-name').value = r.name || '';
+  document.getElementById('f-sector').value = r.sector || '';
+  document.getElementById('f-mode').value = r.mode || '';
+  document.getElementById('f-description').value = r.description || '';
+  document.getElementById('f-deployStatus').value = r.deployStatus || '';
+  document.getElementById('f-currentDev').value = r.currentDev || '';
+  document.getElementById('f-funding').value = r.funding || '';
+  document.getElementById('f-fundingSpecify').value = r.fundingSpecify || '';
+  document.getElementById('f-adopterSpecify').value = r.adopterSpecify || '';
+  document.getElementById('f-gdrive').value = r.googleDriveLink || '';
+  document.getElementById('f-trl').value = r.trl || '';
+  document.getElementById('f-irl').value = r.irl || '';
+  document.getElementById('f-evalReport').value = r.evalReport || '';
+  document.getElementById('f-ftoReport').value = r.ftoReport || '';
+  document.getElementById('f-commPlan').value = r.commPlan || '';
+
+  buildBar('trlBar'); buildBar('irlBar');
+  updateReadinessBar('trl'); updateReadinessBar('irl');
+
+  const resContainer = document.getElementById('researcherRows');
+  resContainer.innerHTML = '';
+  if (r.researchers && r.researchers.length) {
+    r.researchers.forEach(x => addResearcherRow(x));
+  } else {
+    addResearcherRow();
+  }
+
+  const ipContainer = document.getElementById('ipRows');
+  ipContainer.innerHTML = '';
+  if (r.ipRecords && r.ipRecords.length) {
+    r.ipRecords.forEach(x => addIPRow(x));
+  } else {
+    addIPRow();
+  }
+
+  applyTab(0);
   document.getElementById('techModal').classList.add('open');
 }
-function deleteRecord(id){ deleteId=id; document.getElementById('confirmModal').classList.add('open'); }
-function closeConfirm(){ document.getElementById('confirmModal').classList.remove('open'); deleteId=null; }
-async function confirmDelete(){
-  const btn=document.getElementById('btnConfirmDelete');
-  btn.disabled=true; btn.innerHTML='<div class="spinner" style="border-top-color:#ef4444;border-color:rgba(239,68,68,.3);"></div>';
-  try { await apiDelete(deleteId); closeConfirm(); showToast('Technology deleted.'); renderTable(); }
-  catch(e){ showToast(e.error||'Delete failed.','error'); }
-  finally { btn.disabled=false; btn.innerHTML='<i class="ti ti-trash text-[14px]"></i> Delete'; }
-}
 
-/* ══════════════════════════════════════════
-   VIEW RECORD
-══════════════════════════════════════════ */
+/* ── VIEW MODAL ── */
 function viewRecord(id){
-  viewingId=id;
-  const r=records.find(x=>x._id===id); if(!r) return;
-  document.getElementById('viewTitle').textContent=r.name;
-  document.getElementById('viewBadges').innerHTML=`
-    ${r.sector?`<span class="badge ${SECTOR_BADGE[r.sector]||'badge-gray'}">${esc(r.sector)}</span>`:''}
-    ${r.mode?`<span class="badge ${MODE_BADGE[r.mode]||'badge-gray'}">${esc(r.mode)}</span>`:''}
-    ${r.trl?`<span class="badge badge-blue">${esc(r.trl)}</span>`:''}
-    ${r.irl?`<span class="badge badge-purple">${esc(r.irl)}</span>`:''}
+  const r = records.find(x => x._id === id);
+  if(!r) return;
+  viewingId = id;
+
+  document.getElementById('viewTitle').textContent = r.name;
+  document.getElementById('viewBadges').innerHTML = `
+    ${r.sector?`<span class="badge ${SECTOR_BADGE[r.sector]||'badge-gray'}">${escapeHTML(r.sector)}</span>`:''}
+    ${r.mode?`<span class="badge ${MODE_BADGE[r.mode]||'badge-gray'}">${escapeHTML(r.mode)}</span>`:''}
+    ${r.trl?`<span class="badge badge-blue">${escapeHTML(r.trl)}</span>`:''}
+    ${r.irl?`<span class="badge badge-purple">${escapeHTML(r.irl)}</span>`:''}
   `;
 
-  const adoptersStr=(r.adopters?.length?r.adopters.join(', '):'—')+(r.adopterSpecify?` (${r.adopterSpecify})`:'');
-  const fundingStr=r.funding==='Other GFA'&&r.fundingSpecify?`Other GFA – ${r.fundingSpecify}`:(r.funding||'—');
-  const lead=r.researchers?.[0];
-  const members=(r.researchers||[]).slice(1);
+  const lead = (r.researchers||[])[0];
+  const members = (r.researchers||[]).slice(1);
+  const fundingStr = r.fundingSpecify ? `${r.funding||'—'} – ${r.fundingSpecify}` : (r.funding||'—');
 
-  const ipHtml=r.ipRecords?.length?r.ipRecords.map(ip=>`
+  const ipHtml = (r.ipRecords||[]).length ? r.ipRecords.map(ip=>`
     <div class="flex items-center gap-3 py-2.5 border-b border-slate-50 last:border-0">
       <div class="flex-1 min-w-0">
-        <div class="text-[13px] font-semibold text-on-surface">${esc(ip.type||'—')}</div>
-        <div class="text-[11px] text-on-surface-variant mt-0.5">${esc(ip.regNum||'No registration number')}</div>
+        <div class="text-[13px] font-semibold text-on-surface">${escapeHTML(ip.type||'—')}</div>
+        <div class="text-[11px] text-on-surface-variant mt-0.5">${escapeHTML(ip.regNum||'Walang registration number')}</div>
       </div>
-      <span class="badge ${ip.regStatus==='Registered'?'badge-green':ip.regStatus==='Expired Protection'?'badge-red':'badge-gray'} flex-shrink-0">${esc(ip.regStatus||'—')}</span>
-    </div>`).join('')
-    :'<p class="text-[13px] text-on-surface-variant">No IP records added.</p>';
+      <span class="badge ${ip.regStatus==='Registered'?'badge-green':ip.regStatus==='Expired Protection'?'badge-red':'badge-gray'} flex-shrink-0">${escapeHTML(ip.regStatus||'—')}</span>
+    </div>`).join('') : '<p class="text-[13px] text-on-surface-variant">Walang IP record.</p>';
 
-  const reportBadge=v=>v?v.includes('Not')?'<span class="badge badge-red">Not Yet Available</span>':`<span class="badge badge-green">${esc(v)}</span>`:'<span class="text-[13px] text-on-surface-variant">—</span>';
-  const fmtDate=d=>d?new Date(d).toLocaleDateString('en-PH',{year:'numeric',month:'long',day:'numeric'}):'—';
+  const reportBadge = v => v ? (v.includes('Not')?`<span class="badge badge-red">${escapeHTML(v)}</span>`:`<span class="badge badge-green">${escapeHTML(v)}</span>`) : '<span class="text-[13px] text-on-surface-variant">—</span>';
+  const trlN = parseInt((r.trl||'').replace(/\D/g,''))||0;
+  const irlN = parseInt((r.irl||'').replace(/\D/g,''))||0;
+  const fmtDate = d => d ? new Date(d).toLocaleDateString('en-PH',{year:'numeric',month:'long',day:'numeric'}) : '—';
 
-  document.getElementById('viewModalBody').innerHTML=`
+  document.getElementById('viewModalBody').innerHTML = `
     <div class="grid md:grid-cols-5 divide-y md:divide-y-0 md:divide-x divide-slate-100">
-      <!-- Left panel -->
       <div class="md:col-span-3 px-6 py-5 space-y-5">
         <div>
           <div class="section-heading"><i class="ti ti-info-circle text-[13px]"></i> Overview</div>
-          <div class="view-field"><div class="view-label">Description</div><div class="view-value">${esc(r.description||'—')}</div></div>
+          <div class="view-field"><div class="view-label">Description</div><div class="view-value">${escapeHTML(r.description||'—')}</div></div>
           <div class="grid grid-cols-2 gap-x-4">
-            <div class="view-field"><div class="view-label">Deployment Status</div><div class="view-value">${r.deployStatus?`<span class="badge ${STATUS_BADGE[r.deployStatus]||'badge-gray'}">${esc(r.deployStatus)}</span>`:'—'}</div></div>
-            <div class="view-field"><div class="view-label">Current Development</div><div class="view-value">${esc(r.currentDev||'—')}</div></div>
-            <div class="view-field"><div class="view-label">Adopter(s)</div><div class="view-value">${esc(adoptersStr)}</div></div>
-            <div class="view-field"><div class="view-label">Funding Source</div><div class="view-value">${esc(fundingStr)}</div></div>
+            <div class="view-field"><div class="view-label">Deployment Status</div><div class="view-value">${r.deployStatus?`<span class="badge ${STATUS_BADGE[r.deployStatus]||'badge-gray'}">${escapeHTML(r.deployStatus)}</span>`:'—'}</div></div>
+            <div class="view-field"><div class="view-label">Current Development</div><div class="view-value">${escapeHTML(r.currentDev||'—')}</div></div>
+            <div class="view-field"><div class="view-label">Adopter Specification</div><div class="view-value">${escapeHTML(r.adopterSpecify||'—')}</div></div>
+            <div class="view-field"><div class="view-label">Funding Source</div><div class="view-value">${escapeHTML(fundingStr)}</div></div>
           </div>
         </div>
         <div>
           <div class="section-heading"><i class="ti ti-users text-[13px]"></i> Researchers</div>
-          ${lead?`<div class="view-field"><div class="view-label text-primary">Lead Researcher</div><div class="view-value">${esc(lead.name)}${lead.contact?` · <span class="text-on-surface-variant text-[12px]">${esc(lead.contact)}</span>`:''}${lead.email?` · <span class="text-on-surface-variant text-[12px]">${esc(lead.email)}</span>`:''}</div></div>`:'<p class="text-[13px] text-on-surface-variant">—</p>'}
-          ${members.map((m,i)=>`<div class="view-field"><div class="view-label">Member ${i+1}</div><div class="view-value">${esc(m.name)}${m.contact?` · <span class="text-on-surface-variant text-[12px]">${esc(m.contact)}</span>`:''}${m.email?` · <span class="text-on-surface-variant text-[12px]">${esc(m.email)}</span>`:''}</div></div>`).join('')}
+          ${lead?`<div class="view-field"><div class="view-label text-primary">Lead Researcher</div><div class="view-value">${escapeHTML(lead.name)}${lead.contact?` · <span class="text-on-surface-variant text-[12px]">${escapeHTML(lead.contact)}</span>`:''}${lead.email?` · <span class="text-on-surface-variant text-[12px]">${escapeHTML(lead.email)}</span>`:''}</div></div>`:'<p class="text-[13px] text-on-surface-variant">—</p>'}
+          ${members.map((m,i)=>`<div class="view-field"><div class="view-label">Member ${i+1}</div><div class="view-value">${escapeHTML(m.name)}${m.contact?` · <span class="text-on-surface-variant text-[12px]">${escapeHTML(m.contact)}</span>`:''}${m.email?` · <span class="text-on-surface-variant text-[12px]">${escapeHTML(m.email)}</span>`:''}</div></div>`).join('')}
         </div>
         <div>
-          <div class="section-heading"><i class="ti ti-shield text-[13px]"></i> IP Records</div>
+          <div class="section-heading"><i class="ti ti-certificate text-[13px]"></i> IP Records</div>
           ${ipHtml}
         </div>
       </div>
-      <!-- Right panel -->
       <div class="md:col-span-2 px-6 py-5 space-y-5 bg-surface-container-lowest rounded-r-2xl">
         <div>
           <div class="section-heading"><i class="ti ti-chart-bar text-[13px]"></i> Readiness</div>
           ${r.trl?`<div class="mb-4">
             <div class="view-label mb-2">Technology Readiness</div>
-            <div class="flex gap-1 mb-1">${Array.from({length:9},(_,i)=>`<div class="h-2 flex-1 rounded-full" style="background:${i<parseInt((r.trl||'0').replace(/\D/g,''))?'#0058be':'#e1e2ec'};"></div>`).join('')}</div>
-            <div class="text-[12px] font-semibold text-primary">${esc(r.trl)}</div>
-            <div class="text-[11px] text-on-surface-variant mt-0.5">${TRL_DESC[parseInt((r.trl||'').replace(/\D/g,''))]||''}</div>
-          </div>`:'<p class="text-[12px] text-on-surface-variant mb-4">TRL not specified</p>'}
+            <div class="flex gap-1 mb-1">${Array.from({length:9},(_,i)=>`<div class="h-2 flex-1 rounded-full" style="background:${i<trlN?'#0058be':'#e2e8f0'};"></div>`).join('')}</div>
+            <div class="text-[12px] font-semibold text-primary">${escapeHTML(r.trl)}</div>
+            <div class="text-[11px] text-on-surface-variant mt-0.5">${TRL_DESC[trlN]||''}</div>
+          </div>`:'<p class="text-[12px] text-on-surface-variant mb-4">TRL hindi tinukoy</p>'}
           ${r.irl?`<div>
             <div class="view-label mb-2">Investment Readiness</div>
-            <div class="flex gap-1 mb-1">${Array.from({length:9},(_,i)=>`<div class="h-2 flex-1 rounded-full" style="background:${i<parseInt((r.irl||'0').replace(/\D/g,''))?'#6b38d4':'#e1e2ec'};"></div>`).join('')}</div>
-            <div class="text-[12px] font-semibold text-secondary">${esc(r.irl)}</div>
-            <div class="text-[11px] text-on-surface-variant mt-0.5">${IRL_DESC[parseInt((r.irl||'').replace(/\D/g,''))]||''}</div>
-          </div>`:'<p class="text-[12px] text-on-surface-variant">IRL not specified</p>'}
+            <div class="flex gap-1 mb-1">${Array.from({length:9},(_,i)=>`<div class="h-2 flex-1 rounded-full" style="background:${i<irlN?'#6b38d4':'#e2e8f0'};"></div>`).join('')}</div>
+            <div class="text-[12px] font-semibold text-secondary">${escapeHTML(r.irl)}</div>
+            <div class="text-[11px] text-on-surface-variant mt-0.5">${IRL_DESC[irlN]||''}</div>
+          </div>`:'<p class="text-[12px] text-on-surface-variant">IRL hindi tinukoy</p>'}
         </div>
         <div>
           <div class="section-heading"><i class="ti ti-file-analytics text-[13px]"></i> Reports & Plans</div>
@@ -1229,6 +927,7 @@ function viewRecord(id){
             <div><div class="view-label">Evaluation Report</div>${reportBadge(r.evalReport)}</div>
             <div><div class="view-label">Freedom to Operate</div>${reportBadge(r.ftoReport)}</div>
             <div><div class="view-label">Commercialization Plan</div>${reportBadge(r.commPlan)}</div>
+            <div><div class="view-label">Google Drive Link</div>${r.googleDriveLink ? `<a href="${escapeHTML(r.googleDriveLink)}" target="_blank" rel="noopener" class="text-primary underline break-all">${escapeHTML(r.googleDriveLink)}</a>` : '<span class="text-[13px] text-on-surface-variant">—</span>'}</div></div>
           </div>
         </div>
         <div>
@@ -1243,68 +942,139 @@ function viewRecord(id){
   `;
   document.getElementById('viewModal').classList.add('open');
 }
+function closeViewModal(){ document.getElementById('viewModal').classList.remove('open'); viewingId=null; }
 function editFromView(){ closeViewModal(); if(viewingId) editRecord(viewingId); }
 
-/* ══════════════════════════════════════════
-   PDF EXPORT
-══════════════════════════════════════════ */
-function exportPDF(){
-  const data=records.filter(r=>{
-    const q=searchQuery;
-    return (!q||r.name?.toLowerCase().includes(q)||(r.sector||'').toLowerCase().includes(q))&&(!filterSector||r.sector===filterSector);
+/* ── DELETE ── */
+function deleteRecord(id) {
+  deleteId = id;
+  document.getElementById('confirmModal').classList.add('open');
+}
+function closeConfirm() {
+  document.getElementById('confirmModal').classList.remove('open');
+  deleteId = null;
+}
+async function confirmDelete() {
+  const btn = document.getElementById('btnConfirmDelete');
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner" style="border-top-color:#fff;"></span> Buburahin...`;
+  try {
+    const res = await fetch(`${API_BASE}/${deleteId}`, { method: 'DELETE' });
+    if(!res.ok) throw new Error('Hindi mabura ang record.');
+    showToast('Matagumpay na nabura ang record.');
+    closeConfirm();
+    fetchRecords();
+  } catch(err) {
+    showToast(err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = 'Oo, Burahin';
+  }
+}
+
+/* ── REPEATER ROWS ── */
+function addResearcherRow(data = {}) {
+  const container = document.getElementById('researcherRows');
+  const isLead = container.children.length === 0;
+  const div = document.createElement('div');
+  div.className = 'researcher-item repeater-row';
+  div.innerHTML = `
+    <div class="mb-2"><span class="badge ${isLead?'badge-blue':'badge-gray'}">${isLead?'★ Lead Researcher':'Member '+(container.children.length)}</span></div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div><label class="form-label">Pangalan ${isLead?'<span class=\"text-red-500\">*</span>':''}</label><input type="text" class="r-name form-input" placeholder="Pangalan ng Researcher" value="${escapeHTML(data.name || '')}" ${isLead?'required':''}/></div>
+      <div><label class="form-label">Contact Number</label><input type="text" class="r-contact form-input" placeholder="+63 9XX XXX XXXX" value="${escapeHTML(data.contact || '')}"/></div>
+      <div><label class="form-label">Email Address</label><input type="email" class="r-email form-input" placeholder="email@university.edu.ph" value="${escapeHTML(data.email || '')}"/></div>
+    </div>
+    ${!isLead?`<button type="button" onclick="this.parentElement.remove()" class="rm-btn" title="Alisin"><i class="ti ti-x"></i></button>`:''}
+  `;
+  container.appendChild(div);
+}
+
+function addIPRow(data = {}) {
+  const container = document.getElementById('ipRows');
+  const num = container.children.length + 1;
+  const div = document.createElement('div');
+  div.className = 'ip-item repeater-row';
+  div.innerHTML = `
+    <div class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-3">IP Record #${num}</div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div>
+        <label class="form-label">Uri ng Proteksyon</label>
+        <select class="ip-type form-select">
+          <option value="">-- Uri ng Proteksyon --</option>
+          <option value="Patent/Invention" ${data.type==='Patent/Invention'?'selected':''}>Patent/Invention</option>
+          <option value="Utility Model" ${data.type==='Utility Model'?'selected':''}>Utility Model</option>
+          <option value="Industrial Design" ${data.type==='Industrial Design'?'selected':''}>Industrial Design</option>
+          <option value="Trademark" ${data.type==='Trademark'?'selected':''}>Trademark</option>
+          <option value="Copyright" ${data.type==='Copyright'?'selected':''}>Copyright</option>
+          <option value="Trade Secret" ${data.type==='Trade Secret'?'selected':''}>Trade Secret</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Registration No.</label>
+        <input type="text" class="ip-regNum form-input" placeholder="Kung mayroon" value="${escapeHTML(data.regNum || '')}"/>
+      </div>
+      <div>
+        <label class="form-label">Status</label>
+        <select class="ip-regStatus form-select">
+          <option value="">-- Status --</option>
+          <option value="Registered" ${data.regStatus==='Registered'?'selected':''}>Registered</option>
+          <option value="Ongoing Registration" ${data.regStatus==='Ongoing Registration'?'selected':''}>Ongoing Registration</option>
+          <option value="Expired Protection" ${data.regStatus==='Expired Protection'?'selected':''}>Expired Protection</option>
+        </select>
+      </div>
+    </div>
+    <button type="button" onclick="this.parentElement.remove()" class="rm-btn" title="Alisin"><i class="ti ti-x"></i></button>
+  `;
+  container.appendChild(div);
+}
+
+/* ── TABS ── */
+function applyTab(idx) {
+  currentTabIdx = idx;
+  document.querySelectorAll('#techModal .tab-btn').forEach((t, i) => t.classList.toggle('active', i===idx));
+  document.querySelectorAll('#techModal .tab-content').forEach((c, i) => c.classList.toggle('active', i===idx));
+  document.querySelectorAll('#formStepDots span').forEach((d,i)=>{
+    d.classList.toggle('bg-primary', i===idx);
+    d.classList.toggle('bg-slate-200', i!==idx);
   });
-  if(!data.length){ showToast('No records to export.','error'); return; }
-  const rows=data.map(r=>{
-    const lead=r.researchers?.[0]?.name||'—';
-    return `<tr><td>${esc(r.name)}</td><td>${esc(r.sector||'—')}</td><td>${esc(r.mode||'—')}</td><td>${esc(r.trl||'—')}</td><td>${esc(r.irl||'—')}</td><td>${esc(r.deployStatus||'—')}</td><td>${esc(lead)}</td></tr>`;
-  }).join('');
-  const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"/><title>Inventory of Technology</title>
-    <style>body{font-family:Arial,sans-serif;font-size:11px;color:#191b23;margin:24px;}
-    h1{font-size:18px;font-weight:bold;margin-bottom:4px;}p{font-size:11px;color:#727785;margin-bottom:16px;}
-    table{width:100%;border-collapse:collapse;}th{background:#0058be;color:#fff;padding:8px 10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.08em;}
-    td{padding:7px 10px;border-bottom:1px solid #f2f3fd;font-size:11px;}</style></head><body>
-    <h1>Inventory of Technology</h1>
-    <p>Exported ${new Date().toLocaleDateString('en-PH',{year:'numeric',month:'long',day:'numeric'})} · ${data.length} record${data.length!==1?'s':''}</p>
-    <table><thead><tr><th>Name</th><th>Sector</th><th>Mode</th><th>TRL</th><th>IRL</th><th>Status</th><th>Lead Researcher</th></tr></thead><tbody>${rows}</tbody></table>
-    </body></html>`);
-  w.document.close(); setTimeout(()=>w.print(),500);
 }
 
-/* ══════════════════════════════════════════
-   TOAST
-══════════════════════════════════════════ */
+/* ── SEARCH / FILTER ── */
+function handleSearch(val) {
+  searchQuery = val.toLowerCase().trim();
+  renderTable();
+}
+function toggleDropdown(id, e) {
+  e.stopPropagation();
+  document.getElementById(id).classList.toggle('hidden');
+}
+function setSectorFilter(val, btn) {
+  filterSector = val;
+  document.getElementById('sectorFilterLabel').textContent = val || 'All Sectors';
+  document.querySelectorAll('#sectorDD .filter-opt').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('sectorDD').classList.add('hidden');
+  renderTable();
+}
+
+/* ── TOAST ── */
 let toastTimer;
-function showToast(msg,type='success'){
-  const t=document.getElementById('toast');
-  document.getElementById('toastMsg').textContent=msg;
-  document.getElementById('toastIcon').textContent=type==='error'?'error':'check_circle';
-  t.style.background=type==='error'?'#ef4444':'#191b23';
-  t.classList.add('show'); clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  document.getElementById('toastIcon').textContent = type==='error' ? 'error' : 'check_circle';
+  document.getElementById('toastIcon').className = `material-symbols-outlined text-[18px] ${type==='error'?'text-red-400':'text-green-400'}`;
+  t.style.background = type === 'error' ? '#ef4444' : '#191b23';
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-/* ══════════════════════════════════════════
-   ESC KEY
-══════════════════════════════════════════ */
-document.addEventListener('keydown',e=>{
-  if(e.key!=='Escape') return;
-  if(document.getElementById('confirmModal').classList.contains('open')){ closeConfirm(); return; }
-  if(document.getElementById('viewModal').classList.contains('open')){ closeViewModal(); return; }
-  if(document.getElementById('techModal').classList.contains('open')){ closeModal(); return; }
-});
-
-/* ══════════════════════════════════════════
-   UTIL
-══════════════════════════════════════════ */
-function esc(s){ return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-/* ══════════════════════════════════════════
-   INIT — if USE_API=true, load from server
-         if false, records[] is populated
-         directly by your app's auth/session
-══════════════════════════════════════════ */
-renderTable();
+function escapeHTML(str) {
+  if(!str) return '';
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
 </script>
 </body>
 </html>

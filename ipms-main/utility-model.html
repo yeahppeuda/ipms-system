@@ -137,6 +137,7 @@
     <a class="nav-item" href="industrial-design.html"><i class="ti ti-vector-bezier-2"></i><span>Industrial Design</span></a>
     <div class="border-t border-slate-100 my-5"></div>
     <div class="nav-section-label">General</div>
+    <a class="nav-item" href="inventory-of-technology.html"><i class="ti ti-device-desktop-analytics"></i><span>Inventory of Technology</span></a>
     <a class="nav-item" href="event.html"><i class="ti ti-calendar-event"></i><span>Event</span></a>
   </nav>
   <div class="p-4 border-t border-outline-variant">
@@ -230,10 +231,10 @@
           <div id="filter-menu" class="hidden absolute right-0 mt-1 w-48 bg-white rounded-xl border border-slate-200 shadow-lg z-50 py-1.5 overflow-hidden">
             <div class="px-3 py-1.5 text-[10px] font-bold text-outline uppercase tracking-widest">Filter by Status</div>
             <button onclick="applyStatusFilter('All')"              class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="All">All<i class="ti ti-check text-primary" style="font-size:13px;"></i></button>
-            <button onclick="applyStatusFilter('Submitted to IPO')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Submitted to IPO">Submitted to IPO<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
+            <button onclick="applyStatusFilter('Submitted to IPOPHL')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Submitted to IPOPHL">Submitted to IPOPHL<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
             <button onclick="applyStatusFilter('Received E-SOA')"   class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Received E-SOA">Received E-SOA<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
             <button onclick="applyStatusFilter('Paid')"             class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Paid">Paid<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
-            <button onclick="applyStatusFilter('Approved')"         class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Approved">Approved<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
+            <button onclick="applyStatusFilter('Approved with Certificate')"         class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Approved with Certificate">Approved with Certificate<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
           </div>
         </div>
         <button title="Export" class="w-9 h-9 flex items-center justify-center bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors shrink-0">
@@ -293,10 +294,10 @@
         <select id="field-status" disabled onchange="updateStatusStyle(this)"
           class="w-full text-[15px] font-bold rounded-xl py-3.5 px-4 border-2 outline-none transition-all appearance-none cursor-default"
           style="background-image:none;">
-          <option value="Submitted to IPO">Submitted to IPO</option>
+          <option value="Submitted to IPOPHL">Submitted to IPOPHL</option>
           <option value="Received E-SOA">Received E-SOA</option>
           <option value="Paid">Paid</option>
-          <option value="Approved">Approved</option>
+          <option value="Approved with Certificate">Approved with Certificate</option>
         </select>
       </div>
 
@@ -349,6 +350,21 @@
           <input id="field-date" type="date" disabled
             class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all"/>
         </div>
+      </div>
+
+      <!-- Google Drive Link -->
+      <div>
+        <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">
+          Google Drive Link
+          <span class="text-[10px] font-normal text-outline normal-case tracking-normal ml-1">(optional)</span>
+        </label>
+        <div class="relative">
+          <i class="ti ti-brand-google-drive absolute left-3.5 top-1/2 -translate-y-1/2" style="font-size:16px; color:#1a73e8;"></i>
+          <input id="field-gdrive" type="url" disabled oninput="markDirty()"
+            class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 pl-9 border border-slate-200 bg-slate-50 outline-none transition-all"
+            placeholder="https://drive.google.com/…"/>
+        </div>
+        <p class="text-[10px] text-outline mt-1">Paste a Google Drive folder or file link for related documents</p>
       </div>
     </div>
 
@@ -452,10 +468,10 @@ function updateModalDeptOptions() {
 
 /* STATUS STYLES */
 const statusMeta = {
-  'Submitted to IPO': { cls: 'badge-submitted', label: 'Submitted to IPO' },
+  'Submitted to IPOPHL': { cls: 'badge-submitted', label: 'Submitted to IPOPHL' },
   'Received E-SOA':   { cls: 'badge-esoa',       label: 'Received E-SOA'   },
   'Paid':             { cls: 'badge-paid',        label: 'Paid'             },
-  'Approved':         { cls: 'badge-approved',    label: 'Approved'         },
+  'Approved with Certificate':         { cls: 'badge-approved',    label: 'Approved with Certificate'         },
 };
 function statusBadgeHTML(status) {
   const m = statusMeta[status] || { cls: 'badge-default', label: status || '—' };
@@ -476,9 +492,10 @@ function updateStatusStyle(sel) {
 
 /* STAT CARDS */
 function updateStats() {
-  document.getElementById('stat-total').textContent    = ALL_RECORDS.length;
-  document.getElementById('stat-approved').textContent = ALL_RECORDS.filter(r => r.status === 'Approved').length;
-  document.getElementById('stat-pending').textContent  = ALL_RECORDS.filter(r => r.status !== 'Approved').length;
+  const active = ALL_RECORDS.filter(r => !r.archived);
+  document.getElementById('stat-total').textContent    = active.length;
+  document.getElementById('stat-approved').textContent = active.filter(r => r.status === 'Approved').length;
+  document.getElementById('stat-pending').textContent  = active.filter(r => r.status !== 'Approved').length;
 }
 
 /* FILTER DROPDOWN */
@@ -506,7 +523,8 @@ document.addEventListener('click', e => {
 /* SEARCH + FILTER */
 function filterAndRender() {
   const q = document.getElementById('search-input').value.toLowerCase().trim();
-  filteredRecords = ALL_RECORDS.filter(r => {
+  const activeRecords = ALL_RECORDS.filter(r => !r.archived);
+  filteredRecords = activeRecords.filter(r => {
     const matchStatus = activeStatusFilter === 'All' || r.status === activeStatusFilter;
     const matchSearch = !q ||
       (r.referenceNo || '').toLowerCase().includes(q) ||
@@ -599,24 +617,22 @@ function mapRecord(item) {
     _id: String(item._id),
     referenceNo: referenceNo || String(item._id),
     title, creator, dept,
-    status: item.status || 'Submitted to IPO',
+    status: item.status || 'Submitted to IPOPHL',
     dateApplied,
+    googleDriveLink: item.googleDriveLink || '',
+    archived: item.archived === true || item.archived === 'true'
   };
 }
 
 /* FETCH DATA */
 async function fetchUtilityModels() {
   try {
-    const res  = await fetch(`${API_URL}?category=${encodeURIComponent(CATEGORY)}`);
+    const res  = await fetch(`${API_URL}/${CATEGORY}`);
     const data = await res.json();
     const records = Array.isArray(data) ? data : (data.data ?? []);
-    const filtered = records.filter(item =>
-      (item.category || '').trim().toLowerCase() === CATEGORY
-    );
-    ALL_RECORDS     = filtered.map(mapRecord);
-    filteredRecords = [...ALL_RECORDS];
+    ALL_RECORDS = records.filter(item => (item.category || '').trim().toLowerCase() === CATEGORY).map(mapRecord);
     updateStats();
-    render();
+    filterAndRender();
   } catch (err) {
     console.error('Failed to fetch utility models:', err);
   }
@@ -661,7 +677,7 @@ function closeModal() {
 }
 
 /* VIEW / EDIT MODE */
-const EDITABLE_FIELDS  = ['field-title', 'field-creator', 'field-date'];
+const EDITABLE_FIELDS  = ['field-title', 'field-creator', 'field-date', 'field-gdrive'];
 const EDITABLE_SELECTS = ['field-dept', 'field-status', 'field-college'];
 
 function setViewMode() {
@@ -715,6 +731,7 @@ function exitEditMode() {
     document.getElementById('field-title').value   = activeSnapshot.title || '';
     document.getElementById('field-creator').value = activeSnapshot.creator || '';
     document.getElementById('field-date').value    = activeSnapshot.dateApplied || '';
+    document.getElementById('field-gdrive').value  = activeSnapshot.googleDriveLink || '';
 
     // Restore college + dept
     const parts   = activeSnapshot.dept ? activeSnapshot.dept.split(' — ') : [];
@@ -754,6 +771,7 @@ async function confirmSave() {
     referenceId:   document.getElementById('field-ref').value.trim(),
     authors: document.getElementById('field-creator').value
                .split(',').map(a => a.trim()).filter(Boolean),
+    googleDriveLink: document.getElementById('field-gdrive').value.trim(),
   };
 
   const confirmBtn = document.getElementById('btn-confirm-save');

@@ -1,24 +1,23 @@
-const ActivityLog = require("../models/ActivityLog");
+const ActivityLog = require('../models/ActivityLog');
 
-const logActivity = async (req, action, moduleName, desc, severity = "info") => {
+// Ginawa nating 'createLog' at nakabalot sa Object ({ }) para eksaktong tugma sa authRoutes mo!
+const createLog = async ({ user, action, module, desc, ip, severity = 'info' }) => {
   try {
-    // Fallback if walang JWT auth pa:
-    const performedBy = req.user ? `${req.user.fname} ${req.user.lname}` : "Admin System"; 
-    const ipAddress = req.ip || req.connection.remoteAddress || "Unknown";
-
     const newLog = new ActivityLog({
-      user: performedBy,
-      action: action,
-      module: moduleName,
-      desc: desc,
-      ip: ipAddress,
-      severity: severity
+      user,
+      action,
+      module, // Gagamitin ang 'module' field mula sa pinasa mo
+      desc,
+      ip: ip || '127.0.0.1',
+      severity
     });
 
     await newLog.save();
-  } catch (err) {
-    console.error("Logger error:", err);
+    console.log("📌 LOGGER SUCCESS: Matagumpay na na-save ang login activity!");
+  } catch (error) {
+    console.error("❌ LOGGER ERROR (Sa loob ng utils):", error.message);
+    // Hindi natin ito itatapon (no throw) para kahit magka-error ang log, makaka-login pa rin ang user
   }
 };
 
-module.exports = logActivity;
+module.exports = { createLog }; 

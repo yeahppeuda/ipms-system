@@ -63,7 +63,6 @@
   .view-btn { padding: 6px 10px; border-radius: 8px; border: none; cursor: pointer; transition: background 0.12s, color 0.12s; color: #727785; background: transparent; display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; }
   .view-btn.active { background: #fff; color: #0058be; box-shadow: 0 1px 4px rgba(0,0,0,0.10); }
 
-  /* Activity type badge colours */
   .cat-ipa        { background:#eff6ff; color:#1d4ed8; }
   .cat-ps         { background:#f0fdf4; color:#15803d; }
   .cat-pd         { background:#faf5ff; color:#7e22ce; }
@@ -75,13 +74,15 @@
   @keyframes modalIn { from { opacity:0; transform:translateY(8px) scale(0.98); } to { opacity:1; transform:none; } }
   .modal-body { animation: modalIn 0.2s ease; }
 
-  .drop-zone { border: 2px dashed #c2c6d6; border-radius: 12px; transition: border-color 0.15s, background 0.15s; }
-  .drop-zone.dragover { border-color: #0058be; background: #eff6ff; }
+  @keyframes checkDraw {
+    from { stroke-dashoffset: 50; }
+    to   { stroke-dashoffset: 0; }
+  }
+  .check-draw { stroke-dasharray: 50; stroke-dashoffset: 50; animation: checkDraw 0.4s 0.1s ease forwards; }
 
   .list-row { transition: background 0.10s; }
   .list-row:hover { background: #f8fafc; }
 
-  /* Checkbox custom style */
   .check-item {
     display: flex; align-items: center; gap: 8px; padding: 7px 11px;
     border-radius: 8px; border: 1.5px solid #e2e5ef; cursor: pointer;
@@ -92,22 +93,16 @@
   .check-item.checked { border-color: #0058be; background: #eff6ff; color: #1d4ed8; }
   .check-item input[type=checkbox] { display: none; }
 
-  /* Summary section in detail modal */
   .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
   .summary-cell { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; }
   .summary-cell:nth-child(odd) { border-right: 1px solid #f1f5f9; }
   .summary-cell-full { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; grid-column: 1 / -1; }
 
-  .doc-badge { display:inline-flex; align-items:center; gap:4px; padding:2px 9px; border-radius:20px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; }
-
-    /* ── Page entrance animation ── */
   @keyframes pageFadeSlideIn {
     from { opacity: 0; transform: translateY(18px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-  .page-enter {
-    animation: pageFadeSlideIn 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
+  .page-enter { animation: pageFadeSlideIn 0.38s cubic-bezier(0.22, 1, 0.36, 1) both; }
   .page-enter > * { opacity: 0; animation: pageFadeSlideIn 0.38s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
   .page-enter > *:nth-child(1) { animation-delay: 0.04s; }
   .page-enter > *:nth-child(2) { animation-delay: 0.10s; }
@@ -122,7 +117,6 @@
   }
   .nav-item.active { animation: navActivePulse 0.55s ease 0.2s both; }
 
-  /* ── VIEW TRANSITION ── */
   @keyframes viewFadeSlideIn {
     from { opacity: 0; transform: translateY(10px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -131,29 +125,13 @@
     from { opacity: 1; transform: translateY(0); }
     to   { opacity: 0; transform: translateY(-8px); }
   }
-  .view-entering {
-    animation: viewFadeSlideIn 0.22s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  }
-  .view-leaving {
-    animation: viewFadeSlideOut 0.15s ease forwards;
-    pointer-events: none;
-  }
-
-  /* ── TAB TRANSITION ── */
-  @keyframes tabSlideIn {
-    from { opacity: 0; transform: translateX(12px); }
-    to   { opacity: 1; transform: translateX(0); }
-  }
-  @keyframes tabSlideInLeft {
-    from { opacity: 0; transform: translateX(-12px); }
-    to   { opacity: 1; transform: translateX(0); }
-  }
-  .tab-entering-right { animation: tabSlideIn 0.2s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
-  .tab-entering-left  { animation: tabSlideInLeft 0.2s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+  .view-entering { animation: viewFadeSlideIn 0.22s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+  .view-leaving  { animation: viewFadeSlideOut 0.15s ease forwards; pointer-events: none; }
 </style>
 </head>
 <body class="bg-surface text-on-surface font-sans antialiased flex min-h-screen">
 
+<!-- ═══ SIDEBAR ═══ -->
 <aside class="w-[260px] h-screen fixed left-0 top-0 border-r border-outline-variant bg-white flex flex-col z-50">
   <div class="flex items-center gap-3 px-5 py-5 border-b border-outline-variant">
     <div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white flex-shrink-0">
@@ -174,6 +152,7 @@
     <a class="nav-item" href="industrial-design.html"><i class="ti ti-vector-bezier-2"></i><span>Industrial Design</span></a>
     <div class="border-t border-slate-100 my-5"></div>
     <div class="nav-section-label">General</div>
+    <a class="nav-item" href="inventory-of-technology.html"><i class="ti ti-device-desktop-analytics"></i><span>Inventory of Technology</span></a>
     <a class="nav-item active" href="event.html"><i class="ti ti-calendar-event"></i><span>Event</span></a>
   </nav>
   <div class="p-4 border-t border-outline-variant">
@@ -183,6 +162,7 @@
   </div>
 </aside>
 
+<!-- ═══ MAIN ═══ -->
 <main class="flex-1 ml-[260px] min-h-screen flex flex-col bg-surface">
 
   <header class="h-[60px] flex items-center justify-end px-8 sticky top-0 bg-white/80 backdrop-blur-md z-40 border-b border-outline-variant">
@@ -207,6 +187,7 @@
 
   <div class="p-8 space-y-7 flex-1 page-enter">
 
+    <!-- Page Header -->
     <div class="flex items-center justify-between">
       <div>
         <h2 class="text-2xl font-bold text-on-surface">Events</h2>
@@ -217,6 +198,7 @@
       </button>
     </div>
 
+    <!-- Stats -->
     <section class="grid grid-cols-1 sm:grid-cols-3 gap-5">
       <div class="bg-white rounded-2xl border border-outline-variant p-5 flex items-center gap-4 shadow-sm" style="transition:transform 0.2s,box-shadow 0.2s;" onmouseenter="this.style.transform='translateY(-2px)'" onmouseleave="this.style.transform=''">
         <div class="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
@@ -250,8 +232,10 @@
       </div>
     </section>
 
+    <!-- Events Table/Card Section -->
     <section class="bg-white rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
 
+      <!-- Toolbar -->
       <div class="px-6 py-4 border-b border-outline-variant flex items-center gap-3 flex-wrap">
         <div class="relative flex-1 min-w-[180px]">
           <i class="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-outline" style="font-size:15px;"></i>
@@ -323,6 +307,7 @@
         </div>
       </div>
 
+      <!-- Card View -->
       <div id="card-view" class="p-6">
         <div id="event-cards" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"></div>
         <div id="card-empty" class="hidden flex flex-col items-center justify-center py-16 text-center">
@@ -334,6 +319,7 @@
         </div>
       </div>
 
+      <!-- List View -->
       <div id="list-view" class="hidden overflow-x-auto">
         <table class="w-full text-left border-collapse">
           <thead>
@@ -355,6 +341,7 @@
         </div>
       </div>
 
+      <!-- Pagination -->
       <div class="px-6 py-4 border-t border-outline-variant flex flex-col sm:flex-row items-center justify-between gap-3">
         <p id="pagination-info" class="text-[12px] text-outline"></p>
         <div id="pagination-controls" class="flex items-center gap-1"></div>
@@ -364,6 +351,7 @@
   </div>
 </main>
 
+<!-- ═══ ADD / EDIT EVENT MODAL ═══ -->
 <div id="event-form-modal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 bg-on-surface/40 backdrop-blur-sm">
   <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] modal-body">
     <div class="px-7 py-5 border-b border-outline-variant flex items-center justify-between">
@@ -510,6 +498,21 @@
         </div>
       </div>
 
+      <!-- Google Drive Link Field -->
+      <div>
+        <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">
+          Google Drive Link
+          <span class="text-[10px] font-normal text-outline normal-case tracking-normal ml-1">(optional)</span>
+        </label>
+        <div class="relative">
+          <i class="ti ti-brand-google-drive absolute left-3.5 top-1/2 -translate-y-1/2" style="font-size:16px; color:#1a73e8;"></i>
+          <input id="fm-gdrive" type="url"
+            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 pl-10 text-[13px] text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/10 focus:bg-white outline-none transition-all placeholder:text-outline"
+            placeholder="https://drive.google.com/…"/>
+        </div>
+        <p class="text-[11px] text-outline mt-1.5">Paste a Google Drive folder or file link for event documents.</p>
+      </div>
+
     </div>
 
     <div class="px-7 py-5 bg-slate-50 border-t border-outline-variant flex items-center justify-between gap-3">
@@ -525,9 +528,11 @@
   </div>
 </div>
 
+<!-- ═══ EVENT DETAIL MODAL ═══ -->
 <div id="event-detail-modal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 bg-on-surface/40 backdrop-blur-sm">
   <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] modal-body">
 
+    <!-- Modal Header -->
     <div class="px-7 py-5 border-b border-outline-variant flex items-start justify-between gap-4">
       <div class="flex items-start gap-3 min-w-0">
         <div id="det-type-badge-wrap" class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5 bg-blue-50">
@@ -543,27 +548,20 @@
       </button>
     </div>
 
-    <div class="border-b border-outline-variant px-7 flex gap-0">
-      <button onclick="switchTab('info')" id="tab-info" class="tab-btn px-1 py-3.5 text-[13px] font-semibold text-primary border-b-2 border-primary mr-6">Event Summary</button>
-      <button onclick="switchTab('docs')" id="tab-docs" class="tab-btn px-1 py-3.5 text-[13px] font-medium text-outline border-b-2 border-transparent hover:text-on-surface transition-colors">Documents <span id="doc-count-badge" class="ml-1 bg-slate-100 text-outline text-[10px] font-bold px-1.5 py-0.5 rounded-full">0</span></button>
-    </div>
+    <!-- Scrollable Body -->
+    <div class="p-7 overflow-y-auto flex-1 space-y-5">
 
-    <div id="tab-info-content" class="p-7 overflow-y-auto flex-1">
-
+      <!-- Event Info Card -->
       <div class="rounded-2xl border border-outline-variant overflow-hidden">
-
         <div class="px-5 py-3.5 bg-slate-50 border-b border-outline-variant flex items-center gap-2">
           <i class="ti ti-clipboard-text text-primary" style="font-size:15px;"></i>
           <span class="text-[11px] font-bold text-on-surface uppercase tracking-widest">Event Information</span>
         </div>
-
         <div class="summary-grid">
-
           <div class="summary-cell-full">
             <p class="text-[10px] font-bold text-outline uppercase tracking-widest mb-1">Event Title</p>
             <p class="text-[14px] font-semibold text-on-surface leading-snug" id="det-name-body">—</p>
           </div>
-
           <div class="summary-cell">
             <p class="text-[10px] font-bold text-outline uppercase tracking-widest mb-1">Type of Activity</p>
             <p class="text-[13px] font-medium text-on-surface" id="det-type-body">—</p>
@@ -572,7 +570,6 @@
             <p class="text-[10px] font-bold text-outline uppercase tracking-widest mb-1">Mode of Delivery</p>
             <p class="text-[13px] font-medium text-on-surface" id="det-mode-body">—</p>
           </div>
-
           <div class="summary-cell">
             <p class="text-[10px] font-bold text-outline uppercase tracking-widest mb-1">Date</p>
             <p class="text-[13px] font-medium text-on-surface" id="det-date">—</p>
@@ -581,21 +578,17 @@
             <p class="text-[10px] font-bold text-outline uppercase tracking-widest mb-1">Number of Hours</p>
             <p class="text-[13px] font-medium text-on-surface" id="det-hours">—</p>
           </div>
-
           <div class="summary-cell-full">
             <p class="text-[10px] font-bold text-outline uppercase tracking-widest mb-2">Profile / Background</p>
             <div id="det-profile" class="flex flex-wrap gap-1.5"></div>
           </div>
-
           <div class="summary-cell-full">
             <p class="text-[10px] font-bold text-outline uppercase tracking-widest mb-2">Sector</p>
             <div id="det-sector" class="flex flex-wrap gap-1.5"></div>
           </div>
-
           <div class="summary-cell-full" style="background:#f8fafc; border-bottom:1px solid #f1f5f9;">
             <p class="text-[10px] font-bold text-outline uppercase tracking-widest">Number of Participants</p>
           </div>
-
           <div class="summary-cell" style="border-right:1px solid #f1f5f9;">
             <div class="flex items-center gap-2 mb-1">
               <div class="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center">
@@ -625,65 +618,70 @@
               <p class="text-[26px] font-bold text-primary tabular-nums" id="det-total">0</p>
             </div>
           </div>
-
           <div class="summary-cell-full" style="border-bottom:none;">
             <p class="text-[10px] font-bold text-outline uppercase tracking-widest mb-2">Age Range</p>
             <div id="det-age" class="flex flex-wrap gap-1.5"></div>
           </div>
-
         </div>
       </div>
-    </div>
 
-    <div id="tab-docs-content" class="p-7 overflow-y-auto flex-1 hidden space-y-5">
-      <div>
-        <p class="text-[13px] font-semibold text-on-surface mb-3">Upload Documents</p>
-        <div id="drop-zone" class="drop-zone p-6 text-center cursor-pointer" onclick="document.getElementById('file-input').click()" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
-          <div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center mx-auto mb-3">
-            <i class="ti ti-cloud-upload text-outline" style="font-size:22px;"></i>
+      <!-- Documents Section (read-only preview; edit via Edit Event) -->
+      <div class="rounded-2xl border border-outline-variant overflow-hidden">
+        <div class="px-5 py-3.5 bg-slate-50 border-b border-outline-variant flex items-center gap-2">
+          <i class="ti ti-brand-google-drive" style="font-size:16px; color:#1a73e8;"></i>
+          <span class="text-[11px] font-bold text-on-surface uppercase tracking-widest">Documents</span>
+        </div>
+        <div class="p-5">
+          <div id="det-gdrive-has-link" class="hidden">
+            <p class="text-[12px] text-outline mb-3">
+              Link to a Google Drive folder or file containing event documents (attendance sheets, photos, activity reports, etc.).
+            </p>
+            <div class="flex gap-2 items-center">
+              <div class="flex-1 flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-[13px] text-on-surface min-w-0">
+                <i class="ti ti-link text-outline flex-shrink-0" style="font-size:15px;"></i>
+                <span id="det-gdrive-text" class="truncate">—</span>
+              </div>
+              <a id="det-gdrive-open-link" href="#" target="_blank" rel="noopener"
+                class="px-4 py-2.5 text-white text-[13px] font-semibold rounded-xl transition-all flex items-center gap-2 flex-shrink-0 hover:opacity-90"
+                style="background:#1a73e8;">
+                <i class="ti ti-external-link" style="font-size:14px;"></i> Open
+              </a>
+            </div>
+            <p class="text-[11px] text-outline mt-2">
+              Press <strong>Open</strong> to view the linked Drive folder in a new tab.
+            </p>
           </div>
-          <p class="text-[13px] font-medium text-on-surface">Drag & drop files here, or <span class="text-primary underline underline-offset-2 cursor-pointer">browse</span></p>
-          <p class="text-[11px] text-outline mt-1">PDF, DOCX, XLSX, JPG, PNG — max 20MB each</p>
-          <input id="file-input" type="file" multiple class="hidden" onchange="handleFileSelect(event)" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.ppt,.pptx"/>
+          <p id="det-gdrive-no-link" class="text-[12px] text-outline">
+            No document link added. You can add one from <strong>Edit Event</strong>.
+          </p>
         </div>
       </div>
 
-      <div class="flex flex-wrap gap-2" id="doc-type-filters">
-        <button onclick="filterDocs('all')" class="doc-type-btn px-3 py-1.5 rounded-lg text-[12px] font-semibold border border-primary bg-primary text-white transition-all" data-type="all">All</button>
-        <button onclick="filterDocs('Activity Report')"        class="doc-type-btn px-3 py-1.5 rounded-lg text-[12px] font-semibold border border-slate-200 text-on-surface-variant hover:bg-slate-50 transition-all" data-type="Activity Report">Activity Report</button>
-        <button onclick="filterDocs('Attendance Sheet')"       class="doc-type-btn px-3 py-1.5 rounded-lg text-[12px] font-semibold border border-slate-200 text-on-surface-variant hover:bg-slate-50 transition-all" data-type="Attendance Sheet">Attendance Sheet</button>
-        <button onclick="filterDocs('Photo')"                  class="doc-type-btn px-3 py-1.5 rounded-lg text-[12px] font-semibold border border-slate-200 text-on-surface-variant hover:bg-slate-50 transition-all" data-type="Photo">Photo</button>
-        <button onclick="filterDocs('Certificate')"            class="doc-type-btn px-3 py-1.5 rounded-lg text-[12px] font-semibold border border-slate-200 text-on-surface-variant hover:bg-slate-50 transition-all" data-type="Certificate">Certificate</button>
-        <button onclick="filterDocs('Accomplishment Report')"  class="doc-type-btn px-3 py-1.5 rounded-lg text-[12px] font-semibold border border-slate-200 text-on-surface-variant hover:bg-slate-50 transition-all" data-type="Accomplishment Report">Accomplishment Report</button>
-        <button onclick="filterDocs('Other')"                  class="doc-type-btn px-3 py-1.5 rounded-lg text-[12px] font-semibold border border-slate-200 text-on-surface-variant hover:bg-slate-50 transition-all" data-type="Other">Other</button>
-      </div>
-
-      <div id="doc-list" class="space-y-2"></div>
-      <div id="doc-empty" class="hidden flex flex-col items-center justify-center py-10 text-center">
-        <div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center mb-3">
-          <i class="ti ti-file-off text-slate-300" style="font-size:24px;"></i>
-        </div>
-        <p class="text-[13px] font-medium text-on-surface">No documents yet</p>
-        <p class="text-[12px] text-outline mt-0.5">Upload files using the area above.</p>
-      </div>
     </div>
 
-    <div class="px-7 py-5 bg-slate-50 border-t border-outline-variant flex items-center justify-end gap-3">
-      <button onclick="closeDetailModal()" class="px-5 py-2.5 text-[13px] font-semibold text-on-surface-variant border border-slate-200 rounded-xl hover:bg-slate-100 transition-all">Close</button>
-      <button onclick="editCurrentEvent()" class="px-6 py-2.5 text-[13px] font-bold text-white bg-primary rounded-xl hover:opacity-90 hover:-translate-y-0.5 transition-all flex items-center gap-2">
-        <i class="ti ti-pencil" style="font-size:15px;"></i> Edit Event
+    <!-- Modal Footer -->
+    <div class="px-7 py-5 bg-slate-50 border-t border-outline-variant flex items-center justify-between gap-3">
+      <button onclick="askDelete(viewingEventId)" class="px-5 py-2.5 text-[13px] font-semibold text-red-500 border border-red-200 bg-red-50 hover:bg-red-100 rounded-xl transition-all flex items-center gap-2">
+        <i class="ti ti-trash" style="font-size:14px;"></i> Delete
       </button>
+      <div class="flex gap-3">
+        <button onclick="closeDetailModal()" class="px-5 py-2.5 text-[13px] font-semibold text-on-surface-variant border border-slate-200 rounded-xl hover:bg-slate-100 transition-all">Close</button>
+        <button onclick="editCurrentEvent()" class="px-6 py-2.5 text-[13px] font-bold text-white bg-primary rounded-xl hover:opacity-90 hover:-translate-y-0.5 transition-all flex items-center gap-2">
+          <i class="ti ti-pencil" style="font-size:15px;"></i> Edit Event
+        </button>
+      </div>
     </div>
   </div>
 </div>
 
+<!-- ═══ DELETE CONFIRM MODAL ═══ -->
 <div id="confirm-modal" class="fixed inset-0 z-[70] hidden items-center justify-center p-4 bg-on-surface/50 backdrop-blur-sm">
   <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl p-8 text-center modal-body">
     <div class="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-5">
       <i class="ti ti-trash text-red-500" style="font-size:26px;"></i>
     </div>
     <h3 class="text-[16px] font-bold text-on-surface mb-2">Delete Event?</h3>
-    <p class="text-[13px] text-on-surface-variant mb-7">This will permanently remove the event and all its documents. This action cannot be undone.</p>
+    <p class="text-[13px] text-on-surface-variant mb-7">This will permanently remove the event. This action cannot be undone.</p>
     <div class="flex items-center gap-3">
       <button onclick="closeConfirm()" class="flex-1 py-2.5 text-[13px] font-bold text-on-surface-variant bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors">Cancel</button>
       <button onclick="confirmDelete()" class="flex-1 py-2.5 text-[13px] font-bold text-white bg-red-500 hover:bg-red-600 rounded-xl transition-colors">Delete</button>
@@ -691,6 +689,7 @@
   </div>
 </div>
 
+<!-- ═══ SAVE CONFIRM MODAL ═══ -->
 <div id="save-confirm-modal" class="fixed inset-0 z-[70] hidden items-center justify-center p-4 bg-on-surface/50 backdrop-blur-sm">
   <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden modal-body">
     <div class="px-7 py-5 border-b border-outline-variant flex items-center gap-3">
@@ -740,15 +739,19 @@
           <span class="w-[40%] px-4 py-2.5 text-[10px] font-bold text-outline uppercase tracking-widest bg-slate-50 flex-shrink-0">Sector</span>
           <span class="px-4 py-2.5 text-on-surface leading-relaxed" id="sc-sector">—</span>
         </div>
-        <div class="flex">
+        <div class="flex border-b border-slate-100">
           <span class="w-[40%] px-4 py-2.5 text-[10px] font-bold text-outline uppercase tracking-widest bg-slate-50 flex-shrink-0">Age Range</span>
           <span class="px-4 py-2.5 text-on-surface" id="sc-age">—</span>
+        </div>
+        <div class="flex">
+          <span class="w-[40%] px-4 py-2.5 text-[10px] font-bold text-outline uppercase tracking-widest bg-slate-50 flex-shrink-0">Drive Link</span>
+          <span class="px-4 py-2.5 text-on-surface text-[11px] break-all" id="sc-gdrive">—</span>
         </div>
       </div>
     </div>
     <div class="px-7 py-5 bg-slate-50 border-t border-outline-variant flex items-center gap-3 justify-end">
       <button onclick="closeSaveConfirm()" class="px-5 py-2.5 text-[13px] font-semibold text-on-surface-variant border border-slate-200 rounded-xl hover:bg-slate-100 transition-all flex items-center gap-2">
-        <i class="ti ti-arrow-left" style="font-size:13px;"></i> Go Back & Edit
+        <i class="ti ti-arrow-left" style="font-size:13px;"></i> Go Back &amp; Edit
       </button>
       <button onclick="confirmSaveEvent()" class="px-6 py-2.5 text-[13px] font-bold text-white bg-primary rounded-xl hover:opacity-90 hover:-translate-y-0.5 transition-all flex items-center gap-2">
         <i class="ti ti-device-floppy" style="font-size:15px;"></i>
@@ -758,38 +761,21 @@
   </div>
 </div>
 
-<div id="success-toast" class="fixed bottom-8 right-8 z-[80] flex items-center gap-3 bg-white border border-emerald-200 shadow-xl rounded-2xl px-5 py-4 pointer-events-none"
-  style="opacity:0;transform:translateY(12px);transition:opacity 0.25s ease,transform 0.25s ease;min-width:260px;">
+<!-- ═══ TOAST ═══ -->
+<div id="success-toast"
+  class="fixed bottom-8 right-8 z-[90] flex items-center gap-3 bg-white border border-emerald-200 shadow-xl rounded-2xl px-5 py-4 pointer-events-none"
+  style="opacity:0; transform:translateY(12px); transition:opacity 0.25s ease, transform 0.25s ease; min-width:260px;">
   <div class="w-9 h-9 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
-    <i class="ti ti-check text-emerald-600" style="font-size:18px;"></i>
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <circle cx="9" cy="9" r="9" fill="#d1fae5"/>
+      <polyline points="5,9 8,12 13,6" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="check-draw"/>
+    </svg>
   </div>
   <div>
-    <p class="text-[13px] font-bold text-on-surface leading-tight" id="toast-title">Done!</p>
-    <p class="text-[11px] text-outline mt-0.5" id="toast-msg"></p>
+    <p class="text-[13px] font-bold text-on-surface leading-tight" id="toast-title">Changes saved successfully</p>
+    <p class="text-[11px] text-outline mt-0.5" id="toast-body">The record has been updated.</p>
   </div>
   <div class="absolute bottom-0 left-0 h-[3px] bg-emerald-400 rounded-b-2xl" id="toast-bar" style="width:100%;"></div>
-</div>
-
-<div id="doc-type-modal" class="fixed inset-0 z-[75] hidden items-center justify-center p-4 bg-on-surface/40 backdrop-blur-sm">
-  <div class="bg-white w-full max-w-xs rounded-2xl shadow-2xl p-6 modal-body">
-    <h3 class="text-[15px] font-bold text-on-surface mb-1">Classify Document</h3>
-    <p class="text-[12px] text-outline mb-4" id="doctype-filename">filename.pdf</p>
-    <div class="space-y-2">
-      <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Document Type</label>
-      <select id="doctype-select" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-[13px] text-on-surface outline-none focus:border-primary appearance-none">
-        <option>Activity Report</option>
-        <option>Attendance Sheet</option>
-        <option>Photo</option>
-        <option>Certificate</option>
-        <option>Accomplishment Report</option>
-        <option>Other</option>
-      </select>
-    </div>
-    <div class="flex gap-3 mt-5">
-      <button onclick="closeDoctypeModal()" class="flex-1 py-2.5 text-[13px] font-semibold text-on-surface-variant border border-slate-200 rounded-xl hover:bg-slate-100 transition-all">Cancel</button>
-      <button onclick="confirmDocType()" class="flex-1 py-2.5 text-[13px] font-bold text-white bg-primary rounded-xl hover:opacity-90 transition-all">Confirm</button>
-    </div>
-  </div>
 </div>
 
 <script>
@@ -807,23 +793,20 @@ function updateClock() {
 updateClock(); setInterval(updateClock, 1000);
 
 /* ═══════════════════════ DATA ═══════════════════════ */
-let EVENTS = []; // TATANGGALIN ANG DUMMY DATA
-let nextDocId   = 8; // Local doc handling
+let EVENTS = [];
 
 /* ═══════════════════════ STATE ═══════════════════════ */
 const ROWS_PER_PAGE = 6;
-let currentPage     = 1;
-let currentView     = 'card';
-let searchQuery     = '';
-let filterMonth     = '';
-let filterYear      = '';
-let filterType      = '';
-let editingEventId  = null;
-let viewingEventId  = null;
-let deleteTargetId  = null;
-let activeDocFilter = 'all';
-let pendingDocFile  = null;
-let _activeTab      = 'info'; 
+let currentPage    = 1;
+let currentView    = 'card';
+let searchQuery    = '';
+let filterMonth    = '';
+let filterYear     = '';
+let filterType     = '';
+let editingEventId = null;
+let viewingEventId = null;
+let deleteTargetId = null;
+let _pendingPayload = null;
 
 /* ═══════════════════════ FILTER + RENDER ═══════════════════════ */
 function getFiltered() {
@@ -862,7 +845,13 @@ function populateYears() {
   const sel = document.getElementById('filter-year');
   const existing = Array.from(sel.options).map(o => o.value);
   const years = [...new Set(EVENTS.map(e => (e.date||'').split('-')[0]).filter(Boolean))].sort((a,b)=>b-a);
-  years.forEach(y => { if (!existing.includes(y)) { const o = document.createElement('option'); o.value=y; o.textContent=y; sel.appendChild(o); } });
+  years.forEach(y => {
+    if (!existing.includes(y)) {
+      const o = document.createElement('option');
+      o.value = y; o.textContent = y;
+      sel.appendChild(o);
+    }
+  });
 }
 
 function applyDateFilter() {
@@ -942,13 +931,11 @@ function setView(v) {
   if (v === currentView) return;
   const outEl = currentView === 'card' ? document.getElementById('card-view') : document.getElementById('list-view');
   const inEl  = v === 'card' ? document.getElementById('card-view') : document.getElementById('list-view');
-
   outEl.classList.add('view-leaving');
   outEl.addEventListener('animationend', function onOut() {
     outEl.removeEventListener('animationend', onOut);
     outEl.classList.add('hidden');
     outEl.classList.remove('view-leaving');
-
     inEl.classList.remove('hidden');
     inEl.classList.add('view-entering');
     inEl.addEventListener('animationend', function onIn() {
@@ -956,7 +943,6 @@ function setView(v) {
       inEl.classList.remove('view-entering');
     }, { once: true });
   }, { once: true });
-
   currentView = v;
   document.getElementById('view-card-btn').classList.toggle('active', v === 'card');
   document.getElementById('view-list-btn').classList.toggle('active', v === 'list');
@@ -971,8 +957,8 @@ function render() {
   if (currentPage > totalPages) currentPage = totalPages;
   const start = (currentPage - 1) * ROWS_PER_PAGE;
   const page  = filtered.slice(start, start + ROWS_PER_PAGE);
-  if (currentView === 'card') renderCards(page, total, start);
-  else                        renderList(page, total, start);
+  if (currentView === 'card') renderCards(page, total);
+  else                         renderList(page, total);
   renderPagination(total, totalPages);
 }
 
@@ -984,16 +970,15 @@ function renderCards(page, total) {
   emptyEl.classList.add('hidden');
 
   page.forEach(ev => {
-    const card = document.createElement('div');
-    card.className = 'event-card bg-white rounded-2xl border border-outline-variant shadow-sm overflow-hidden flex flex-col cursor-pointer';
-    card.onclick   = () => openDetailModal(ev.id);
-    const catCls   = catClass(ev.type);
-    const modeCls  = ev.mode === 'Online' ? 'bg-violet-50 text-violet-700' : 'bg-teal-50 text-teal-700';
-    const ttl      = (ev.male||0) + (ev.female||0);
-    const docCount = (ev.docs||[]).length;
+    const card    = document.createElement('div');
+    card.className = 'event-card bg-white rounded-2xl border border-outline-variant shadow-sm overflow-hidden flex flex-col';
+    const catCls  = catClass(ev.type);
+    const modeCls = ev.mode === 'Online' ? 'bg-violet-50 text-violet-700' : 'bg-teal-50 text-teal-700';
+    const ttl     = (ev.male||0) + (ev.female||0);
+    const hasLink = !!(ev.gdriveLink);
 
     card.innerHTML = `
-      <div class="p-5 flex-1 flex flex-col gap-3">
+      <div class="p-5 flex-1 flex flex-col gap-3 cursor-pointer" onclick="openDetailModal('${ev.id}')">
         <div class="flex items-start justify-between gap-2">
           <div class="flex-1 min-w-0">
             <h3 class="text-[14px] font-bold text-on-surface leading-snug line-clamp-2">${ev.name}</h3>
@@ -1005,21 +990,16 @@ function renderCards(page, total) {
           <span class="text-[10px] font-bold px-2 py-1 rounded-full ${catCls}">${ev.type}</span>
         </div>
         <div class="flex items-center gap-3 flex-wrap border-t border-slate-100 pt-3 mt-1">
-          <span class="flex items-center gap-1 text-[11px] text-outline"><i class="ti ti-users" style="font-size:12px;"></i>${ttl.toLocaleString()} participants</span>
-          ${docCount > 0 ? `<span class="flex items-center gap-1 text-[11px] text-outline"><i class="ti ti-paperclip" style="font-size:12px;"></i>${docCount}</span>` : ''}
-          <span class="text-[11px] text-outline truncate max-w-[140px]"><i class="ti ti-clock" style="font-size:12px;"></i> ${ev.hours||0}h</span>
+          <span class="flex items-center gap-1 text-[11px] text-outline">
+            <i class="ti ti-users" style="font-size:12px;"></i>${ttl.toLocaleString()} participants
+          </span>
+          ${hasLink ? '<span class="flex items-center gap-1 text-[11px]" style="color:#1a73e8;"><i class="ti ti-brand-google-drive" style="font-size:12px;"></i>Drive</span>' : ''}
         </div>
         ${(ev.profile||[]).length ? `<div class="flex flex-wrap gap-1">${(ev.profile||[]).map(p=>`<span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-on-surface-variant">${p}</span>`).join('')}</div>` : ''}
       </div>
-      <div class="px-5 py-3 border-t border-outline-variant flex items-center gap-2" onclick="event.stopPropagation()">
-        <button onclick="openDetailModal('${ev.id}')" class="flex items-center gap-1 px-3 py-1.5 text-[11px] font-semibold text-primary bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
-          <i class="ti ti-eye" style="font-size:13px;"></i> View
-        </button>
-        <button onclick="openEditModal('${ev.id}')" class="flex items-center gap-1 px-3 py-1.5 text-[11px] font-semibold text-on-surface-variant bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
-          <i class="ti ti-pencil" style="font-size:13px;"></i> Edit
-        </button>
-        <button onclick="askDelete('${ev.id}')" class="flex items-center gap-1 px-3 py-1.5 text-[11px] font-semibold text-red-500 bg-red-50 hover:bg-red-100 rounded-lg transition-colors ml-auto">
-          <i class="ti ti-trash" style="font-size:13px;"></i> Delete
+      <div class="px-5 py-3 border-t border-outline-variant">
+        <button onclick="openDetailModal('${ev.id}')" class="flex items-center gap-1.5 px-4 py-1.5 text-[12px] font-semibold text-primary bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors w-full justify-center">
+          <i class="ti ti-eye" style="font-size:13px;"></i> View Details
         </button>
       </div>`;
     grid.appendChild(card);
@@ -1034,12 +1014,12 @@ function renderList(page, total) {
   emptyEl.classList.add('hidden');
 
   page.forEach(ev => {
-    const cat   = catClass(ev.type);
-    const ttl   = (ev.male||0) + (ev.female||0);
+    const cat     = catClass(ev.type);
+    const ttl     = (ev.male||0) + (ev.female||0);
     const modeCls = ev.mode === 'Online' ? 'bg-violet-50 text-violet-700' : 'bg-teal-50 text-teal-700';
-    const tr    = document.createElement('tr');
-    tr.className = 'list-row';
-    tr.innerHTML = `
+    const tr      = document.createElement('tr');
+    tr.className  = 'list-row';
+    tr.innerHTML  = `
       <td class="px-5 py-4 text-[13px] font-semibold text-on-surface max-w-[220px]">
         <span class="line-clamp-2 leading-snug">${ev.name}</span>
       </td>
@@ -1053,11 +1033,9 @@ function renderList(page, total) {
       <td class="px-5 py-4 text-[12px] text-on-surface-variant whitespace-nowrap text-center">${ttl.toLocaleString()}</td>
       <td class="px-5 py-4 text-[12px] text-on-surface-variant whitespace-nowrap">${ev.hours ? ev.hours + 'h' : '—'}</td>
       <td class="px-5 py-4 text-center whitespace-nowrap">
-        <div class="flex items-center justify-center gap-1.5">
-          <button onclick="openDetailModal('${ev.id}')" class="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-semibold text-primary bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"><i class="ti ti-eye" style="font-size:12px;"></i> View</button>
-          <button onclick="openEditModal('${ev.id}')"   class="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-semibold text-on-surface-variant bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"><i class="ti ti-pencil" style="font-size:12px;"></i> Edit</button>
-          <button onclick="askDelete('${ev.id}')"       class="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"><i class="ti ti-trash" style="font-size:14px;"></i></button>
-        </div>
+        <button onclick="openDetailModal('${ev.id}')" class="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-semibold text-primary bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors mx-auto">
+          <i class="ti ti-eye" style="font-size:12px;"></i> View
+        </button>
       </td>`;
     tbody.appendChild(tr);
   });
@@ -1089,8 +1067,14 @@ function renderPagination(total, totalPages) {
     pages.push(totalPages);
   }
   pages.forEach(p => {
-    if (p === '…') { const s = document.createElement('span'); s.className = 'page-btn text-outline cursor-default'; s.textContent = '…'; ctrl.appendChild(s); }
-    else mkBtn(p, p, p === currentPage, false, false);
+    if (p === '…') {
+      const s = document.createElement('span');
+      s.className = 'page-btn text-outline cursor-default';
+      s.textContent = '…';
+      ctrl.appendChild(s);
+    } else {
+      mkBtn(p, p, p === currentPage, false, false);
+    }
   });
   mkBtn('chevron_right', currentPage + 1, false, currentPage === totalPages, true);
 }
@@ -1114,6 +1098,7 @@ function getCheckedValues(groupId) {
 
 function toggleCheckItem(el) { el.classList.toggle('checked'); }
 
+/* ═══════════════════════ FORM ═══════════════════════ */
 function openAddEventModal() {
   editingEventId = null;
   clearForm();
@@ -1127,7 +1112,6 @@ function openEditModal(id) {
   if (!ev) return;
   editingEventId = id;
   clearForm();
-
   document.getElementById('fm-name').value     = ev.name;
   document.getElementById('fm-type').value     = ev.type;
   document.getElementById('fm-mode').value     = ev.mode || '';
@@ -1136,12 +1120,20 @@ function openEditModal(id) {
   document.getElementById('fm-hours').value    = ev.hours || '';
   document.getElementById('fm-male').value     = ev.male || 0;
   document.getElementById('fm-female').value   = ev.female || 0;
+  document.getElementById('fm-gdrive').value   = ev.gdriveLink || '';
   calcTotal();
-
-  (ev.profile||[]).forEach(val => { const el = document.querySelector(`#fm-profile-group [data-value="${val}"]`); if (el) el.classList.add('checked'); });
-  (ev.sector||[]).forEach(val => { const el = document.querySelector(`#fm-sector-group [data-value="${val}"]`); if (el) el.classList.add('checked'); });
-  (ev.ageRange||[]).forEach(val => { const el = document.querySelector(`#fm-age-group [data-value="${val}"]`); if (el) el.classList.add('checked'); });
-
+  (ev.profile||[]).forEach(val => {
+    const el = document.querySelector(`#fm-profile-group [data-value="${val}"]`);
+    if (el) el.classList.add('checked');
+  });
+  (ev.sector||[]).forEach(val => {
+    const el = document.querySelector(`#fm-sector-group [data-value="${val}"]`);
+    if (el) el.classList.add('checked');
+  });
+  (ev.ageRange||[]).forEach(val => {
+    const el = document.querySelector(`#fm-age-group [data-value="${val}"]`);
+    if (el) el.classList.add('checked');
+  });
   document.getElementById('form-modal-title').textContent = 'Edit Event';
   document.getElementById('form-save-label').textContent  = 'Update Event';
   document.getElementById('form-error').classList.add('hidden');
@@ -1151,36 +1143,34 @@ function openEditModal(id) {
 function closeFormModal() { hide('event-form-modal'); }
 
 function clearForm() {
-  document.getElementById('fm-name').value     = '';
-  document.getElementById('fm-type').value     = '';
-  document.getElementById('fm-mode').value     = '';
-  document.getElementById('fm-date').value     = '';
-  document.getElementById('fm-duration').value = '';
-  document.getElementById('fm-hours').value    = '';
-  document.getElementById('fm-male').value     = '';
-  document.getElementById('fm-female').value   = '';
+  ['fm-name','fm-type','fm-mode','fm-date','fm-duration','fm-hours','fm-male','fm-female','fm-gdrive'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
   document.getElementById('fm-total-display').textContent = '0';
   document.querySelectorAll('#fm-profile-group .check-item, #fm-sector-group .check-item, #fm-age-group .check-item').forEach(el => el.classList.remove('checked'));
   document.getElementById('form-error').classList.add('hidden');
 }
 
-let _pendingPayload = null;
-
 function saveEvent() {
-  const name     = document.getElementById('fm-name').value.trim();
-  const type     = document.getElementById('fm-type').value;
-  const mode     = document.getElementById('fm-mode').value;
-  const date     = document.getElementById('fm-date').value;
-  const duration = parseInt(document.getElementById('fm-duration').value) || 0;
-  const hours    = parseFloat(document.getElementById('fm-hours').value) || 0;
-  const male     = parseInt(document.getElementById('fm-male').value) || 0;
-  const female   = parseInt(document.getElementById('fm-female').value) || 0;
-  const profile  = getCheckedValues('fm-profile-group');
-  const sector   = getCheckedValues('fm-sector-group');
-  const ageRange = getCheckedValues('fm-age-group');
-  const err      = document.getElementById('form-error');
+  const name      = document.getElementById('fm-name').value.trim();
+  const type      = document.getElementById('fm-type').value;
+  const mode      = document.getElementById('fm-mode').value;
+  const date      = document.getElementById('fm-date').value;
+  const duration  = parseInt(document.getElementById('fm-duration').value) || 0;
+  const hours     = parseFloat(document.getElementById('fm-hours').value) || 0;
+  const male      = parseInt(document.getElementById('fm-male').value) || 0;
+  const female    = parseInt(document.getElementById('fm-female').value) || 0;
+  const gdriveLink = document.getElementById('fm-gdrive').value.trim();
+  const profile   = getCheckedValues('fm-profile-group');
+  const sector    = getCheckedValues('fm-sector-group');
+  const ageRange  = getCheckedValues('fm-age-group');
+  const err       = document.getElementById('form-error');
 
-  if (!name || !type || !mode || !date) { err.textContent = 'Please fill in all required fields: Title, Type of Activity, Mode of Delivery, and Date.'; err.classList.remove('hidden'); return; }
+  if (!name || !type || !mode || !date) {
+    err.textContent = 'Please fill in all required fields: Title, Type of Activity, Mode of Delivery, and Date.';
+    err.classList.remove('hidden'); return;
+  }
   if (duration <= 0) { err.textContent = 'Please enter a valid Duration (number of days).'; err.classList.remove('hidden'); return; }
   if (hours <= 0) { err.textContent = 'Please enter a valid Number of Hours.'; err.classList.remove('hidden'); return; }
   if (male === 0 && female === 0) { err.textContent = 'Please enter at least one participant (Male or Female).'; err.classList.remove('hidden'); return; }
@@ -1189,7 +1179,7 @@ function saveEvent() {
   if (ageRange.length === 0) { err.textContent = 'Please select at least one Age Range.'; err.classList.remove('hidden'); return; }
   err.classList.add('hidden');
 
-  _pendingPayload = { name, type, mode, date, duration, hours, male, female, profile, sector, ageRange };
+  _pendingPayload = { name, type, mode, date, duration, hours, male, female, profile, sector, ageRange, gdriveLink };
 
   const [y, m, d] = date.split('-');
   const fmtD = new Date(+y, +m-1, +d).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
@@ -1206,6 +1196,7 @@ function saveEvent() {
   document.getElementById('sc-profile').textContent      = profile.join(', ');
   document.getElementById('sc-sector').textContent       = sector.join(', ');
   document.getElementById('sc-age').textContent          = ageRange.join(', ');
+  document.getElementById('sc-gdrive').textContent       = gdriveLink || '—';
 
   show('save-confirm-modal');
 }
@@ -1215,7 +1206,7 @@ function closeSaveConfirm() { hide('save-confirm-modal'); _pendingPayload = null
 async function confirmSaveEvent() {
   if (!_pendingPayload) return;
   const isEditing = !!editingEventId;
-  const url = isEditing ? `http://localhost:5000/api/events/${editingEventId}` : 'http://localhost:5000/api/events';
+  const url    = isEditing ? `http://localhost:5000/api/events/${editingEventId}` : 'http://localhost:5000/api/events';
   const method = isEditing ? 'PUT' : 'POST';
 
   try {
@@ -1225,13 +1216,11 @@ async function confirmSaveEvent() {
       body: JSON.stringify(_pendingPayload)
     });
     const savedEvent = await res.json();
-
     if (isEditing) {
       const idx = EVENTS.findIndex(e => e.id === editingEventId);
       if (idx !== -1) EVENTS[idx] = savedEvent;
       showToast('Event Updated', `"${savedEvent.name}" has been updated successfully.`);
     } else {
-      savedEvent.docs = [];
       EVENTS.unshift(savedEvent);
       showToast('Event Added', `"${savedEvent.name}" has been added successfully.`);
     }
@@ -1246,11 +1235,11 @@ async function confirmSaveEvent() {
   render();
 }
 
+/* ═══════════════════════ DETAIL MODAL ═══════════════════════ */
 function openDetailModal(id) {
   const ev = EVENTS.find(e => e.id === id);
   if (!ev) return;
   viewingEventId = id;
-  activeDocFilter = 'all';
 
   document.getElementById('det-name').textContent      = ev.name;
   document.getElementById('det-subtitle').textContent  = `${ev.type} · ${fmtDate(ev.date)}`;
@@ -1263,155 +1252,120 @@ function openDetailModal(id) {
   document.getElementById('det-female').textContent    = (ev.female||0).toLocaleString();
   document.getElementById('det-total').textContent     = ((ev.male||0)+(ev.female||0)).toLocaleString();
 
-  const typeIconMap = { 'IP Awareness (IPA)':'ti-bulb','Patent Search (PS)':'ti-search','Patent Drafting (PD)':'ti-file-pencil','IPA and PS':'ti-bulb','IPA and PD':'ti-bulb','PS and PD':'ti-file-search','IPA, PS, and PD':'ti-certificate' };
+  const typeIconMap = {
+    'IP Awareness (IPA)':'ti-bulb', 'Patent Search (PS)':'ti-search',
+    'Patent Drafting (PD)':'ti-file-pencil', 'IPA and PS':'ti-bulb',
+    'IPA and PD':'ti-bulb', 'PS and PD':'ti-file-search', 'IPA, PS, and PD':'ti-certificate'
+  };
   const badge = document.getElementById('det-type-badge-wrap');
   const icon  = document.getElementById('det-type-icon');
   badge.style.background = '#eff6ff';
   icon.className         = `ti ${typeIconMap[ev.type]||'ti-calendar-event'}`;
   icon.style.color       = '#0058be';
 
-  const profileEl = document.getElementById('det-profile');
-  profileEl.innerHTML = (ev.profile||[]).length ? (ev.profile||[]).map(p=>`<span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-blue-50 text-blue-700">${p}</span>`).join('') : '<span class="text-[13px] text-outline">—</span>';
+  document.getElementById('det-profile').innerHTML = (ev.profile||[]).length
+    ? (ev.profile||[]).map(p=>`<span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-blue-50 text-blue-700">${p}</span>`).join('')
+    : '<span class="text-[13px] text-outline">—</span>';
 
-  const sectorEl = document.getElementById('det-sector');
-  sectorEl.innerHTML = (ev.sector||[]).length ? (ev.sector||[]).map(s=>`<span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700">${s}</span>`).join('') : '<span class="text-[13px] text-outline">—</span>';
+  document.getElementById('det-sector').innerHTML = (ev.sector||[]).length
+    ? (ev.sector||[]).map(s=>`<span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700">${s}</span>`).join('')
+    : '<span class="text-[13px] text-outline">—</span>';
 
-  const ageEl = document.getElementById('det-age');
-  ageEl.innerHTML = (ev.ageRange||[]).length ? (ev.ageRange||[]).map(a=>`<span class="inline-flex items-center text-[11px] font-bold px-3 py-1 rounded-full bg-orange-50 text-orange-700">${a}</span>`).join('') : '<span class="text-[13px] text-outline">—</span>';
+  document.getElementById('det-age').innerHTML = (ev.ageRange||[]).length
+    ? (ev.ageRange||[]).map(a=>`<span class="inline-flex items-center text-[11px] font-bold px-3 py-1 rounded-full bg-orange-50 text-orange-700">${a}</span>`).join('')
+    : '<span class="text-[13px] text-outline">—</span>';
 
-  document.getElementById('doc-count-badge').textContent = (ev.docs||[]).length;
-  _activeTab = 'info';
-  switchTab('info');
-  renderDocs(ev.docs||[], 'all');
+  // Documents / Drive link — read-only display
+  const gdriveHasLink  = document.getElementById('det-gdrive-has-link');
+  const gdriveNoLink   = document.getElementById('det-gdrive-no-link');
+  const gdriveText     = document.getElementById('det-gdrive-text');
+  const gdriveOpenLink = document.getElementById('det-gdrive-open-link');
+  if (ev.gdriveLink) {
+    gdriveText.textContent = ev.gdriveLink;
+    gdriveOpenLink.href = ev.gdriveLink;
+    gdriveHasLink.classList.remove('hidden');
+    gdriveNoLink.classList.add('hidden');
+  } else {
+    gdriveHasLink.classList.add('hidden');
+    gdriveNoLink.classList.remove('hidden');
+  }
+
   show('event-detail-modal');
 }
 
 function closeDetailModal() { hide('event-detail-modal'); }
 function editCurrentEvent() { closeDetailModal(); openEditModal(viewingEventId); }
 
-function switchTab(tab) {
-  const goingRight = (tab === 'docs' && _activeTab === 'info');
-  const wasTab     = _activeTab;
-  _activeTab       = tab;
-
-  const isInfo = tab === 'info';
-  const outEl  = isInfo ? document.getElementById('tab-docs-content') : document.getElementById('tab-info-content');
-  const inEl   = isInfo ? document.getElementById('tab-info-content') : document.getElementById('tab-docs-content');
-
-  document.getElementById('tab-info').className = `tab-btn px-1 py-3.5 text-[13px] mr-6 border-b-2 transition-colors ${isInfo ? 'font-semibold text-primary border-primary' : 'font-medium text-outline border-transparent hover:text-on-surface'}`;
-  document.getElementById('tab-docs').className = `tab-btn px-1 py-3.5 text-[13px] border-b-2 transition-colors ${!isInfo ? 'font-semibold text-primary border-primary' : 'font-medium text-outline border-transparent hover:text-on-surface'}`;
-
-  if (wasTab === tab) return;
-  outEl.classList.add('hidden');
-  inEl.classList.remove('hidden');
-  const animClass = goingRight ? 'tab-entering-right' : 'tab-entering-left';
-  inEl.classList.add(animClass);
-  inEl.addEventListener('animationend', function handler() {
-    inEl.removeEventListener('animationend', handler);
-    inEl.classList.remove(animClass);
-  }, { once: true });
+/* ═══════════════════════ DELETE ═══════════════════════ */
+function askDelete(id) {
+  deleteTargetId = id;
+  // Close detail modal if it's open
+  const detModal = document.getElementById('event-detail-modal');
+  if (!detModal.classList.contains('hidden')) closeDetailModal();
+  show('confirm-modal');
 }
 
-function renderDocs(docs, filterType) {
-  const list    = document.getElementById('doc-list');
-  const emptyEl = document.getElementById('doc-empty');
-  const display = filterType === 'all' ? docs : docs.filter(d => d.type === filterType);
-  document.querySelectorAll('.doc-type-btn').forEach(b => {
-    b.className = (b.dataset.type === filterType)
-      ? 'doc-type-btn px-3 py-1.5 rounded-lg text-[12px] font-semibold border border-primary bg-primary text-white transition-all'
-      : 'doc-type-btn px-3 py-1.5 rounded-lg text-[12px] font-semibold border border-slate-200 text-on-surface-variant hover:bg-slate-50 transition-all';
-  });
-  if (display.length === 0) { list.innerHTML = ''; emptyEl.classList.remove('hidden'); return; }
-  emptyEl.classList.add('hidden');
-  const docIcons  = { 'Activity Report':'ti-report','Attendance Sheet':'ti-clipboard-list','Photo':'ti-photo','Certificate':'ti-award','Accomplishment Report':'ti-file-check','Other':'ti-paperclip' };
-  const docColors = { 'Activity Report':'#1d4ed8','Attendance Sheet':'#15803d','Photo':'#7e22ce','Certificate':'#d97706','Accomplishment Report':'#0369a1','Other':'#475569' };
-  const docBgs    = { 'Activity Report':'#eff6ff','Attendance Sheet':'#f0fdf4','Photo':'#faf5ff','Certificate':'#fffbeb','Accomplishment Report':'#f0f9ff','Other':'#f8fafc' };
-  list.innerHTML = display.map(doc => `
-    <div class="flex items-center gap-3 p-3.5 rounded-xl border border-outline-variant hover:bg-slate-50 transition-colors group">
-      <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:${docBgs[doc.type]||'#f8fafc'};">
-        <i class="ti ${docIcons[doc.type]||'ti-paperclip'}" style="font-size:16px;color:${docColors[doc.type]||'#475569'};"></i>
-      </div>
-      <div class="flex-1 min-w-0">
-        <p class="text-[13px] font-semibold text-on-surface truncate">${doc.name}</p>
-        <p class="text-[11px] text-outline mt-0.5">${doc.type} · ${doc.size} · ${doc.date}</p>
-      </div>
-      <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        <a href="${doc.url}" download class="p-1.5 text-on-surface-variant hover:text-primary hover:bg-blue-50 rounded-lg transition-colors"><i class="ti ti-download" style="font-size:14px;"></i></a>
-        <button onclick="removeDoc('${doc.id}')" class="p-1.5 text-on-surface-variant hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"><i class="ti ti-trash" style="font-size:14px;"></i></button>
-      </div>
-    </div>`).join('');
-}
-
-function filterDocs(type) { activeDocFilter = type; const ev = EVENTS.find(e => e.id === viewingEventId); if (ev) renderDocs(ev.docs||[], type); }
-function removeDoc(docId) {
-  const ev = EVENTS.find(e => e.id === viewingEventId);
-  if (!ev) return;
-  ev.docs = (ev.docs||[]).filter(d => d.id !== docId);
-  document.getElementById('doc-count-badge').textContent = ev.docs.length;
-  renderDocs(ev.docs, activeDocFilter);
-  showToast('Document Removed', 'The document has been deleted.');
-}
-
-function onDragOver(e) { e.preventDefault(); document.getElementById('drop-zone').classList.add('dragover'); }
-function onDragLeave()  { document.getElementById('drop-zone').classList.remove('dragover'); }
-function onDrop(e) { e.preventDefault(); document.getElementById('drop-zone').classList.remove('dragover'); const files = Array.from(e.dataTransfer.files); if (files.length) processUpload(files[0]); }
-function handleFileSelect(e) { const files = Array.from(e.target.files); if (files.length) processUpload(files[0]); e.target.value = ''; }
-function processUpload(file) { pendingDocFile = file; document.getElementById('doctype-filename').textContent = file.name; show('doc-type-modal'); }
-function closeDoctypeModal() { hide('doc-type-modal'); pendingDocFile = null; }
-function confirmDocType() {
-  if (!pendingDocFile || !viewingEventId) return;
-  const ev   = EVENTS.find(e => e.id === viewingEventId);
-  const type = document.getElementById('doctype-select').value;
-  const size = pendingDocFile.size < 1024*1024 ? `${(pendingDocFile.size/1024).toFixed(0)} KB` : `${(pendingDocFile.size/1024/1024).toFixed(1)} MB`;
-  const doc  = { id:'d'+nextDocId++, name:pendingDocFile.name, type, size, date:new Date().toISOString().split('T')[0], url:URL.createObjectURL(pendingDocFile) };
-  ev.docs.push(doc);
-  document.getElementById('doc-count-badge').textContent = ev.docs.length;
-  renderDocs(ev.docs, activeDocFilter);
-  closeDoctypeModal();
-  showToast('Document Uploaded', `"${doc.name}" added as ${type}.`);
-}
-
-function askDelete(id) { deleteTargetId = id; show('confirm-modal'); }
 function closeConfirm() { hide('confirm-modal'); deleteTargetId = null; }
+
 async function confirmDelete() {
   const ev = EVENTS.find(e => e.id === deleteTargetId);
-  if (ev) { 
+  if (ev) {
     try {
       await fetch(`http://localhost:5000/api/events/${deleteTargetId}`, { method: 'DELETE' });
-      EVENTS = EVENTS.filter(e => e.id !== deleteTargetId); 
-      showToast('Event Deleted', `"${ev.name}" has been removed.`); 
+      EVENTS = EVENTS.filter(e => e.id !== deleteTargetId);
+      showToast('Event Deleted', `"${ev.name}" has been removed.`);
     } catch(err) {
       console.error(err);
       showToast('Error', 'Failed to delete event.');
     }
   }
-  closeConfirm(); 
+  closeConfirm();
   render();
 }
 
+/* ═══════════════════════ TOAST ═══════════════════════ */
 function showToast(title, msg, duration = 3200) {
   const toast = document.getElementById('success-toast');
   const bar   = document.getElementById('toast-bar');
   document.getElementById('toast-title').textContent = title;
-  document.getElementById('toast-msg').textContent   = msg;
+  document.getElementById('toast-body').textContent  = msg;
+
+  // Restart the checkmark draw animation each time
+  const check = toast.querySelector('.check-draw');
+  if (check) {
+    check.style.animation = 'none';
+    void check.offsetWidth;
+    check.style.animation = '';
+  }
+
   bar.style.transition = 'none'; bar.style.width = '100%';
+  toast.style.opacity = '1'; toast.style.transform = 'translateY(0)';
   requestAnimationFrame(() => requestAnimationFrame(() => {
-    toast.style.opacity = '1'; toast.style.transform = 'translateY(0)';
     bar.style.transition = `width ${duration}ms linear`; bar.style.width = '0%';
   }));
   clearTimeout(window._toast);
-  window._toast = setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateY(12px)'; }, duration);
+  window._toast = setTimeout(() => {
+    toast.style.opacity = '0'; toast.style.transform = 'translateY(12px)';
+  }, duration);
 }
 
+/* ═══════════════════════ HELPERS ═══════════════════════ */
 function show(id) { const m = document.getElementById(id); m.classList.remove('hidden'); m.classList.add('flex'); }
 function hide(id) { const m = document.getElementById(id); m.classList.add('hidden'); m.classList.remove('flex'); }
-function fmtDate(d) { if (!d) return '—'; const [y,m,day] = d.split('-'); return new Date(+y, +m-1, +day).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }); }
+function fmtDate(d) {
+  if (!d) return '—';
+  const [y,m,day] = d.split('-');
+  return new Date(+y, +m-1, +day).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+}
 function catClass(type) {
-  const map = { 'IP Awareness (IPA)':'cat-ipa','Patent Search (PS)':'cat-ps','Patent Drafting (PD)':'cat-pd','IPA and PS':'cat-ipa-ps','IPA and PD':'cat-ipa-pd','PS and PD':'cat-ps-pd','IPA, PS, and PD':'cat-all' };
+  const map = {
+    'IP Awareness (IPA)':'cat-ipa', 'Patent Search (PS)':'cat-ps', 'Patent Drafting (PD)':'cat-pd',
+    'IPA and PS':'cat-ipa-ps', 'IPA and PD':'cat-ipa-pd', 'PS and PD':'cat-ps-pd', 'IPA, PS, and PD':'cat-all'
+  };
   return map[type] || 'cat-other';
 }
 
-/* ═══════════════════════ INITIAL LOAD FROM DATABASE ═══════════════════════ */
+/* ═══════════════════════ INITIAL LOAD ═══════════════════════ */
 async function loadData() {
   try {
     const res = await fetch('http://localhost:5000/api/events');
@@ -1424,5 +1378,7 @@ async function loadData() {
   }
 }
 
-loadData(); 
+loadData();
 </script>
+</body>
+</html>

@@ -6,7 +6,8 @@ const trademarkSchema = new mongoose.Schema({
   owner: String,
   dept: String,
   status: String,
-  date: String
+  date: String,
+  googleDriveLink: { type: String, trim: true, default: '' }
 });
 
 module.exports = mongoose.model('Trademark', trademarkSchema);

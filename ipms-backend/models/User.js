@@ -8,22 +8,23 @@ const userSchema = new mongoose.Schema(
     lname: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password: { type: String, required: true },
-    dept: { type: String, required: true, trim: true },
-    role: { type: String, enum: ["admin", "staff", "researcher"], default: "staff", required: true },
-    status: { type: String, enum: ["Active", "Inactive", "Suspended"], default: "Active", required: true }
+    role: { type: String, enum: ["admin", "staff"], default: "staff", required: true },
+    status: { type: String, enum: ["Active", "Inactive", "Suspended"], default: "Active", required: true },
+    // UPDATE: Idinagdag para mag-record ng timestamp ng huling login
+    lastLogin: { type: Date, default: null }
   },
   { timestamps: true }
 );
 
-// Hash password bago i-save
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+// Pre-save hook para sa password hashing
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return; 
+
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
-    next();
   } catch (err) {
-    next(err);
+    throw err; 
   }
 });
 
@@ -34,7 +35,7 @@ userSchema.set("toJSON", {
     ret.id = ret._id; 
     delete ret._id;
     delete ret.__v;
-    delete ret.password; // Tago ang password!
+    delete ret.password; // Ligtas na tinago ang password hash sa client-side browser
     ret.created = ret.createdAt ? ret.createdAt.toISOString().split("T")[0] : "";
   }
 });

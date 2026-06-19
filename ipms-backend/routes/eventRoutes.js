@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Event = require('../models/Event');
+const { createLog } = require('../utils/logger');
 
-// GET: Kumuha ng lahat ng events
 router.get('/', async (req, res) => {
   try {
     const events = await Event.find().sort({ createdAt: -1 });

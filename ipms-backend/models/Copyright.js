@@ -6,7 +6,8 @@ const copyrightSchema = new mongoose.Schema({
   author: String,
   dept: String,
   status: String,
-  date: String
+  date: String,
+  googleDriveLink: { type: String, trim: true, default: '' }
 });
 
 module.exports = mongoose.model('Copyright', copyrightSchema);

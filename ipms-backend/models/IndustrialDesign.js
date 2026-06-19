@@ -6,7 +6,8 @@ const industrialDesignSchema = new mongoose.Schema({
   designer: String,
   dept: String,
   status: String,
-  date: String
+  date: String,
+  googleDriveLink: { type: String, trim: true, default: '' }
 });
 
 module.exports = mongoose.model('IndustrialDesign', industrialDesignSchema);
