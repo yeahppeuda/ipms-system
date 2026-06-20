@@ -40,21 +40,23 @@ app.use((req, res, next) => {
    DATABASE CONNECTION
 ========================= */
 if (!process.env.MONGO_URI) {
-  console.error("❌ MONGO_URI is missing in .env");
-  process.exit(1);
+  console.error("❌ MONGO_URI is missing in environment variables");
+  // Inalis ang process.exit(1) para hindi mag-crash ang Vercel container bago pa man makasagot sa request
 }
 
-mongoose.connect(process.env.MONGO_URI)
+// Optimization para sa Serverless connection pooling
+mongoose.connect(process.env.MONGO_URI, {
+  maxPoolSize: 10, 
+  serverSelectionTimeoutMS: 5000
+})
   .then(() => console.log("✅ MongoDB Connected Successfully"))
   .catch((err) => {
     console.error("❌ MongoDB Connection Error:", err.message);
-    process.exit(1);
   });
 
 /* =========================
    ROUTES
 ========================= */
-// Make sure these files exist inside your /routes folder!
 const authRoutes = require("./routes/authRoutes");
 const researchRoutes = require("./routes/researchRoutes");
 const eventRoutes = require("./routes/eventRoutes");
@@ -77,7 +79,8 @@ app.use("/api/inventory-of-technology", inventoryRoutes);
 app.get("/", (req, res) => {
   res.json({
     status: "OK",
-    message: "IPMS API is running smoothly"
+    message: "IPMS API is running smoothly",
+    environment: process.env.NODE_ENV || "development"
   });
 });
 
@@ -103,21 +106,26 @@ app.use((err, req, res, next) => {
 });
 
 /* =========================
-   START SERVER & GRACEFUL SHUTDOWN
+   START SERVER (LOCAL ONLY) & EXPORT
 ========================= */
-const PORT = process.env.PORT || 5000;
-
-const server = app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
-
-// Pro-tip: Graceful shutdown to prevent database connection leaks
-process.on('SIGINT', async () => {
-  console.log('Shutting down server...');
-  await mongoose.connection.close();
-  console.log('MongoDB connection closed.');
-  server.close(() => {
-    console.log('Server successfully closed.');
-    process.exit(0);
+// Patakbuhin lang ang server port kung HINDI production (hindi Vercel)
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5000;
+  const server = app.listen(PORT, () => {
+    console.log(`🚀 Server running locally on http://localhost:${PORT}`);
   });
-});
+
+  // Ang graceful shutdown ay para sa local machine/tradisyunal na VPS lang
+  process.on('SIGINT', async () => {
+    console.log('Shutting down local server...');
+    await mongoose.connection.close();
+    console.log('MongoDB connection closed.');
+    server.close(() => {
+      console.log('Server successfully closed.');
+      process.exit(0);
+    });
+  });
+}
+
+// IMPORTANTE: Kailangan i-export ang app para makuha ng Vercel Serverless Functions
+module.exports = app;
