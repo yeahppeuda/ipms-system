@@ -68,12 +68,14 @@
 
   /* ── Form Fields ── */
   .field-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:#727785; display:block; margin-bottom:8px; }
-  .field-input { width:100%; background:#f4f7fc; border:1px solid #e4e9f2; border-radius:14px; padding:12px 16px; font-family:'Inter',sans-serif; font-size:14px; color:#191b23; outline:none; transition:border-color 0.15s,box-shadow 0.15s, background-color 0.15s; }
-  .field-input:focus { border-color:#0058be; background:#ffffff; box-shadow:0 0 0 3px rgba(0,88,190,0.06); }
+  .field-input { width:100%; background:#f4f7fc; border:1.5px solid transparent; border-radius:12px; padding:12px 16px; font-family:'Inter',sans-serif; font-size:14px; color:#191b23; outline:none; transition:border-color 0.15s,box-shadow 0.15s, background-color 0.15s; }
+  .field-input:hover { background:#eef2f9; }
+  .field-input:focus { border-color:#0058be; background:#ffffff; box-shadow:0 0 0 3px rgba(0,88,190,0.08); }
   .field-input::placeholder { color:#8e9aa8; font-weight:400; }
   
-  .dropdown-trigger { width:100%; display:flex; align-items:center; justify-content:between; background:#f4f7fc; border:1px solid #e4e9f2; border-radius:14px; padding:12px 16px; font-family:'Inter',sans-serif; font-size:14px; color:#191b23; font-weight:500; cursor:pointer; text-align:left; transition:all 0.15s; }
-  .dropdown-trigger:focus { border-color:#0058be; background:#ffffff; box-shadow:0 0 0 3px rgba(0,88,190,0.06); outline:none; }
+  .dropdown-trigger { width:100%; display:flex; align-items:center; justify-content:between; background:#f4f7fc; border:1.5px solid transparent; border-radius:12px; padding:12px 16px; font-family:'Inter',sans-serif; font-size:14px; color:#191b23; font-weight:500; cursor:pointer; text-align:left; transition:all 0.15s; }
+  .dropdown-trigger:hover { background:#eef2f9; }
+  .dropdown-trigger:focus { border-color:#0058be; background:#ffffff; box-shadow:0 0 0 3px rgba(0,88,190,0.08); outline:none; }
   
   .pw-wrap { position:relative; }
   .pw-wrap .field-input { padding-right:44px; }
@@ -127,7 +129,7 @@
 <header class="fixed top-0 left-0 right-0 pl-[260px] z-40 bg-white/80 backdrop-blur-md border-b border-[#e2e8f0]">
   <div class="flex items-center justify-between h-[64px] w-full px-8 gap-4">
     <div>
-      <h2 class="text-[16px] font-bold text-[#191b23] leading-tight">User Management</h2>
+    
     </div>
     <div class="flex items-center gap-5 shrink-0">
       <div class="live-time-badge"><i class="ti ti-clock"></i><span id="clockDisplay">--:-- --</span></div>
@@ -270,7 +272,7 @@
         <div class="text-[11px] font-extrabold tracking-widest text-[#0058be] uppercase border-b border-[#edf0f7] pb-1">Personal Details</div>
         <div>
           <label class="field-label">Full Name <span class="text-[#dc2626]">*</span></label>
-          <div class="grid grid-cols-3 gap-3">
+          <div class="grid grid-cols-3 gap-4">
             <input class="field-input" id="umFname" type="text" placeholder="First Name"/>
             <input class="field-input" id="umMname" type="text" placeholder="Middle Name"/>
             <input class="field-input" id="umLname" type="text" placeholder="Last Name"/>
@@ -341,8 +343,8 @@
     </div>
 
     <div class="px-8 pt-5 flex items-center justify-between gap-3 border-t border-[#f0f2f7] bg-white">
-      <button id="deleteBtn" onclick="triggerDelete()" class="hidden text-[13px] font-semibold text-[#a0a6b8] hover:text-[#dc2626] transition-colors">
-        Delete Account
+      <button id="deleteBtn" onclick="triggerDelete()" class="hidden text-[13px] font-bold text-[#dc2626] hover:text-[#b91c1c] transition-colors flex items-center gap-1.5">
+        <i class="ti ti-trash" style="font-size:14px;"></i>Delete Account
       </button>
       <div class="flex gap-3 ml-auto">
         <button onclick="closeModal()" class="px-6 py-2.5 text-[13px] font-bold text-[#424754] bg-white border border-[#e2e8f0] rounded-xl hover:bg-[#f4f7fc] transition-all">Cancel</button>
@@ -362,7 +364,7 @@
       <i class="ti" style="font-size:22px;color:#dc2626;" id="confIconTag"></i>
     </div>
     <h3 class="text-[18px] font-bold text-[#191b23] mb-2" id="confTitle">Delete User</h3>
-    <p class="text-[13px] font-medium text-[#727785] mb-6 leading-relaxed" id="confMsg">Are you sure?</p>
+    <div class="text-[13px] font-medium text-[#727785] mb-6 leading-relaxed" id="confMsg">Are you sure?</div>
     <div class="flex gap-3">
       <button onclick="closeConfirm()" class="flex-1 py-2.5 border border-[#e2e8f0] rounded-xl text-[13px] font-bold text-[#424754] hover:bg-[#f4f7fc] transition-all">Cancel</button>
       <button id="confBtn" class="flex-1 py-2.5 rounded-xl text-[13px] font-bold text-white transition-all bg-[#dc2626] hover:bg-[#b91c1c]" onclick="executeConfirm()">Delete</button>
@@ -589,21 +591,23 @@ function renderTable() {
     const fullName = [u.fname, u.mname, u.lname].filter(Boolean).join(' ');
     const uid = u._id || u.id || '';
 
-    const roleBadge = ((u.role||'').toLowerCase() === 'admin') 
-        ? `<span class="badge badge-role-admin">Admin</span>`
-        : `<span class="badge badge-role-staff">Staff</span>`;
+    const roleBadge = ((u.role||'').toLowerCase() === 'admin')
+        ? `<span class="text-[13px] font-medium text-[#424754]">Admin</span>`
+        : `<span class="text-[13px] font-medium text-[#424754]">Staff</span>`;
 
     const statusBadge = u.status === 'Active'
-      ? `<span class="badge badge-status-active"><span class="w-1.5 h-1.5 rounded-full bg-[#15803d] mr-1.5"></span>Active</span>`
-      : `<span class="badge badge-status-inactive"><span class="w-1.5 h-1.5 rounded-full bg-[#4b5563] mr-1.5"></span>Inactive</span>`;
+      ? `<span class="badge badge-status-active">Active</span>`
+      : `<span class="badge badge-status-inactive">Inactive</span>`;
 
     // Flexible fallback engine para sa Last Login date field structures
     const rawLastLogin = u.lastLogin || u.last_login || u.lastlogin;
+    const username = (u.email || '').split('@')[0] || '—';
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td class="tbl-td">
-        <p class="text-[13px] font-bold text-[#191b23]">${fullName}</p>
+        <p class="text-[13px] font-medium text-[#191b23]">${fullName}</p>
+        <p class="text-[12px] text-[#a0a6b8] mt-0.5">${username}</p>
       </td>
       <td class="tbl-td text-[#727785]">${u.email||''}</td>
       <td class="tbl-td">${roleBadge}</td>
@@ -640,7 +644,7 @@ function openAddModal() {
   editingId = null;
   clearForm();
   document.getElementById('drawerTitle').textContent    = 'Add New User';
-  document.getElementById('drawerSubtitle').textContent = 'Create a secure system user identification log entry.';
+  document.getElementById('drawerSubtitle').textContent = 'Fill in the details to create a new account.';
   document.getElementById('drawerIdRow').classList.add('hidden');
   document.getElementById('deleteBtn').classList.add('hidden');
   document.getElementById('umSaveLabel').textContent    = 'Save User';
@@ -657,8 +661,8 @@ function openViewEdit(uid) {
   if (!u) return;
   editingId = uid;
 
-  document.getElementById('drawerTitle').textContent    = 'Account Parameters';
-  document.getElementById('drawerSubtitle').textContent = `Reviewing user structural attributes inside index data registry.`;
+  document.getElementById('drawerTitle').textContent    = 'User Details';
+  document.getElementById('drawerSubtitle').textContent = `View or update this user's account information.`;
   document.getElementById('drawerIdRow').classList.remove('hidden');
   document.getElementById('drawerUserId').textContent   = uid;
   document.getElementById('umFname').value  = u.fname || '';
@@ -712,12 +716,12 @@ function interceptFormSubmit() {
   const confirmPass = document.getElementById('umConfirmPass').value;
 
   if (!fname || !lname || !email || !role) {
-    return showErr('Missing input parameters. Please complete all required profile details.');
+    return showErr('Please fill in all required fields.');
   }
 
   // Mandatory ang password kapag gagawa ng bagong user
   if (!editingId && !pass) {
-    return showErr('Password field is required to register a new system profile.');
+    return showErr('Password is required for new accounts.');
   }
 
   // Client-side duplication checking
@@ -727,31 +731,46 @@ function interceptFormSubmit() {
   });
 
   if (isDuplicate) {
-    return showErr('Existing user');
+    return showErr('This email is already in use by another account.');
   }
 
   // STRICT RULE: Confirm password match block
   if (pass !== confirmPass) {
-    return showErr('Validation failure. Confirm password matrix string does not match.');
+    return showErr('Passwords do not match.');
   }
 
   // STRICT RULE: Minimum length must be at least 6 characters & No special characters block
   if (pass) {
     if (pass.length < 6) {
-      return showErr('Password validation dropped: Minimum length required is 6 characters.');
+      return showErr('Password must be at least 6 characters long.');
     }
     const alphaNumericRegex = /^[a-zA-Z0-9]+$/;
     if (!alphaNumericRegex.test(pass)) {
-      return showErr('Password validation dropped: Special characters are completely restricted.');
+      return showErr('Password can only contain letters and numbers.');
     }
   }
 
+  const roleLabel = role === 'admin' ? 'Admin' : 'Staff';
+  const statusVal = document.getElementById('umStatus').value || 'Active';
+  const fullNamePreview = [fname, document.getElementById('umMname').value.trim(), lname].filter(Boolean).join(' ');
+
+  const previewHTML = `
+    <p class="mb-3">Please review the details before ${editingId ? 'saving changes to' : 'creating'} this account:</p>
+    <div class="rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-4 py-3 text-left">
+      <p class="text-[14px] font-bold text-[#191b23]">${fullNamePreview}</p>
+      <p class="text-[12px] text-[#727785] mb-2">${email}</p>
+      <div class="flex items-center gap-2 text-[12px] font-semibold">
+        <span class="px-2 py-0.5 rounded-md bg-[#e0f2fe] text-[#0369a1]">${roleLabel}</span>
+        <span class="px-2 py-0.5 rounded-md ${statusVal === 'Active' ? 'bg-[#dcfce7] text-[#15803d]' : 'bg-[#f3f4f6] text-[#4b5563]'}">${statusVal}</span>
+      </div>
+    </div>`;
+
   openConfirmModal(
-    editingId ? 'Modify User Details' : 'Register System Profile',
-    `Are you sure you want to proceed with processing structural updates into the system core for this identity record?`,
+    editingId ? 'Confirm Changes' : 'Confirm New User',
+    previewHTML,
     'ti-device-floppy',
     '#0058be',
-    'Execute',
+    'Confirm',
     () => { saveUser(); }
   );
 }
@@ -781,9 +800,9 @@ async function saveUser() {
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify(payload)
     });
-    if (!res.ok) throw new Error('Action execution dropped by server validation protocols.');
+    if (!res.ok) throw new Error('Something went wrong while saving. Please try again.');
     closeModal();
-    showToast('Success Saved', 'User logs catalog synchronization complete.');
+    showToast(editingId ? 'User Updated' : 'User Created', editingId ? 'Changes have been saved.' : 'New account has been created.');
     await loadUsers();
   } catch (err) {
     showErr(err.message);
@@ -798,7 +817,7 @@ async function saveUser() {
 ══════════════════════════════════ */
 function openConfirmModal(title, msg, iconClass, btnBgColor, actionText, callback) {
   document.getElementById('confTitle').textContent = title;
-  document.getElementById('confMsg').textContent = msg;
+  document.getElementById('confMsg').innerHTML = msg;
   
   const iconTag = document.getElementById('confIconTag');
   iconTag.className = `ti ${iconClass}`;
@@ -820,12 +839,27 @@ function triggerDelete() {
   pendingDeleteId = editingId;
   openConfirmModal(
     'Delete User',
-    'Are you completely sure you want to permanently separate and erase this identity parameter logging record?',
+    'This will permanently delete this account. This action cannot be undone.',
     'ti-trash',
     '#dc2626',
     'Delete',
-    () => { executeConfirm(); }
+    () => { deleteUser(); }
   );
+}
+
+async function deleteUser() {
+  if (!pendingDeleteId) return;
+  try {
+    const res = await fetch(`${API_BASE}/users/${pendingDeleteId}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error('Could not delete this user. Please try again.');
+    closeModal();
+    showToast('User Deleted', 'The account has been removed.');
+    await loadUsers();
+  } catch (err) {
+    showToast('Delete Failed', err.message);
+  } finally {
+    pendingDeleteId = null;
+  }
 }
 
 function closeConfirm() { 

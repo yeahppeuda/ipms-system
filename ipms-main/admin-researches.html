@@ -194,10 +194,6 @@
 
   <div class="p-5 lg:p-8 space-y-7 flex-1">
     <div class="flex items-center justify-between flex-wrap gap-3">
-      <div>
-        <h2 class="text-2xl font-bold text-on-surface">All Researches</h2>
-        <p class="text-[13px] text-outline mt-0.5">Centralized repository of all research records across IP categories</p>
-      </div>
     </div>
 
     <section class="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -294,8 +290,8 @@
               <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant" style="width:16%;">Title</th>
               <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant" style="width:15%;">Author(s)</th>
               <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant" style="width:21%;">College / Department</th>
-              <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant" style="width:13%;">Category</th>
-              <th id="th-dynamic" class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant whitespace-nowrap" style="width:11%;">Date Applied</th>
+              <th class="pl-2 pr-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant" style="width:11%;">Category</th>
+              <th id="th-dynamic" class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant whitespace-nowrap" style="width:15%;">Date Applied</th>
               <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant text-center" style="width:9%;">Actions</th>
             </tr>
           </thead>
@@ -780,7 +776,7 @@ function render() {
               <i class="ti ti-trash" style="font-size:11px;color:#ef4444;"></i>
               <span class="${urgentCls}">${fmtShort(delDate)}</span>
             </div>
-            <div class="retention-bar" style="width:90px;">
+            <div class="retention-bar" style="width:110px;">
               <div class="retention-fill ${barCls}" style="width:${pct}%;"></div>
             </div>
             <div class="${urgentCls} text-[10px] mt-0.5">${remaining}d remaining</div>
@@ -808,8 +804,8 @@ function render() {
               `;
             })()}
           </td>
-          <td class="px-5 py-4">${catBadgeHTML(r.category)}</td>
-          <td class="px-5 py-4">${dynamicCell}</td>
+          <td class="pl-2 pr-8 py-4">${catBadgeHTML(r.category)}</td>
+          <td class="px-5 py-4 pl-6">${dynamicCell}</td>
           <td class="px-5 py-4 text-center">
             <div class="flex items-center justify-center gap-1.5">
               <button onclick="openDetailModal('${idStr}')" title="View"

@@ -42,8 +42,8 @@
       .nav-item i { font-size:18px; width:20px; text-align:center; flex-shrink:0; color:#727785; transition:color 0.15s; }
       .nav-item:hover i { color:#191b23; }
       .nav-section-label { font-size:10px; font-weight:700; color:#a0a6b8; text-transform:uppercase; letter-spacing:0.08em; padding:0 12px; margin:16px 0 6px; }
-      .live-time-badge { display:flex; align-items:center; gap:6px; background:#f4f7fc; border:1px solid #e2e8f0; border-radius:8px; padding:5px 11px; font-size:12px; font-weight:600; color:#424754; white-space:nowrap; flex-shrink:0; }
-      .live-time-badge i { color:#0058be; font-size:14px; }
+      .live-time-badge { display:flex; align-items:center; gap:6px; background:#f2f3fd; border:1px solid #e1e2ec; border-radius:12px; padding:0 14px; height:38px; font-size:13px; font-weight:600; color:#424754; white-space:nowrap; flex-shrink:0; }
+      .live-time-badge i { color:#0058be; font-size:15px; }
 
       .stat-card { transition: box-shadow 0.2s, transform 0.2s; }
       .stat-card:hover { transform: translateY(-2px); }
@@ -189,12 +189,6 @@
     <a class="nav-item" href="inventory-of-technology.html"><i class="ti ti-device-desktop-analytics"></i><span>Inventory of Technology</span></a>
     <a class="nav-item" href="event.html"><i class="ti ti-calendar-event"></i><span>Event</span></a>
   </nav>
-  <div class="p-4 border-t border-[#e2e8f0]">
-    <button onclick="handleNavAway('index.html')"
-      class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-[#e2e8f0] text-[#424754] text-sm font-semibold hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all duration-200">
-      <i class="ti ti-logout" style="font-size:16px;"></i><span>Log Out</span>
-    </button>
-  </div>
 </aside>
 
     <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black/30 z-40 lg:hidden" onclick="closeSidebar()"></div>
@@ -212,12 +206,12 @@
             <div class="h-6 w-px bg-[#e2e8f0]"></div>
             <div class="relative" id="profileMenuWrapper">
               <div onclick="toggleProfileDropdown(event)" class="w-10 h-10 rounded-full bg-[#f4f7fc] flex items-center justify-center border border-[#e2e8f0] cursor-pointer hover:ring-2 hover:ring-[#0058be]/30 transition-all shadow-sm">
-                <span class="text-[12px] font-bold text-[#0058be]">AU</span>
+                <span class="text-[12px] font-bold text-[#0058be]" id="headerUserInitials">?</span>
               </div>
               <div id="profileDropdown" class="hidden absolute right-0 top-[calc(100%+8px)] min-w-[160px] bg-white border border-[#e2e8f0] rounded-xl p-1.5 shadow-lg z-50">
                 <div class="px-3 py-2.5 border-b border-[#f0f2f7] mb-1">
-                  <p class="text-[13px] font-semibold text-[#191b23]">Admin User</p>
-                  <p class="text-[10px] font-bold text-[#727785] uppercase tracking-wider mt-0.5">Administrator</p>
+                  <p class="text-[13px] font-semibold text-[#191b23]" id="headerUserName">User</p>
+                  <p class="text-[10px] font-bold text-[#727785] uppercase tracking-wider mt-0.5" id="headerUserRole">Role</p>
                 </div>
                 <button onclick="handleNavAway('index.html')" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] font-semibold text-[#dc2626] hover:bg-[#fef2f2] transition-colors text-left">
                   Log Out
@@ -609,12 +603,46 @@
     const CATEGORY = "copyright";
 
     /* ── CLOCK ── */
-    /* Clock replaced by dashboard-style clock */
+    function startLiveClock() {
+      function tick() {
+        const n = new Date();
+        let h = n.getHours(), m = n.getMinutes(), s = n.getSeconds();
+        const ap = h >= 12 ? 'PM' : 'AM';
+        h = h % 12 || 12;
+        document.getElementById('liveClockDisplay').textContent =
+          `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')} ${ap}`;
+      }
+      tick(); setInterval(tick, 1000);
+    }
 
     /* ── SIDEBAR MOBILE ── */
     function openSidebar()  { document.getElementById('sidebar').classList.add('open');    document.getElementById('sidebar-overlay').classList.remove('hidden'); }
     function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').classList.add('hidden'); }
     function toggleProfileDropdown(e) { e.stopPropagation(); document.getElementById('profileDropdown').classList.toggle('hidden'); }
+    /* ── USER INFO (same source as dashboard.html) ── */
+    function getCurrentUser() {
+      try {
+        const stored = sessionStorage.getItem('itso_user');
+        return stored ? JSON.parse(stored) : null;
+      } catch { return null; }
+    }
+
+    function populateProfileInfo() {
+      const currentUser = getCurrentUser();
+      if (!currentUser) return;
+
+      const fullName = [currentUser.fname, currentUser.lname].filter(Boolean).join(' ') || 'User';
+      const initials  = ((currentUser.fname?.[0] || '') + (currentUser.lname?.[0] || '')).toUpperCase() || 'U';
+      const roleLabel = (currentUser.role || 'user');
+      const roleCap   = roleLabel.charAt(0).toUpperCase() + roleLabel.slice(1);
+
+      const initialsEl = document.getElementById('headerUserInitials');
+      const nameEl = document.getElementById('headerUserName');
+      const roleEl = document.getElementById('headerUserRole');
+      if (initialsEl) initialsEl.textContent = initials;
+      if (nameEl) nameEl.textContent = fullName;
+      if (roleEl) roleEl.textContent = roleCap;
+    }
 
     /* ── HELPERS ── */
     function toReadableDate(ds) {
@@ -1254,7 +1282,11 @@
     });
 
     window.addEventListener('beforeunload', e => { if (isDirty) { e.preventDefault(); e.returnValue = ''; } });
-    document.addEventListener('DOMContentLoaded', fetchCopyrights);
+    document.addEventListener('DOMContentLoaded', () => {
+      startLiveClock();
+      populateProfileInfo();
+      fetchCopyrights();
+    });
     </script>
     </body>
     </html>

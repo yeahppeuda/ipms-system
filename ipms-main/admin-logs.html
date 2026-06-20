@@ -80,7 +80,7 @@
   .btn-detail:hover{background:#0058be;color:#fff;border-color:#0058be;transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,88,190,.2);}
 
   /* Refresh button */
-  .btn-refresh{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:9px;font-size:13px;font-weight:600;color:#424754;background:#fff;border:1px solid #e2e5ef;cursor:pointer;transition:all .18s;white-space:nowrap;}
+  .btn-refresh{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:9px;font-size:13px;font-weight:600;color:#424754;background:#fff;border:1px solid #e2e5ef;cursor:pointer;transition:all .18s;white-space:nowrap;height:38px;box-sizing:border-box;}
   .btn-refresh:hover{color:#0058be;border-color:#bfdbfe;background:#eff6ff;}
   .btn-refresh.spinning i{animation:spin .6s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg);}}
@@ -89,16 +89,20 @@
   .filter-chip{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;font-size:12.5px;font-weight:500;color:#424754;background:#fff;border:1px solid #e2e5ef;cursor:pointer;transition:all .15s;}
   .filter-chip:hover{border-color:#bfdbfe;color:#0058be;background:#eff6ff;}
   .filter-chip.active-filter{border-color:#0058be;color:#0058be;background:#eff6ff;}
+  .filter-panel{position:absolute;right:0;top:calc(100% + 6px);width:280px;background:#fff;border:1px solid #e2e5ef;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.1);z-index:200;padding:18px;}
+
+
+
 
   /* Search bar */
   .search-bar{position:relative;flex:1;}
   .search-bar i{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:15px;color:#a0a6b8;pointer-events:none;}
-  .search-bar input{width:100%;background:#f8fafc;border:1px solid #e2e5ef;border-radius:9px;padding:8px 12px 8px 35px;font-size:13px;font-family:Inter,sans-serif;color:#191b23;outline:none;transition:all .15s;}
+  .search-bar input{width:100%;background:#f8fafc;border:1px solid #e2e5ef;border-radius:9px;padding:8px 12px 8px 35px;font-size:13px;font-family:Inter,sans-serif;color:#191b23;outline:none;transition:all .15s;height:38px;box-sizing:border-box;}
   .search-bar input::placeholder{color:#a0a6b8;}
   .search-bar input:focus{background:#fff;border-color:#0058be;box-shadow:0 0 0 3px rgba(0,88,190,.08);}
 
   /* Filter panel */
-  .filter-panel{position:absolute;right:0;top:calc(100% + 6px);width:280px;background:#fff;border:1px solid #e2e5ef;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.1);z-index:200;padding:18px;}
+
 
   /* Truncated desc */
   .desc-cell{max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -149,7 +153,7 @@
 <header class="fixed top-0 left-0 right-0 pl-[260px] z-40 bg-white/80 backdrop-blur-md border-b border-[#e2e8f0]">
   <div class="flex items-center justify-between h-[64px] w-full px-8 gap-4">
     <div>
-      <h2 class="text-[16px] font-bold text-[#191b23] leading-tight">Activity Logs</h2>
+      
     </div>
     <div class="flex items-center gap-5 shrink-0">
       <div class="live-time-badge"><i class="ti ti-clock"></i><span id="clockDisplay">--:-- --</span></div>
@@ -227,7 +231,7 @@
         <div id="active-chips" class="flex flex-wrap gap-1.5"></div>
 
         <div class="relative" id="filter-wrapper">
-          <button id="filter-btn" onclick="toggleFilterPanel()" class="filter-chip" id="filter-toggle-btn">
+          <button id="filter-toggle-btn" onclick="toggleFilterPanel()" class="filter-chip">
             <i class="ti ti-adjustments-horizontal" style="font-size:15px;"></i>
             <span>Filter</span>
             <span id="filter-count-badge" class="hidden text-[10px] font-bold bg-primary text-white rounded-full px-1.5 py-px leading-none"></span>
@@ -238,36 +242,14 @@
 
             <div class="space-y-3">
               <div>
-                <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Module</label>
-                <select id="mod-filter" onchange="updateFilterBadge()"
-                  class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-[13px] text-on-surface outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all cursor-pointer">
-                  <option value="all">All Modules</option>
-                  <option>Copyright</option><option>Patent</option><option>Trademark</option>
-                  <option>Utility Model</option><option>Industrial Design</option>
-                  <option>User Management</option><option>System</option><option>Reports</option><option>Events</option>
-                </select>
-              </div>
-
-              <div>
                 <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Action</label>
                 <select id="action-filter" onchange="updateFilterBadge()"
                   class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-[13px] text-on-surface outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all cursor-pointer">
                   <option value="all">All Actions</option>
-                  <option>Login</option><option>Logout</option><option>Create</option>
+                  <option>Login</option><option>Create</option>
                   <option>Update</option><option>Delete</option><option>Export</option>
-                  <option>View</option><option>Reset Password</option>
+                  <option>Archive</option><option>Restore</option>
                 </select>
-              </div>
-
-              <div>
-                <label class="text-[11px] font-semibold text-on-surface-variant block mb-1">Status / Severity</label>
-                <div class="grid grid-cols-4 gap-1.5">
-                  <button onclick="setSev('all')"      id="sev-btn-all"      class="sev-btn py-1.5 rounded-lg text-[11px] font-semibold border transition-all">All</button>
-                  <button onclick="setSev('info')"     id="sev-btn-info"     class="sev-btn py-1.5 rounded-lg text-[11px] font-semibold border transition-all">Info</button>
-                  <button onclick="setSev('warning')"  id="sev-btn-warning"  class="sev-btn py-1.5 rounded-lg text-[11px] font-semibold border transition-all">Warning</button>
-                  <button onclick="setSev('critical')" id="sev-btn-critical" class="sev-btn py-1.5 rounded-lg text-[11px] font-semibold border transition-all">Critical</button>
-                </div>
-                <input type="hidden" id="sev-filter" value="all"/>
               </div>
 
               <div>
@@ -375,15 +357,9 @@
 
     <div class="p-6 overflow-y-auto flex-1" id="log-detail-body"></div>
 
-    <div class="px-6 py-4 bg-slate-50 border-t border-outline-variant flex items-center justify-between">
-      <button id="modal-prev-btn" onclick="navigateModal(-1)" class="flex items-center gap-1.5 text-[12px] font-semibold text-outline hover:text-primary transition-colors disabled:opacity-30" disabled>
-        <i class="ti ti-chevron-left" style="font-size:14px;"></i> Previous
-      </button>
+    <div class="px-6 py-4 bg-slate-50 border-t border-outline-variant flex items-center justify-end">
       <button onclick="closeLogDetail()" class="px-5 py-2 text-[13px] font-semibold text-on-surface-variant bg-white border border-slate-200 hover:border-slate-300 rounded-xl transition-all">
         Close
-      </button>
-      <button id="modal-next-btn" onclick="navigateModal(1)" class="flex items-center gap-1.5 text-[12px] font-semibold text-outline hover:text-primary transition-colors disabled:opacity-30" disabled>
-        Next <i class="ti ti-chevron-right" style="font-size:14px;"></i>
       </button>
     </div>
   </div>
@@ -408,24 +384,17 @@
 ═══════════════════════════════════════════════ */
 const ACTIONS_META = {
   'Login':          {color:'#1e40af',bg:'#eff6ff',border:'#bfdbfe',icon:'ti-login'},
-  'Logout':         {color:'#5b21b6',bg:'#f5f3ff',border:'#c4b5fd',icon:'ti-logout'},
   'Create':         {color:'#065f46',bg:'#ecfdf5',border:'#6ee7b7',icon:'ti-plus'},
   'Update':         {color:'#92400e',bg:'#fffbeb',border:'#fcd34d',icon:'ti-pencil'},
   'Delete':         {color:'#991b1b',bg:'#fef2f2',border:'#fca5a5',icon:'ti-trash'},
   'Export':         {color:'#0369a1',bg:'#f0f9ff',border:'#7dd3fc',icon:'ti-download'},
-  'View':           {color:'#374151',bg:'#f9fafb',border:'#d1d5db',icon:'ti-eye'},
-  'Reset Password': {color:'#9d174d',bg:'#fdf2f8',border:'#f9a8d4',icon:'ti-key'},
+  'Archive':        {color:'#475569',bg:'#f8fafc',border:'#cbd5e1',icon:'ti-archive'},
+  'Restore':        {color:'#0f766e',bg:'#f0fdfa',border:'#5eead4',icon:'ti-rotate-clockwise'},
 };
 const SEV_CONFIG = {
   info:     {cls:'badge-info',    label:'Info',     icon:'ti-info-circle'},
   warning:  {cls:'badge-warning', label:'Warning',  icon:'ti-alert-circle'},
   critical: {cls:'badge-critical',label:'Critical', icon:'ti-alert-triangle'},
-};
-const SEV_BTN_STYLES = {
-  all:     {active:'bg-slate-700 text-white border-slate-700',    inactive:'bg-slate-50 text-slate-600 border-slate-200'},
-  info:    {active:'bg-blue-600 text-white border-blue-600',       inactive:'bg-blue-50 text-blue-700 border-blue-200'},
-  warning: {active:'bg-amber-500 text-white border-amber-500',     inactive:'bg-amber-50 text-amber-700 border-amber-200'},
-  critical:{active:'bg-red-600 text-white border-red-600',         inactive:'bg-red-50 text-red-700 border-red-200'},
 };
 
 /* ═══════════════════════════════════════════════
@@ -433,7 +402,6 @@ const SEV_BTN_STYLES = {
 ═══════════════════════════════════════════════ */
 let ALL_LOGS = [], filteredLogs = [], currentPage = 1, ROWS = 15;
 let sortField = 'timestamp', sortDir = 'desc';
-let activeSev = 'all';
 let currentModalId = null;
 
 /* ═══════════════════════════════════════════════
@@ -522,9 +490,9 @@ async function refreshLogs() {
    SUMMARY STATS
 ═══════════════════════════════════════════════ */
 function updateSummary() {
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toLocaleDateString('en-CA', {timeZone:'Asia/Manila'}); // en-CA gives YYYY-MM-DD
   document.getElementById('ls-total').textContent    = ALL_LOGS.length.toLocaleString();
-  document.getElementById('ls-today').textContent    = ALL_LOGS.filter(l => l.timestamp && l.timestamp.startsWith(today)).length.toLocaleString();
+  document.getElementById('ls-today').textContent    = ALL_LOGS.filter(l => l.timestamp && new Date(l.timestamp).toLocaleDateString('en-CA', {timeZone:'Asia/Manila'}) === today).length.toLocaleString();
   document.getElementById('ls-critical').textContent = ALL_LOGS.filter(l => l.severity === 'critical').length.toLocaleString();
   document.getElementById('ls-unique').textContent   = new Set(ALL_LOGS.map(l => l.user)).size.toLocaleString();
 }
@@ -560,33 +528,14 @@ document.addEventListener('click', e => {
 });
 
 /* ═══════════════════════════════════════════════
-   SEVERITY BUTTONS
-═══════════════════════════════════════════════ */
-function setSev(val) {
-  activeSev = val;
-  document.getElementById('sev-filter').value = val;
-  ['all','info','warning','critical'].forEach(s => {
-    const btn = document.getElementById(`sev-btn-${s}`);
-    const st = SEV_BTN_STYLES[s];
-    btn.className = `sev-btn py-1.5 rounded-lg text-[11px] font-semibold border transition-all ${s === val ? st.active : st.inactive}`;
-  });
-  updateFilterBadge();
-}
-setSev('all');
-
-/* ═══════════════════════════════════════════════
    FILTER BADGE COUNT & ACTIVE CHIPS
 ═══════════════════════════════════════════════ */
 function updateFilterBadge() {
-  const mod   = document.getElementById('mod-filter').value;
   const act   = document.getElementById('action-filter').value;
-  const sev   = document.getElementById('sev-filter').value;
   const dfrom = document.getElementById('date-from').value;
   const dto   = document.getElementById('date-to').value;
   let count = 0;
-  if (mod  !== 'all') count++;
   if (act  !== 'all') count++;
-  if (sev  !== 'all') count++;
   if (dfrom || dto)   count++;
   const badge = document.getElementById('filter-count-badge');
   badge.textContent = count;
@@ -594,9 +543,7 @@ function updateFilterBadge() {
 }
 
 function renderActiveChips() {
-  const mod   = document.getElementById('mod-filter').value;
   const act   = document.getElementById('action-filter').value;
-  const sev   = document.getElementById('sev-filter').value;
   const dfrom = document.getElementById('date-from').value;
   const dto   = document.getElementById('date-to').value;
   const chips = document.getElementById('active-chips');
@@ -608,9 +555,7 @@ function renderActiveChips() {
     c.onclick = clearFn;
     chips.appendChild(c);
   };
-  if (mod  !== 'all') mkChip(mod,   () => { document.getElementById('mod-filter').value = 'all'; applyFilters(); });
   if (act  !== 'all') mkChip(act,   () => { document.getElementById('action-filter').value = 'all'; applyFilters(); });
-  if (sev  !== 'all') mkChip(sev,   () => { setSev('all'); applyFilters(); });
   if (dfrom) mkChip(`From ${dfrom}`, () => { document.getElementById('date-from').value = ''; applyFilters(); });
   if (dto)   mkChip(`To ${dto}`,     () => { document.getElementById('date-to').value = '';   applyFilters(); });
 }
@@ -628,11 +573,9 @@ function applyFilters() {
 
 function clearFilters() {
   document.getElementById('log-search').value = '';
-  document.getElementById('mod-filter').value = 'all';
   document.getElementById('action-filter').value = 'all';
   document.getElementById('date-from').value = '';
   document.getElementById('date-to').value = '';
-  setSev('all');
   updateFilterBadge();
   renderActiveChips();
   filterAndRender();
@@ -643,9 +586,7 @@ function clearFilters() {
 ═══════════════════════════════════════════════ */
 function filterAndRender() {
   const q     = (document.getElementById('log-search').value || '').toLowerCase().trim();
-  const mod   = document.getElementById('mod-filter').value;
   const act   = document.getElementById('action-filter').value;
-  const sev   = document.getElementById('sev-filter').value;
   const dfrom = document.getElementById('date-from').value;
   const dto   = document.getElementById('date-to').value;
 
@@ -656,12 +597,11 @@ function filterAndRender() {
                      (l.desc||'').toLowerCase().includes(q) ||
                      (l.ip||'').includes(q) ||
                      (l.id||'').toLowerCase().includes(q);
-    const mM = mod === 'all' || (l.module||'').toLowerCase() === mod.toLowerCase();
-    const mA = act === 'all' || (l.action||'').toLowerCase() === act.toLowerCase();
-    const mS = sev === 'all' || (l.severity||'').toLowerCase() === sev.toLowerCase();
-    const ld = l.timestamp ? l.timestamp.split('T')[0] : '';
+    const normAction = (l.action||'').replace(/[_-]+/g, ' ').trim().toLowerCase();
+    const mA = act === 'all' || normAction === act.toLowerCase();
+    const ld = l.timestamp ? new Date(l.timestamp).toLocaleDateString('en-CA', {timeZone:'Asia/Manila'}) : '';
     const mD = (!dfrom || ld >= dfrom) && (!dto || ld <= dto);
-    return mQ && mM && mA && mS && mD;
+    return mQ && mA && mD;
   });
 
   filteredLogs.sort((a, b) => {
@@ -679,20 +619,20 @@ function filterAndRender() {
 ═══════════════════════════════════════════════ */
 function toTitleCase(str) {
   if (!str) return '—';
-  return str.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+  return str.replace(/[_-]+/g, ' ').trim().replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
 }
 
 function formatDate(ts) {
   if (!ts) return { date: '—', time: '—' };
   const dt = new Date(ts);
-  const date = dt.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
-  const time = dt.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+  const date = dt.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric', timeZone:'Asia/Manila'});
+  const time = dt.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', second:'2-digit', timeZone:'Asia/Manila'});
   return { date, time };
 }
 
 function formatDateFull(ts) {
   if (!ts) return '—';
-  return new Date(ts).toLocaleString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit', timeZoneName:'short'});
+  return new Date(ts).toLocaleString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit', timeZone:'Asia/Manila', timeZoneName:'short'});
 }
 
 /* ═══════════════════════════════════════════════
@@ -826,15 +766,6 @@ function openLogDetail(id) {
 
   document.getElementById('det-log-id').textContent = log.id || '—';
 
-  /* Find position in current filtered list for prev/next */
-  const idx   = filteredLogs.findIndex(l => l.id === id);
-  const total = filteredLogs.length;
-  const prevBtn = document.getElementById('modal-prev-btn');
-  const nextBtn = document.getElementById('modal-next-btn');
-  prevBtn.disabled = idx <= 0;
-  nextBtn.disabled = idx >= total - 1;
-  prevBtn.style.opacity = idx <= 0 ? '0.3' : '1';
-  nextBtn.style.opacity = idx >= total - 1 ? '0.3' : '1';
 
   /* Build detail body */
   const body = document.getElementById('log-detail-body');
@@ -859,7 +790,7 @@ function openLogDetail(id) {
     { label: 'Timestamp',   value: formatDateFull(log.timestamp) },
     { label: 'User',        value: log.user || '—' },
     { label: 'IP Address',  value: log.ip || '—',             style: 'mono' },
-    { label: 'Module',      value: log.module || '—' },
+    { label: 'Module',      value: toTitleCase(log.module) },
     { label: 'Description', value: log.desc || '—',           style: 'desc' },
   ];
 
@@ -881,12 +812,6 @@ function openLogDetail(id) {
 
   document.getElementById('log-detail-modal').style.display = 'flex';
   document.body.style.overflow = 'hidden';
-}
-
-function navigateModal(dir) {
-  const idx = filteredLogs.findIndex(l => l.id === currentModalId);
-  const next = filteredLogs[idx + dir];
-  if (next) openLogDetail(next.id);
 }
 
 function closeLogDetail() {

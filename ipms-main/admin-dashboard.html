@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script id="tailwind-config">
   tailwind.config = {
     darkMode: "class",
@@ -126,12 +127,12 @@
       <div class="h-6 w-px bg-[#e2e8f0]"></div>
       <div class="relative" id="profileMenuWrapper">
         <div onclick="toggleProfileDropdown(event)" class="w-10 h-10 rounded-full bg-[#f4f7fc] flex items-center justify-center border border-[#e2e8f0] cursor-pointer hover:ring-2 hover:ring-[#0058be]/30 transition-all shadow-sm">
-          <span class="text-[12px] font-bold text-[#0058be]">SA</span>
+          <span class="text-[12px] font-bold text-[#0058be]" id="profile-initials">SA</span>
         </div>
         <div id="profileDropdown" class="hidden absolute right-0 top-[calc(100%+8px)] min-w-[160px] bg-white border border-[#e2e8f0] rounded-xl p-1.5 shadow-lg z-50">
           <div class="px-3 py-2.5 border-b border-[#f0f2f7] mb-1">
-            <p class="text-[13px] font-semibold text-[#191b23]">Super Admin</p>
-            <p class="text-[10px] font-bold text-[#727785] uppercase tracking-wider mt-0.5">Administrator</p>
+            <p class="text-[13px] font-semibold text-[#191b23]" id="profile-name">Super Admin</p>
+            <p class="text-[10px] font-bold text-[#727785] uppercase tracking-wider mt-0.5" id="profile-role">Administrator</p>
           </div>
           <button onclick="window.location.href='index.html'" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] font-semibold text-[#dc2626] hover:bg-[#fef2f2] transition-colors text-left">
             Log Out
@@ -213,79 +214,27 @@
         </div>
       </div>
 
-      <!-- Research Records KPI -->
+      <!-- Activity Logs KPI -->
       <div class="col-span-12 md:col-span-6 lg:col-span-3 bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm hover-card overflow-hidden flex flex-col">
         <div class="p-5 flex flex-col h-full gap-4">
           <div class="flex justify-between items-center">
             <div class="flex items-center gap-2.5">
-              <div class="p-2 rounded-xl" style="background:#f2edfd;"><i class="ti ti-database" style="font-size:17px;color:#6b38d4;"></i></div>
-              <span class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Research</span>
+              <div class="p-2 rounded-xl" style="background:#f2edfd;"><i class="ti ti-clipboard-list" style="font-size:17px;color:#6b38d4;"></i></div>
+              <span class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Activity Logs</span>
             </div>
             <span class="text-[10px] font-bold px-2 py-1 rounded-full" style="background:#f2edfd;color:#6b38d4;">↑ Live</span>
           </div>
           <div>
-            <p class="text-[34px] font-extrabold leading-none text-on-surface tracking-tight" id="kpi-research"><span class="skeleton inline-block w-14 h-8 align-middle"></span></p>
-            <p class="text-[11px] text-on-surface-variant mt-1.5">Total submissions</p>
+            <p class="text-[34px] font-extrabold leading-none text-on-surface tracking-tight" id="kpi-logs"><span class="skeleton inline-block w-14 h-8 align-middle"></span></p>
+            <p class="text-[11px] text-on-surface-variant mt-1.5">Total recorded actions</p>
           </div>
           <div class="mt-auto">
             <div class="flex justify-between text-[11px] text-on-surface-variant mb-1.5">
-              <span>This month</span><span id="kpi-research-month" class="font-bold text-on-surface">—</span>
+              <span>Today</span><span id="kpi-logs-today" class="font-bold text-on-surface">—</span>
             </div>
-            <div class="prog-bar"><div class="prog-fill" style="background:#6b38d4;" id="kpi-research-bar"></div></div>
+            <div class="prog-bar"><div class="prog-fill" style="background:#6b38d4;" id="kpi-logs-bar"></div></div>
           </div>
-        </div>
-      </div>
-
-      <!-- ── ROW 2: Category breakdown panel ── -->
-      <div class="col-span-12 bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm p-5">
-        <div class="flex items-center gap-2 mb-4">
-          <div class="p-1.5 rounded-lg" style="background:#f2f3fd;"><i class="ti ti-layout-grid" style="font-size:15px;color:#424754;"></i></div>
-          <h3 class="text-[13px] font-semibold text-on-surface">IP Category Breakdown</h3>
-          <span class="ml-auto text-[11px] text-on-surface-variant">All-time totals</span>
-        </div>
-        <div class="grid grid-cols-5 gap-3">
-          <!-- Copyright -->
-          <div class="flex items-center gap-3 p-3.5 rounded-xl border border-outline-variant bg-surface-container-lowest hover:border-[#0058be]/30 hover:bg-blue-50/40 transition-all cursor-default">
-            <div class="p-2 rounded-lg flex-shrink-0" style="background:#e8f0fd;"><i class="ti ti-copyright" style="font-size:16px;color:#0058be;"></i></div>
-            <div class="min-w-0">
-              <p class="text-[11px] font-semibold text-on-surface-variant truncate">Copyright</p>
-              <p class="text-[20px] font-extrabold text-on-surface leading-tight" id="cat-copyright"><span class="skeleton inline-block w-8 h-5"></span></p>
-            </div>
-          </div>
-          <!-- Patent -->
-          <div class="flex items-center gap-3 p-3.5 rounded-xl border border-outline-variant bg-surface-container-lowest hover:border-[#6b38d4]/30 hover:bg-violet-50/40 transition-all cursor-default">
-            <div class="p-2 rounded-lg flex-shrink-0" style="background:#f2edfd;"><i class="ti ti-file-description" style="font-size:16px;color:#6b38d4;"></i></div>
-            <div class="min-w-0">
-              <p class="text-[11px] font-semibold text-on-surface-variant truncate">Patent</p>
-              <p class="text-[20px] font-extrabold text-on-surface leading-tight" id="cat-patent"><span class="skeleton inline-block w-8 h-5"></span></p>
-            </div>
-          </div>
-          <!-- Trademark -->
-          <div class="flex items-center gap-3 p-3.5 rounded-xl border border-outline-variant bg-surface-container-lowest hover:border-[#059669]/30 hover:bg-emerald-50/40 transition-all cursor-default">
-            <div class="p-2 rounded-lg flex-shrink-0" style="background:#d1fae5;"><i class="ti ti-shield-check" style="font-size:16px;color:#059669;"></i></div>
-            <div class="min-w-0">
-              <p class="text-[11px] font-semibold text-on-surface-variant truncate">Trademark</p>
-              <p class="text-[20px] font-extrabold text-on-surface leading-tight" id="cat-trademark"><span class="skeleton inline-block w-8 h-5"></span></p>
-            </div>
-          </div>
-          <!-- Utility Model -->
-          <div class="flex items-center gap-3 p-3.5 rounded-xl border border-outline-variant bg-surface-container-lowest hover:border-[#924700]/30 hover:bg-amber-50/40 transition-all cursor-default">
-            <div class="p-2 rounded-lg flex-shrink-0" style="background:#fff7ed;"><i class="ti ti-settings-2" style="font-size:16px;color:#924700;"></i></div>
-            <div class="min-w-0">
-              <p class="text-[11px] font-semibold text-on-surface-variant truncate">Utility Model</p>
-              <p class="text-[20px] font-extrabold text-on-surface leading-tight" id="cat-utility"><span class="skeleton inline-block w-8 h-5"></span></p>
-            </div>
-          </div>
-          <!-- Industrial Design -->
-          <div class="flex items-center gap-3 p-3.5 rounded-xl border border-outline-variant bg-surface-container-lowest hover:border-[#dc2626]/30 hover:bg-red-50/40 transition-all cursor-default">
-            <div class="p-2 rounded-lg flex-shrink-0" style="background:#fee2e2;"><i class="ti ti-vector-bezier-2" style="font-size:16px;color:#dc2626;"></i></div>
-            <div class="min-w-0">
-              <p class="text-[11px] font-semibold text-on-surface-variant truncate">Ind. Design</p>
-              <p class="text-[20px] font-extrabold text-on-surface leading-tight" id="cat-design"><span class="skeleton inline-block w-8 h-5"></span></p>
-            </div>
-          </div>
-        </div>
-      </div>
+        </div></div>
 
       <!-- ── ROW 3: Recent Activity (wide) + System Health (narrow) ── -->
 
@@ -337,20 +286,24 @@
         </div>
       </div>
 
-      <!-- ── ROW 4: Quick Insights — full width, compact horizontal ── -->
+      <!-- ── ROW 4: Quick Insights — compact stat strip ── -->
       <div class="col-span-12 bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm p-6">
-        <div class="flex items-center gap-2.5 mb-4">
+        <div class="flex items-center gap-2.5 mb-5">
           <div class="p-1.5 rounded-lg" style="background:#e8f0fd;"><span class="material-symbols-outlined text-[18px]" style="color:#0058be;font-variation-settings:'FILL' 1;">insights</span></div>
           <h3 class="text-[15px] font-semibold text-on-surface">Quick Insights</h3>
         </div>
-        <div id="insightsLoading" class="grid grid-cols-5 gap-4">
-          <div class="skeleton h-16 rounded-xl"></div>
-          <div class="skeleton h-16 rounded-xl"></div>
-          <div class="skeleton h-16 rounded-xl"></div>
-          <div class="skeleton h-16 rounded-xl"></div>
-          <div class="skeleton h-16 rounded-xl"></div>
+
+        <!-- 5-col compact stat strip -->
+        <div id="insightsLoading" class="grid grid-cols-5 gap-3">
+          <div class="skeleton h-[72px] rounded-xl"></div>
+          <div class="skeleton h-[72px] rounded-xl"></div>
+          <div class="skeleton h-[72px] rounded-xl"></div>
+          <div class="skeleton h-[72px] rounded-xl"></div>
+          <div class="skeleton h-[72px] rounded-xl"></div>
         </div>
-        <div id="insightsContent" style="display:none;" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4"></div>
+        <div id="insightsContent" style="display:none;" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3"></div>
+
+
       </div>
 
     </div>
@@ -438,6 +391,13 @@ function getStatus(record) {
   return (getField(record, FIELD.status) || '').toLowerCase();
 }
 
+function isArchived(record) {
+  // Match copyright.html: checks boolean `archived` field first, then status string
+  if (record.archived === true || record.archived === 'true') return true;
+  const s = getStatus(record);
+  return s === 'archived' || s === 'archive';
+}
+
 function timeAgo(dateStr) {
   const d = new Date(dateStr);
   if (isNaN(d)) return 'Recently';
@@ -465,8 +425,26 @@ function startLiveClock() {
 
 function updateGreeting() {
   const h = new Date().getHours();
-  let g = h < 12 ? 'Good Morning' : h < 18 ? 'Good Afternoon' : 'Good Evening';
-  document.getElementById('dynamicGreeting').textContent = `${g}, Admin!`;
+  const g = h < 12 ? 'Good Morning' : h < 18 ? 'Good Afternoon' : 'Good Evening';
+
+  // Read from itso_user — same key used by index.html login
+  let firstName = 'Admin';
+  try {
+    const stored = sessionStorage.getItem('itso_user');
+    if (stored) {
+      const u = JSON.parse(stored);
+      firstName = (u.fname || '').trim() || 'Admin';
+    }
+  } catch {}
+
+  document.getElementById('dynamicGreeting').textContent = `${g}, ${firstName}!`;
+}
+
+function getCurrentUser() {
+  try {
+    const stored = sessionStorage.getItem('itso_user');
+    return stored ? JSON.parse(stored) : null;
+  } catch { return null; }
 }
 
 function toggleProfileDropdown(e) {
@@ -511,6 +489,26 @@ function showApiStatus(ok, msg) {
    MAIN LOAD
 ═══════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
+  // Auth guard — redirect to login if no itso_user session
+  const currentUser = getCurrentUser();
+  if (!currentUser) {
+    window.location.href = 'index.html';
+    return;
+  }
+
+  // Populate profile dropdown with real data from itso_user
+  const fullName = [currentUser.fname, currentUser.lname].filter(Boolean).join(' ') || 'Admin';
+  const initials  = ((currentUser.fname?.[0] || '') + (currentUser.lname?.[0] || '')).toUpperCase() || 'AD';
+  const roleLabel = (currentUser.role || 'admin');
+  const roleCap   = roleLabel.charAt(0).toUpperCase() + roleLabel.slice(1);
+
+  const initialsEl = document.getElementById('profile-initials');
+  const nameEl     = document.getElementById('profile-name');
+  const roleEl     = document.getElementById('profile-role');
+  if (initialsEl) initialsEl.textContent = initials;
+  if (nameEl)     nameEl.textContent     = fullName;
+  if (roleEl)     roleEl.textContent     = roleCap;
+
   const main = document.getElementById('mainContent');
   setTimeout(() => { main.style.opacity = '1'; main.style.transform = 'translateY(0)'; }, 80);
   startLiveClock();
@@ -534,7 +532,7 @@ async function loadAllData() {
     apiOk ? 'Connected to database' : 'API unreachable — check server'
   );
 
-  _researchRecords = records || [];
+  _researchRecords = (records || []).filter(r => !isArchived(r));
 
   if (_researchRecords.length > 0) {
     console.log('[DEBUG] Sample record fields:', Object.keys(_researchRecords[0]));
@@ -702,12 +700,9 @@ function renderKPIs(agg) {
   set('kpi-total-users',    users  || '—');
   const activeEl = document.getElementById('kpi-active-users');
   if (activeEl) activeEl.textContent = users ? `${active} active` : '—';
-  set('kpi-research',       research.toLocaleString());
   set('kpi-ip-total',       ipTotal.toLocaleString());
   set('kpi-active-pct',     users ? activePct + '%' : '—');
   setBar('kpi-active-bar',  activePct);
-  set('kpi-research-month', '+' + thisMonth);
-  setBar('kpi-research-bar', monthPct);
   set('kpi-approved-pct',   research ? approvedPct + '%' : '—');
   setBar('kpi-approved-bar', approvedPct);
 
@@ -716,14 +711,120 @@ function renderKPIs(agg) {
 }
 
 /* ═══════════════════════════════════════
-   CATEGORY MINI CARDS
+   CATEGORY CHARTS
 ═══════════════════════════════════════ */
+let _catDonutChart = null;
+let _monthlyTrendChart = null;
+
+const CAT_META = [
+  { key: 'copyright', label: 'Copyright',      color: '#0058be', bg: '#e8f0fd' },
+  { key: 'patent',    label: 'Patent',          color: '#6b38d4', bg: '#f2edfd' },
+  { key: 'trademark', label: 'Trademark',       color: '#059669', bg: '#d1fae5' },
+  { key: 'utility',   label: 'Utility Model',   color: '#924700', bg: '#fff7ed' },
+  { key: 'design',    label: 'Ind. Design',     color: '#dc2626', bg: '#fee2e2' },
+];
+
 function renderCatCards(agg) {
+  // Keep hidden spans for backward compat
   set('cat-copyright', agg.cats.copyright.toLocaleString());
   set('cat-patent',    agg.cats.patent.toLocaleString());
   set('cat-trademark', agg.cats.trademark.toLocaleString());
   set('cat-utility',   agg.cats.utility.toLocaleString());
   set('cat-design',    agg.cats.design.toLocaleString());
+
+  const total = Object.values(agg.cats).reduce((a, b) => a + b, 0);
+  set('cat-total-center', total.toLocaleString());
+
+  const data   = CAT_META.map(m => agg.cats[m.key]);
+  const colors = CAT_META.map(m => m.color);
+
+  // Donut chart
+  const donutCtx = document.getElementById('catDonutChart');
+  if (donutCtx) {
+    if (_catDonutChart) _catDonutChart.destroy();
+    _catDonutChart = new Chart(donutCtx, {
+      type: 'doughnut',
+      data: {
+        labels: CAT_META.map(m => m.label),
+        datasets: [{ data, backgroundColor: colors, borderWidth: 2, borderColor: '#ffffff', hoverOffset: 4 }]
+      },
+      options: {
+        cutout: '68%',
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => ` ${ctx.label}: ${ctx.parsed.toLocaleString()} (${total ? Math.round(ctx.parsed / total * 100) : 0}%)`
+            }
+          }
+        },
+        animation: { duration: 700, easing: 'easeOutQuart' }
+      }
+    });
+  }
+
+  // Legend list
+  const legend = document.getElementById('cat-legend');
+  if (legend) {
+    legend.innerHTML = CAT_META.map((m, i) => {
+      const v = agg.cats[m.key];
+      const pct = total ? Math.round(v / total * 100) : 0;
+      return `
+        <div class="flex items-center gap-2.5">
+          <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:${m.color};"></span>
+          <span class="text-[12px] text-on-surface-variant flex-1 leading-none">${m.label}</span>
+          <span class="text-[12px] font-bold text-on-surface">${v.toLocaleString()}</span>
+          <span class="text-[10px] text-on-surface-variant w-7 text-right">${pct}%</span>
+        </div>`;
+    }).join('');
+  }
+
+  // Monthly trend chart
+  const trendCtx = document.getElementById('monthlyTrendChart');
+  if (trendCtx) {
+    const year = new Date().getFullYear();
+    document.getElementById('trend-year-label').textContent = year;
+    if (_monthlyTrendChart) _monthlyTrendChart.destroy();
+    _monthlyTrendChart = new Chart(trendCtx, {
+      type: 'line',
+      data: {
+        labels: agg.monthly.labels,
+        datasets: CAT_META.map(m => ({
+          label: m.label,
+          data: agg.monthly[m.key],
+          borderColor: m.color,
+          backgroundColor: m.color + '18',
+          borderWidth: 2,
+          tension: 0.4,
+          fill: false,
+          pointRadius: 3,
+          pointHoverRadius: 5,
+        }))
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+            align: 'end',
+            labels: { boxWidth: 10, boxHeight: 10, borderRadius: 5, usePointStyle: true, pointStyle: 'circle', font: { size: 10 }, padding: 12 }
+          },
+          tooltip: { mode: 'index', intersect: false }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#727785' } },
+          y: {
+            beginAtZero: true,
+            grid: { color: '#f0f2f7' },
+            ticks: { font: { size: 10 }, color: '#727785', stepSize: 1, precision: 0 }
+          }
+        },
+        animation: { duration: 700 }
+      }
+    });
+  }
+
 }
 
 /* ═══════════════════════════════════════
@@ -732,28 +833,28 @@ function renderCatCards(agg) {
 function renderInsights(agg) {
   hide('insightsLoading');
 
-  const ipTotal     = Object.values(agg.cats).reduce((a, b) => a + b, 0);
-  const activePct   = _usersData.total ? Math.round(_usersData.active / _usersData.total * 100) : 0;
-
-  const topCollege  = Object.entries(agg.colleges).sort((a, b) => b[1] - a[1])[0];
-  const topCollegeStr = topCollege
-    ? `${topCollege[0].replace(/^College of /i, 'Col. of ')} (${topCollege[1]})`
-    : '—';
+  const ipTotal   = Object.values(agg.cats).reduce((a, b) => a + b, 0);
+  const activePct = _usersData.total ? Math.round(_usersData.active / _usersData.total * 100) : 0;
+  const topCat    = CAT_META.slice().sort((a, b) => (agg.cats[b.key] || 0) - (agg.cats[a.key] || 0))[0];
+  const topCollege = Object.entries(agg.colleges).sort((a, b) => b[1] - a[1])[0];
 
   const rows = [
-    { label: 'Total Research Records', value: agg.total.toLocaleString(),               sub: 'Across all IP categories' },
-    { label: 'Total IP Records Filed',  value: ipTotal.toLocaleString(),                sub: 'All categories combined' },
-    { label: 'Registered Users',        value: `${_usersData.total} total / ${_usersData.active} active`, sub: `${activePct}% active rate` },
-    { label: 'Top College',             value: topCollegeStr,                            sub: 'Most filings submitted' },
-    { label: 'New This Month',          value: `+${agg.thisMonth} submissions`,          sub: 'Recent activity' },
+    { icon: 'ti-files',       color: '#924700', bg: '#fff7ed', label: 'Total IP Records',   value: ipTotal.toLocaleString(),        sub: 'All categories' },
+    { icon: 'ti-users',       color: '#0058be', bg: '#e8f0fd', label: 'Active Users',        value: `${_usersData.active} / ${_usersData.total}`, sub: `${activePct}% active` },
+    { icon: 'ti-trophy',      color: '#6b38d4', bg: '#f2edfd', label: 'Top Category',        value: topCat ? topCat.label : '—',    sub: topCat ? `${agg.cats[topCat.key]} filings` : '' },
+    { icon: 'ti-building',    color: '#059669', bg: '#d1fae5', label: 'Top College',          value: topCollege ? topCollege[0].replace(/^College of /i,'Col. of ') : '—', sub: topCollege ? `${topCollege[1]} records` : '—' },
+    { icon: 'ti-calendar-plus', color: '#dc2626', bg: '#fee2e2', label: 'New This Month',   value: `+${agg.thisMonth}`,            sub: 'Submissions' },
   ];
 
   const el = document.getElementById('insightsContent');
   el.innerHTML = rows.map(r => `
-    <div class="flex flex-col gap-1.5 p-4 rounded-xl bg-surface-container-low border border-outline-variant/60">
-      <span class="insight-label">${r.label}</span>
-      <span class="insight-value text-[15px]">${r.value}</span>
-      <span class="insight-sub">${r.sub}</span>
+    <div class="flex items-center gap-3 p-3.5 rounded-xl bg-surface-container-low border border-outline-variant/60">
+      <div class="p-2 rounded-lg flex-shrink-0" style="background:${r.bg};"><i class="ti ${r.icon}" style="font-size:15px;color:${r.color};"></i></div>
+      <div class="min-w-0">
+        <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider leading-none mb-0.5">${r.label}</p>
+        <p class="text-[14px] font-extrabold text-on-surface leading-tight truncate">${r.value}</p>
+        <p class="text-[10px] text-on-surface-variant mt-0.5 truncate">${r.sub}</p>
+      </div>
     </div>`).join('');
   show('insightsContent');
 }
@@ -780,6 +881,20 @@ function getActionColor(action) {
 
 function renderActivity(logs) {
   hide('activityLoading');
+
+  // Logs KPI card
+  const logTotal = logs ? logs.length : 0;
+  set('kpi-logs', logTotal.toLocaleString());
+  const today = new Date();
+  const todayCount = logs ? logs.filter(l => {
+    const d = new Date(l.createdAt || l.timestamp || l.date || l.created_at || 0);
+    return d.getFullYear() === today.getFullYear() &&
+           d.getMonth()    === today.getMonth() &&
+           d.getDate()     === today.getDate();
+  }).length : 0;
+  set('kpi-logs-today', todayCount ? '+' + todayCount : '—');
+  setBar('kpi-logs-bar', logTotal ? Math.min(Math.round(todayCount / logTotal * 100), 100) : 0);
+
 
   if (!logs || !logs.length) {
     show('activityEmpty');

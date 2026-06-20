@@ -57,4 +57,43 @@ router.post("/login", async (req, res) => {
   }
 });
 
+
+// POST: http://localhost:5000/api/auth/suspend
+// Tinatawag ng login page kapag nag-exceed ng MAX_ATTEMPTS — nilo-lock ang account
+router.post("/suspend", async (req, res) => {
+  try {
+    const { email, reason } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ success: false, message: "Email is required." });
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) {
+      // Don't reveal if user exists or not
+      return res.json({ success: true });
+    }
+
+    // Only suspend if currently Active — don't touch already Suspended/Inactive
+    if (user.status === "Active") {
+      user.status = "Suspended";
+      await user.save();
+
+      await createLog({
+        user: email,
+        action: "Suspend",
+        module: "Authentication",
+        desc: `Account suspended: ${email}. Reason: ${reason || "Too many failed login attempts"}.`,
+        ip: req.ip,
+        severity: "critical"
+      });
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("🔥 SUSPEND ERROR:", err);
+    res.status(500).json({ success: false, message: "Internal Server Error", error: err.message });
+  }
+});
+
 module.exports = router;
