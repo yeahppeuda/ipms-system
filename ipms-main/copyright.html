@@ -164,7 +164,20 @@
     #sidebar.open { transform:translateX(0); }
     #main-content { margin-left:0 !important; }
   }
+
     </style>
+
+   <style>
+  /* Babawasan ang scale sa malalaking screen para maging compact at modern tingnan */
+  @media (min-width: 1400px) {
+    body {
+      transform: scale(0.92);
+      transform-origin: top center;
+      background-color: #0f172a; /* Slate-900 para malinis tingnan ang labas ng container */
+    }
+  }
+</style>
+
     </head>
     <body class="bg-surface text-on-surface font-sans antialiased flex min-h-screen">
 
@@ -599,7 +612,7 @@
     </div>
 
     <script>
-    const API_URL  = "http://localhost:5000/api/research";
+    const API_URL  = "https://ipms-system.vercel.app";
     const CATEGORY = "copyright";
 
     /* ── CLOCK ── */
