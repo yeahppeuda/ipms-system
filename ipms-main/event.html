@@ -1213,7 +1213,7 @@ function getCurrentUser() {
 async function confirmSaveEvent() {
   if (!_pendingPayload) return;
   const isEditing = !!editingEventId;
-  const url    = isEditing ? `http://localhost:5000/api/events/${editingEventId}` : 'http://localhost:5000/api/events';
+  const url    = isEditing ? `https://ipms-system.vercel.app/api/events/${editingEventId}` : 'https://ipms-system.vercel.app/api/events';
   const method = isEditing ? 'PUT' : 'POST';
   const actor  = getCurrentUser();
 
@@ -1321,7 +1321,7 @@ async function confirmDelete() {
     try {
       const actor = getCurrentUser();
       const actorQuery = actor?.email ? `?actor_email=${encodeURIComponent(actor.email)}` : '';
-      await fetch(`http://localhost:5000/api/events/${deleteTargetId}${actorQuery}`, { method: 'DELETE' });
+      await fetch(`https://ipms-system.vercel.app/api/events/${deleteTargetId}${actorQuery}`, { method: 'DELETE' });
       EVENTS = EVENTS.filter(e => e.id !== deleteTargetId);
       showToast('Event Deleted', `"${ev.name}" has been removed.`);
     } catch(err) {
@@ -1378,7 +1378,7 @@ function catClass(type) {
 /* ═══════════════════════ INITIAL LOAD ═══════════════════════ */
 async function loadData() {
   try {
-    const res = await fetch('http://localhost:5000/api/events');
+    const res = await fetch('https://ipms-system.vercel.app/api/events');
     EVENTS = await res.json();
     render();
   } catch(e) {
