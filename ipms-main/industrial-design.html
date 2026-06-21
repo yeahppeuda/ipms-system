@@ -885,6 +885,12 @@ function exitEditMode() {
 }
 
 /* CONFIRMATION MODAL */
+function getCurrentUser() {
+  try {
+    const stored = sessionStorage.getItem('itso_user');
+    return stored ? JSON.parse(stored) : null;
+  } catch { return null; }
+}
 function openConfirmation()  { document.getElementById('confirm-modal').style.display = 'flex'; }
 function closeConfirmation() { document.getElementById('confirm-modal').style.display = 'none'; }
 
@@ -906,6 +912,7 @@ async function confirmSave() {
     authors: document.getElementById('field-designer').value
                .split(',').map(a => a.trim()).filter(Boolean),
     googleDriveLink: document.getElementById('field-gdrive').value.trim(),
+    actor_email: getCurrentUser()?.email || '',
   };
 
   const confirmBtn = document.getElementById('btn-confirm-save');

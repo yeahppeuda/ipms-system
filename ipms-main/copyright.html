@@ -164,20 +164,7 @@
     #sidebar.open { transform:translateX(0); }
     #main-content { margin-left:0 !important; }
   }
-
     </style>
-
-   <style>
-  /* Babawasan ang scale sa malalaking screen para maging compact at modern tingnan */
-  @media (min-width: 1400px) {
-    body {
-      transform: scale(0.92);
-      transform-origin: top center;
-      background-color: #0f172a; /* Slate-900 para malinis tingnan ang labas ng container */
-    }
-  }
-</style>
-
     </head>
     <body class="bg-surface text-on-surface font-sans antialiased flex min-h-screen">
 
@@ -490,11 +477,12 @@
                   <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">College</label>
                   <select id="field-college" disabled onchange="updateModalDeptOptions(); markDirty();"
                     class="modal-field modal-field-select w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all appearance-none cursor-default">
-                    <option value="">— Select College —</option>
+                    <option value="">Select College</option>
                     <option value="College of Computer Studies">College of Computer Studies</option>
                     <option value="College of Engineering">College of Engineering</option>
                     <option value="College of Accounting">College of Accounting</option>
                     <option value="College of Business">College of Business</option>
+                    <option value="College of Education">College of Education</option>
                   </select>
                 </div>
               </div>
@@ -612,7 +600,7 @@
     </div>
 
     <script>
-    const API_URL  = "https://ipms-system.vercel.app";
+    const API_URL  = "http://localhost:5000/api/research";
     const CATEGORY = "copyright";
 
     /* ── CLOCK ── */
@@ -703,6 +691,7 @@
       'College of Engineering':      ['Industrial Engineering','Electronic Engineering','Computer Engineering'],
       'College of Accounting':       ['Accounting','Management Accounting'],
       'College of Business':         ['Entrepreneurship'],
+      'College of Education':        ['Early Childhood Education'],
     };
 
     function updateModalDeptOptions() {
@@ -1051,6 +1040,7 @@
         referenceId:       document.getElementById('field-ref').value.trim(),
         authors:           document.getElementById('field-author').value.split(',').map(a => a.trim()).filter(Boolean),
         googleDriveLink:   document.getElementById('field-gdrive').value.trim(),
+        actor_email:       getCurrentUser()?.email || '',
       };
       const btn = document.getElementById('btn-confirm-save');
       btn.disabled = true; btn.textContent = 'Saving…';

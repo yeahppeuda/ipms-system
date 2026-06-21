@@ -1203,17 +1203,25 @@ function saveEvent() {
 
 function closeSaveConfirm() { hide('save-confirm-modal'); _pendingPayload = null; }
 
+function getCurrentUser() {
+  try {
+    const stored = sessionStorage.getItem('itso_user');
+    return stored ? JSON.parse(stored) : null;
+  } catch { return null; }
+}
+
 async function confirmSaveEvent() {
   if (!_pendingPayload) return;
   const isEditing = !!editingEventId;
   const url    = isEditing ? `http://localhost:5000/api/events/${editingEventId}` : 'http://localhost:5000/api/events';
   const method = isEditing ? 'PUT' : 'POST';
+  const actor  = getCurrentUser();
 
   try {
     const res = await fetch(url, {
       method: method,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(_pendingPayload)
+      body: JSON.stringify({ ..._pendingPayload, actor_email: actor?.email || '' })
     });
     const savedEvent = await res.json();
     if (isEditing) {
@@ -1311,7 +1319,9 @@ async function confirmDelete() {
   const ev = EVENTS.find(e => e.id === deleteTargetId);
   if (ev) {
     try {
-      await fetch(`http://localhost:5000/api/events/${deleteTargetId}`, { method: 'DELETE' });
+      const actor = getCurrentUser();
+      const actorQuery = actor?.email ? `?actor_email=${encodeURIComponent(actor.email)}` : '';
+      await fetch(`http://localhost:5000/api/events/${deleteTargetId}${actorQuery}`, { method: 'DELETE' });
       EVENTS = EVENTS.filter(e => e.id !== deleteTargetId);
       showToast('Event Deleted', `"${ev.name}" has been removed.`);
     } catch(err) {

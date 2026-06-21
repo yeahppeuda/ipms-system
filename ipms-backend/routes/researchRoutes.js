@@ -6,11 +6,12 @@ const { createLog } = require('../utils/logger');
 // ── CREATE (Mag-add ng bagong IP Asset) ─────────────────────────
 router.post("/", async (req, res) => {
   try {
-    const research = new Research(req.body);
+    const { actor_email, ...researchData } = req.body;
+    const research = new Research(researchData);
     await research.save();
 
     await createLog({
-      user: req.user?.email || "System/Admin",
+      user: req.user?.email || actor_email || "System/Admin",
       action: "Create",
       module: research.category || "Reports", 
       desc: `Registered new IP record: "${research.researchTitle}" (Ref ID: ${research.referenceId || 'N/A'})`,
@@ -85,13 +86,38 @@ router.put("/:id", async (req, res) => {
 
     if (!updated) return res.status(404).json({ error: "Record not found" });
 
+    // Detect if this request was purely an archive/restore toggle
+    // (the archive & restore buttons only send {archived, archiveDate, actor_email})
+    const isArchiveOnlyAction = b.archived !== undefined &&
+      b.researchTitle === undefined && b.referenceId === undefined &&
+      b.department === undefined && b.college === undefined &&
+      b.authors === undefined && b.status === undefined &&
+      b.date === undefined && b.category === undefined &&
+      b.googleDriveLink === undefined;
+
+    let logAction = "Update";
+    let logDesc   = `Updated details for IP record: "${updated.researchTitle}"`;
+    let logSeverity = "warning";
+
+    if (isArchiveOnlyAction) {
+      if (b.archived === true || b.archived === "true") {
+        logAction = "Archive";
+        logDesc   = `Archived IP record: "${updated.researchTitle}" (Ref ID: ${updated.referenceId || 'N/A'})`;
+        logSeverity = "warning";
+      } else {
+        logAction = "Restore";
+        logDesc   = `Restored IP record from archive: "${updated.researchTitle}" (Ref ID: ${updated.referenceId || 'N/A'})`;
+        logSeverity = "info";
+      }
+    }
+
     await createLog({
-      user: req.user?.email || "System/Admin",
-      action: "Update",
+      user: req.user?.email || req.body.actor_email || "System/Admin",
+      action: logAction,
       module: updated.category || "Reports",
-      desc: `Updated details for IP record: "${updated.researchTitle}"`,
+      desc: logDesc,
       ip: req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress,
-      severity: "warning" 
+      severity: logSeverity
     });
 
     res.json(updated);
@@ -108,7 +134,7 @@ router.delete("/:id", async (req, res) => {
     if (!research) return res.status(404).json({ error: "Record not found" });
 
     await createLog({
-      user: req.user?.email || "System/Admin",
+      user: req.user?.email || req.query.actor_email || "System/Admin",
       action: "Delete",
       module: research.category || "Reports",
       desc: `Permanently deleted IP record: "${research.researchTitle}" (Ref ID: ${research.referenceId || 'N/A'})`,
@@ -130,7 +156,7 @@ router.put('/:id/status', async (req, res) => {
     if (!updated) return res.status(404).json({ message: "Record not found" });
 
     await createLog({
-      user: req.user?.email || "System/Admin",
+      user: req.user?.email || req.body.actor_email || "System/Admin",
       action: "Update",
       module: updated.category || "Reports",
       desc: `Changed status of "${updated.researchTitle}" to: ${status}`,

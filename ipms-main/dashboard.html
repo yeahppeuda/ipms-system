@@ -1952,6 +1952,7 @@ async function confirmResearchEntry(){
 
   lastSubmittedCategory=pendingSubmission.category;
   try{
+    const actor = getCurrentUser();
     const response=await fetch(`${API_BASE}/research`,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
@@ -1964,7 +1965,8 @@ async function confirmResearchEntry(){
         authors:       pendingSubmission.authors,
         date:          pendingSubmission.date,
         status:        pendingSubmission.status,
-        googleDriveLink: pendingSubmission.googleDriveLink
+        googleDriveLink: pendingSubmission.googleDriveLink,
+        actor_email:   actor?.email || ''
       })
     });
     if(!response.ok) throw new Error(`Server error ${response.status}`);

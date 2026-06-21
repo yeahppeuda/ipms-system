@@ -1437,6 +1437,12 @@ function exitEditMode() {
 }
 
 /* ── CONFIRM + SAVE ── */
+function getCurrentUser() {
+  try {
+    const stored = sessionStorage.getItem('itso_user');
+    return stored ? JSON.parse(stored) : null;
+  } catch { return null; }
+}
 function openConfirmation()  { document.getElementById('confirm-modal').style.display = 'flex'; }
 function closeConfirmation() { document.getElementById('confirm-modal').style.display = 'none'; }
 
@@ -1468,6 +1474,8 @@ async function confirmSave() {
     defectConfirmed3:  !!activeDefects[2]?.confirmed,
     defectConfirmed4:  !!activeDefects[3]?.confirmed,
     defectConfirmed5:  !!activeDefects[4]?.confirmed,
+
+    actor_email:       getCurrentUser()?.email || '',
 
   };
   const btn = document.getElementById('btn-confirm-save');

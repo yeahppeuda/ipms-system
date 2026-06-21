@@ -38,10 +38,10 @@
   .nav-item:hover i{color:#191b23;}
   .nav-section-label{font-size:10px;font-weight:700;color:#a0a6b8;text-transform:uppercase;letter-spacing:.08em;padding:0 12px;margin:16px 0 6px;}
 
-  .live-time-badge{display:flex;align-items:center;gap:6px;background:#f4f7fc;border:1px solid #e2e8f0;border-radius:8px;padding:5px 11px;font-size:12px;font-weight:600;color:#424754;white-space:nowrap;}
-  .live-time-badge i{color:#0058be;font-size:14px;}
+  .live-time-badge{display:flex;align-items:center;gap:6px;background:#f2f3fd;border:1px solid #e1e2ec;border-radius:12px;padding:0 14px;height:38px;font-size:13px;font-weight:600;color:#424754;white-space:nowrap;flex-shrink:0;}
+  .live-time-badge i{color:#0058be;font-size:15px;}
 
-  #mainContent { opacity:0; transform:translateY(8px); transition:opacity 0.4s ease-out,transform 0.4s ease-out; }
+  #mainContent { opacity:0; transform:translateY(8px); transition:opacity 0.6s ease-out,transform 0.6s ease-out; }
 
   .stat-card{background:#fff;border:1px solid #e2e5ef;border-radius:16px;padding:18px 20px;display:flex;align-items:center;gap:14px;transition:box-shadow .2s,transform .2s;}
   .stat-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,88,190,.08);}
@@ -62,11 +62,6 @@
   /* Sort buttons */
   .sort-btn{background:none;border:none;cursor:pointer;font-size:10px;font-weight:700;color:#727785;text-transform:uppercase;letter-spacing:.09em;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:3px;padding:0;transition:color .15s;white-space:nowrap;}
   .sort-btn:hover{color:#0058be;}
-  .sort-btn .sort-icon{font-size:10px;color:#c0c6d4;transition:color .15s;}
-  .sort-btn:hover .sort-icon{color:#0058be;}
-  .sort-btn.asc .sort-icon::before{content:'↑';color:#0058be;}
-  .sort-btn.desc .sort-icon::before{content:'↓';color:#0058be;}
-  .sort-btn:not(.asc):not(.desc) .sort-icon::before{content:'↕';}
 
   /* Pagination */
   .page-btn{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;transition:background .15s,color .15s;color:#424754;border:1px solid transparent;background:none;font-family:Inter,sans-serif;}
@@ -76,8 +71,23 @@
   .page-ellipsis{width:30px;height:30px;display:flex;align-items:center;justify-content:center;color:#a0a6b8;font-size:13px;}
 
   /* Detail button */
-  .btn-detail{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:7px;font-size:12px;font-weight:600;color:#0058be;background:#eff6ff;border:1px solid #bfdbfe;cursor:pointer;transition:all .18s;white-space:nowrap;}
-  .btn-detail:hover{background:#0058be;color:#fff;border-color:#0058be;transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,88,190,.2);}
+  .btn-detail {
+    display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px 5px 10px;
+    border-radius: 8px; font-size: 12px; font-weight: 600; color: #0058be;
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    border: 1px solid #bfdbfe; cursor: pointer;
+    transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.15s, box-shadow 0.18s;
+    position: relative; overflow: hidden; white-space: nowrap;
+  }
+  .btn-detail::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, #0058be 0%, #1d4ed8 100%);
+    opacity: 0; transition: opacity 0.18s; border-radius: inherit;
+  }
+  .btn-detail:hover::before { opacity: 1; }
+  .btn-detail:hover { color: #fff; border-color: #0058be; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,88,190,0.25); }
+  .btn-detail:active { transform: translateY(0); box-shadow: none; }
+  .btn-detail i, .btn-detail span { position: relative; z-index: 1; }
 
   /* Refresh button */
   .btn-refresh{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:9px;font-size:13px;font-weight:600;color:#424754;background:#fff;border:1px solid #e2e5ef;cursor:pointer;transition:all .18s;white-space:nowrap;height:38px;box-sizing:border-box;}
@@ -86,7 +96,7 @@
   @keyframes spin{to{transform:rotate(360deg);}}
 
   /* Filter toggle */
-  .filter-chip{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;font-size:12.5px;font-weight:500;color:#424754;background:#fff;border:1px solid #e2e5ef;cursor:pointer;transition:all .15s;}
+  .filter-chip{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:9px;font-size:13px;font-weight:600;color:#424754;background:#fff;border:1px solid #e2e5ef;cursor:pointer;transition:all .15s;white-space:nowrap;height:38px;box-sizing:border-box;}
   .filter-chip:hover{border-color:#bfdbfe;color:#0058be;background:#eff6ff;}
   .filter-chip.active-filter{border-color:#0058be;color:#0058be;background:#eff6ff;}
   .filter-panel{position:absolute;right:0;top:calc(100% + 6px);width:280px;background:#fff;border:1px solid #e2e5ef;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.1);z-index:200;padding:18px;}
@@ -160,12 +170,12 @@
       <div class="h-6 w-px bg-[#e2e8f0]"></div>
       <div class="relative" id="profileWrap">
         <div onclick="toggleProfile(event)" class="w-10 h-10 rounded-full bg-[#f4f7fc] flex items-center justify-center border border-[#e2e8f0] cursor-pointer hover:ring-2 hover:ring-[#0058be]/30 transition-all shadow-sm">
-          <span class="text-[12px] font-bold text-[#0058be]">SA</span>
+          <span class="text-[12px] font-bold text-[#0058be]" id="profile-initials">SA</span>
         </div>
         <div id="profileDropdown" class="hidden absolute right-0 top-[calc(100%+8px)] min-w-[160px] bg-white border border-[#e2e8f0] rounded-xl p-1.5 shadow-lg z-50">
           <div class="px-3 py-2.5 border-b border-[#f0f2f7] mb-1">
-            <p class="text-[13px] font-semibold text-[#191b23]">Super Admin</p>
-            <p class="text-[10px] font-bold text-[#727785] uppercase tracking-wider mt-0.5">Administrator</p>
+            <p class="text-[13px] font-semibold text-[#191b23]" id="profile-name">Super Admin</p>
+            <p class="text-[10px] font-bold text-[#727785] uppercase tracking-wider mt-0.5" id="profile-role">Administrator</p>
           </div>
           <button onclick="window.location.href='index.html'" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] font-semibold text-[#dc2626] hover:bg-[#fef2f2] transition-colors text-left">
             Log Out
@@ -247,8 +257,9 @@
                   class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-[13px] text-on-surface outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all cursor-pointer">
                   <option value="all">All Actions</option>
                   <option>Login</option><option>Create</option>
-                  <option>Update</option><option>Delete</option><option>Export</option>
+                  <option>Update</option><option>Delete</option>
                   <option>Archive</option><option>Restore</option>
+                  <option>Lock</option><option>Unlock</option>
                 </select>
               </div>
 
@@ -282,22 +293,22 @@
           <thead>
             <tr style="background:#f8fafc;border-bottom:1px solid #e2e5ef;">
               <th class="px-5 py-3.5" style="width:140px;">
-                <button class="sort-btn" onclick="sortBy('timestamp')">Timestamp<span class="sort-icon ml-1"></span></button>
+                <button class="sort-btn" onclick="sortBy('timestamp')">Timestamp</button>
               </th>
               <th class="px-5 py-3.5" style="width:150px;">
-                <button class="sort-btn" onclick="sortBy('user')">User<span class="sort-icon ml-1"></span></button>
+                <button class="sort-btn" onclick="sortBy('user')">User</button>
               </th>
               <th class="px-5 py-3.5" style="width:130px;">
-                <button class="sort-btn" onclick="sortBy('action')">Action<span class="sort-icon ml-1"></span></button>
+                <button class="sort-btn" onclick="sortBy('action')">Action</button>
               </th>
               <th class="px-5 py-3.5" style="width:140px;">
-                <button class="sort-btn" onclick="sortBy('module')">Module<span class="sort-icon ml-1"></span></button>
+                <button class="sort-btn" onclick="sortBy('module')">Module</button>
               </th>
               <th class="px-5 py-3.5">
                 <span class="text-[10px] font-bold text-outline uppercase tracking-widest">Description</span>
               </th>
               <th class="pl-1 pr-9 py-3.5" style="width:110px;">
-                <button class="sort-btn" onclick="sortBy('severity')">Status<span class="sort-icon ml-1"></span></button>
+                <button class="sort-btn" onclick="sortBy('severity')">Status</button>
               </th>
               <th class="px-5 py-3.5 text-center" style="width:90px;">
                 <span class="text-[10px] font-bold text-outline uppercase tracking-widest">Details</span>
@@ -390,6 +401,8 @@ const ACTIONS_META = {
   'Export':         {color:'#0369a1',bg:'#f0f9ff',border:'#7dd3fc',icon:'ti-download'},
   'Archive':        {color:'#475569',bg:'#f8fafc',border:'#cbd5e1',icon:'ti-archive'},
   'Restore':        {color:'#0f766e',bg:'#f0fdfa',border:'#5eead4',icon:'ti-rotate-clockwise'},
+  'Lock':           {color:'#9a3412',bg:'#fff7ed',border:'#fdba74',icon:'ti-lock'},
+  'Unlock':         {color:'#15803d',bg:'#f0fdf4',border:'#86efac',icon:'ti-lock-open'},
 };
 const SEV_CONFIG = {
   info:     {cls:'badge-info',    label:'Info',     icon:'ti-info-circle'},
@@ -400,9 +413,11 @@ const SEV_CONFIG = {
 /* ═══════════════════════════════════════════════
    STATE
 ═══════════════════════════════════════════════ */
+const API_BASE = 'http://localhost:5000/api';
 let ALL_LOGS = [], filteredLogs = [], currentPage = 1, ROWS = 15;
 let sortField = 'timestamp', sortDir = 'desc';
 let currentModalId = null;
+let USER_MAP = {}; // email (lowercase) -> full name, populated from /users
 
 /* ═══════════════════════════════════════════════
    CLOCK
@@ -432,19 +447,79 @@ document.addEventListener('click', e => {
   const pw = document.getElementById('profileWrap');
   if (pw && !pw.contains(e.target)) document.getElementById('profileDropdown').classList.add('hidden');
 });
+
+function getCurrentUser() {
+  try {
+    const stored = sessionStorage.getItem('itso_user');
+    return stored ? JSON.parse(stored) : null;
+  } catch { return null; }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  // Auth guard — redirect to login if no itso_user session
+  const currentUser = getCurrentUser();
+  if (!currentUser) {
+    window.location.href = 'index.html';
+    return;
+  }
+
+  // Populate profile dropdown with real data from itso_user
+  const fullName = [currentUser.fname, currentUser.lname].filter(Boolean).join(' ') || 'Admin';
+  const initials  = ((currentUser.fname?.[0] || '') + (currentUser.lname?.[0] || '')).toUpperCase() || 'AD';
+  const roleLabel = (currentUser.role || 'admin');
+  const roleCap   = roleLabel.charAt(0).toUpperCase() + roleLabel.slice(1);
+
+  const initialsEl = document.getElementById('profile-initials');
+  const nameEl     = document.getElementById('profile-name');
+  const roleEl     = document.getElementById('profile-role');
+  if (initialsEl) initialsEl.textContent = initials;
+  if (nameEl)     nameEl.textContent     = fullName;
+  if (roleEl)     roleEl.textContent     = roleCap;
+
   const mc = document.getElementById('mainContent');
   setTimeout(() => { if (mc) { mc.style.opacity = '1'; mc.style.transform = 'translateY(0)'; } }, 80);
 });
+
+/* ═══════════════════════════════════════════════
+   USER LOOKUP — resolve log.user (email) to full name
+═══════════════════════════════════════════════ */
+async function fetchUserMap() {
+  try {
+    const res = await fetch(`${API_BASE}/users`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const users = Array.isArray(data) ? data : (data.users || data.data || []);
+    const map = {};
+    users.forEach(u => {
+      const email = (u.email || '').trim().toLowerCase();
+      if (!email) return;
+      const fullName = [u.fname, u.mname, u.lname].filter(Boolean).join(' ').trim();
+      if (fullName) map[email] = fullName;
+    });
+    USER_MAP = map;
+  } catch (error) {
+    console.error('Error fetching users for name lookup:', error);
+    // Leave USER_MAP as-is (or empty) — table falls back to showing the raw value.
+  }
+}
+
+function resolveUserName(rawUser) {
+  if (!rawUser) return '—';
+  const key = String(rawUser).trim().toLowerCase();
+  return USER_MAP[key] || rawUser;
+}
 
 /* ═══════════════════════════════════════════════
    FETCH LOGS — same endpoint as original
 ═══════════════════════════════════════════════ */
 async function fetchLogs() {
   try {
-    const response = await fetch('http://localhost:5000/api/logs');
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const data = await response.json();
+    const [logsResponse] = await Promise.all([
+      fetch(`${API_BASE}/logs`),
+      fetchUserMap(),
+    ]);
+    if (!logsResponse.ok) throw new Error(`HTTP ${logsResponse.status}`);
+    const data = await logsResponse.json();
     ALL_LOGS = data;
     filteredLogs = [...ALL_LOGS];
     document.getElementById('log-loading').style.display = 'none';
@@ -468,9 +543,12 @@ async function refreshLogs() {
   document.getElementById('log-empty').style.display = 'none';
   document.getElementById('log-tbody').innerHTML = '';
   try {
-    const response = await fetch('http://localhost:5000/api/logs');
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const data = await response.json();
+    const [logsResponse] = await Promise.all([
+      fetch(`${API_BASE}/logs`),
+      fetchUserMap(),
+    ]);
+    if (!logsResponse.ok) throw new Error(`HTTP ${logsResponse.status}`);
+    const data = await logsResponse.json();
     ALL_LOGS = data;
     filteredLogs = [...ALL_LOGS];
     document.getElementById('log-loading').style.display = 'none';
@@ -592,6 +670,7 @@ function filterAndRender() {
 
   filteredLogs = ALL_LOGS.filter(l => {
     const mQ = !q || (l.user||'').toLowerCase().includes(q) ||
+                     resolveUserName(l.user).toLowerCase().includes(q) ||
                      (l.action||'').toLowerCase().includes(q) ||
                      (l.module||'').toLowerCase().includes(q) ||
                      (l.desc||'').toLowerCase().includes(q) ||
@@ -605,7 +684,8 @@ function filterAndRender() {
   });
 
   filteredLogs.sort((a, b) => {
-    const av = a[sortField] || '', bv = b[sortField] || '';
+    const av = sortField === 'user' ? resolveUserName(a.user) : (a[sortField] || '');
+    const bv = sortField === 'user' ? resolveUserName(b.user) : (b[sortField] || '');
     const c = av < bv ? -1 : av > bv ? 1 : 0;
     return sortDir === 'asc' ? c : -c;
   });
@@ -685,7 +765,7 @@ function render() {
         <div class="text-[11px] text-outline mt-0.5 tabular-nums font-mono">${time}</div>
       </td>
       <td class="px-5 py-4">
-        <div class="text-[13px] font-semibold text-on-surface">${escHtml(log.user || '—')}</div>
+        <div class="text-[13px] font-semibold text-on-surface">${escHtml(resolveUserName(log.user))}</div>
         <div class="text-[10px] text-outline font-mono mt-0.5 uppercase tracking-wide">${escHtml(log.id || '')}</div>
       </td>
       <td class="px-5 py-4 whitespace-nowrap">
@@ -707,7 +787,7 @@ function render() {
       </td>
       <td class="px-5 py-4 text-center">
         <button onclick="event.stopPropagation();openLogDetail('${escAttr(log.id)}')" class="btn-detail">
-          <i class="ti ti-file-description" style="font-size:13px;" aria-hidden="true"></i>View
+          <i class="ti ti-eye" style="font-size:13px;" aria-hidden="true"></i><span>View</span>
         </button>
       </td>
     `;
@@ -788,7 +868,7 @@ function openLogDetail(id) {
   const fields = [
     { label: 'Log ID',      value: log.id || '—',            style: 'mono' },
     { label: 'Timestamp',   value: formatDateFull(log.timestamp) },
-    { label: 'User',        value: log.user || '—' },
+    { label: 'User',        value: resolveUserName(log.user) },
     { label: 'IP Address',  value: log.ip || '—',             style: 'mono' },
     { label: 'Module',      value: toTitleCase(log.module) },
     { label: 'Description', value: log.desc || '—',           style: 'desc' },
@@ -884,4 +964,4 @@ document.addEventListener('keydown', e => {
 fetchLogs();
 </script>
 </body>
-</html>
+</html> 

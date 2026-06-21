@@ -14,9 +14,20 @@ router.get('/', async (req, res) => {
 
 // POST: Mag-save ng bagong event
 router.post('/', async (req, res) => {
-  const event = new Event(req.body);
+  const { actor_email, ...eventData } = req.body;
+  const event = new Event(eventData);
   try {
     const savedEvent = await event.save();
+
+    await createLog({
+      user: req.user?.email || actor_email || "System/Admin",
+      action: "Create",
+      module: "Events",
+      desc: `Created new event: "${savedEvent.name}"`,
+      ip: req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+      severity: "info"
+    });
+
     res.status(201).json(savedEvent);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -26,7 +37,19 @@ router.post('/', async (req, res) => {
 // PUT: I-update ang event
 router.put('/:id', async (req, res) => {
   try {
-    const updatedEvent = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const { actor_email, ...eventData } = req.body;
+    const updatedEvent = await Event.findByIdAndUpdate(req.params.id, eventData, { new: true });
+    if (!updatedEvent) return res.status(404).json({ message: "Event not found" });
+
+    await createLog({
+      user: req.user?.email || actor_email || "System/Admin",
+      action: "Update",
+      module: "Events",
+      desc: `Updated details for event: "${updatedEvent.name}"`,
+      ip: req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+      severity: "warning"
+    });
+
     res.json(updatedEvent);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -36,7 +59,18 @@ router.put('/:id', async (req, res) => {
 // DELETE: Burahin ang event
 router.delete('/:id', async (req, res) => {
   try {
-    await Event.findByIdAndDelete(req.params.id);
+    const deletedEvent = await Event.findByIdAndDelete(req.params.id);
+    if (!deletedEvent) return res.status(404).json({ message: "Event not found" });
+
+    await createLog({
+      user: req.user?.email || req.query.actor_email || "System/Admin",
+      action: "Delete",
+      module: "Events",
+      desc: `Permanently deleted event: "${deletedEvent.name}"`,
+      ip: req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+      severity: "critical"
+    });
+
     res.json({ message: 'Event deleted' });
   } catch (error) {
     res.status(500).json({ message: error.message });

@@ -9,9 +9,11 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password: { type: String, required: true },
     role: { type: String, enum: ["admin", "staff"], default: "staff", required: true },
-    status: { type: String, enum: ["Active", "Inactive", "Suspended"], default: "Active", required: true },
-    // UPDATE: Idinagdag para mag-record ng timestamp ng huling login
-    lastLogin: { type: Date, default: null }
+    status: { type: String, enum: ["Active", "Inactive", "Locked"], default: "Active", required: true },
+    // Idinagdag para mag-record ng timestamp ng huling login
+    lastLogin: { type: Date, default: null },
+    // Bilang ng magkakasunod na maling password attempt — nag-rereset sa successful login
+    failedAttempts: { type: Number, default: 0 }
   },
   { timestamps: true }
 );
@@ -28,7 +30,7 @@ userSchema.pre("save", async function () {
   }
 });
 
-// Format para tugma sa frontend UI mo
+// Format para tugma sa frontend UI
 userSchema.set("toJSON", {
   virtuals: true,
   transform: function (doc, ret) {

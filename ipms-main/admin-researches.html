@@ -48,9 +48,9 @@
     text-transform: uppercase; letter-spacing: 0.08em; padding: 0 12px; margin: 16px 0 6px;
   }
 
-  .live-time-badge { display:flex; align-items:center; gap:6px; background:#f4f7fc; border:1px solid #e2e8f0; border-radius:8px; padding:5px 11px; font-size:12px; font-weight:600; color:#424754; white-space:nowrap; }
-  .live-time-badge i { color:#0058be; font-size:14px; }
-  #mainContent { opacity:0; transform:translateY(8px); transition:opacity 0.4s ease-out,transform 0.4s ease-out; }
+  .live-time-badge { display:flex; align-items:center; gap:6px; background:#f2f3fd; border:1px solid #e1e2ec; border-radius:12px; padding:0 14px; height:38px; font-size:13px; font-weight:600; color:#424754; white-space:nowrap; flex-shrink:0; }
+  .live-time-badge i { color:#0058be; font-size:15px; }
+  #mainContent { opacity:0; transform:translateY(8px); transition:opacity 0.6s ease-out,transform 0.6s ease-out; }
 
   .stat-card { transition: box-shadow 0.2s, transform 0.2s; }
   .stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
@@ -174,12 +174,12 @@
       <div class="h-6 w-px bg-[#e2e8f0]"></div>
       <div class="relative" id="profileWrap">
         <div onclick="toggleProfile(event)" class="w-10 h-10 rounded-full bg-[#f4f7fc] flex items-center justify-center border border-[#e2e8f0] cursor-pointer hover:ring-2 hover:ring-[#0058be]/30 transition-all shadow-sm">
-          <span class="text-[12px] font-bold text-[#0058be]">SA</span>
+          <span class="text-[12px] font-bold text-[#0058be]" id="profile-initials">SA</span>
         </div>
         <div id="profileDropdown" class="hidden absolute right-0 top-[calc(100%+8px)] min-w-[160px] bg-white border border-[#e2e8f0] rounded-xl p-1.5 shadow-lg z-50">
           <div class="px-3 py-2.5 border-b border-[#f0f2f7] mb-1">
-            <p class="text-[13px] font-semibold text-[#191b23]">Super Admin</p>
-            <p class="text-[10px] font-bold text-[#727785] uppercase tracking-wider mt-0.5">Administrator</p>
+            <p class="text-[13px] font-semibold text-[#191b23]" id="profile-name">Super Admin</p>
+            <p class="text-[10px] font-bold text-[#727785] uppercase tracking-wider mt-0.5" id="profile-role">Administrator</p>
           </div>
           <button onclick="window.location.href='index.html'" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] font-semibold text-[#dc2626] hover:bg-[#fef2f2] transition-colors text-left">
             Log Out
@@ -528,7 +528,35 @@ function startClock() {
   tick(); setInterval(tick, 1000);
 }
 startClock();
+
+function getCurrentUser() {
+  try {
+    const stored = sessionStorage.getItem('itso_user');
+    return stored ? JSON.parse(stored) : null;
+  } catch { return null; }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  // Auth guard — redirect to login if no itso_user session
+  const currentUser = getCurrentUser();
+  if (!currentUser) {
+    window.location.href = 'index.html';
+    return;
+  }
+
+  // Populate profile dropdown with real data from itso_user
+  const fullName = [currentUser.fname, currentUser.lname].filter(Boolean).join(' ') || 'Admin';
+  const initials  = ((currentUser.fname?.[0] || '') + (currentUser.lname?.[0] || '')).toUpperCase() || 'AD';
+  const roleLabel = (currentUser.role || 'admin');
+  const roleCap   = roleLabel.charAt(0).toUpperCase() + roleLabel.slice(1);
+
+  const initialsEl = document.getElementById('profile-initials');
+  const nameEl     = document.getElementById('profile-name');
+  const roleEl     = document.getElementById('profile-role');
+  if (initialsEl) initialsEl.textContent = initials;
+  if (nameEl)     nameEl.textContent     = fullName;
+  if (roleEl)     roleEl.textContent     = roleCap;
+
   const mc = document.getElementById('mainContent');
   setTimeout(() => { if (mc) { mc.style.opacity = '1'; mc.style.transform = 'translateY(0)'; } }, 80);
 });
@@ -972,7 +1000,7 @@ async function confirmArchive() {
     const response = await fetch(`${API_BASE_URL}/research/${pendingArchiveId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ archived: true, archiveDate: todayDate })
+      body: JSON.stringify({ archived: true, archiveDate: todayDate, actor_email: getCurrentUser()?.email || '' })
     });
 
     if (!response.ok) throw new Error('Failed to update data on the database.');
@@ -1016,7 +1044,7 @@ async function confirmRestore() {
     const response = await fetch(`${API_BASE_URL}/research/${pendingRestoreId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ archived: false, archiveDate: "" })
+      body: JSON.stringify({ archived: false, archiveDate: "", actor_email: getCurrentUser()?.email || '' })
     });
 
     if (!response.ok) throw new Error('Failed to restore data in database.');

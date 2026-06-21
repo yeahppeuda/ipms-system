@@ -4,19 +4,37 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>User Management | ITSO Research Management Office</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.tailwindcss.com?plugins=container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
-<script>
+<script id="tailwind-config">
   tailwind.config = {
-    darkMode:"class",
-    theme:{ extend:{ colors:{
-      "background":"#f9f9ff",
-      "primary":"#0058be",
-      "on-surface":"#191b23",
-      "outline":"#e2e8f0"
-    }, fontFamily:{ sans:["Inter","sans-serif"] } } }
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "background": "#f9f9ff","inverse-on-surface": "#eff0fa","surface-container-high": "#e6e7f2",
+          "primary": "#0058be","inverse-surface": "#2e3038","on-primary-container": "#fefcff",
+          "on-primary": "#ffffff","secondary-fixed": "#e9ddff","surface-container-low": "#f2f3fd",
+          "surface-container": "#ecedf7","outline": "#727785","surface-container-highest": "#e1e2ec",
+          "surface-variant": "#e1e2ec","surface-container-lowest": "#ffffff","secondary": "#6b38d4",
+          "on-surface": "#191b23","surface-bright": "#f9f9ff","tertiary-container": "#b75b00",
+          "primary-container": "#2170e4","tertiary": "#924700","on-tertiary": "#ffffff",
+          "on-background": "#191b23","on-surface-variant": "#424754","surface-dim": "#d8d9e3",
+          "inverse-primary": "#adc6ff","outline-variant": "#c2c6d6","surface": "#f9f9ff"
+        },
+        borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
+        fontFamily: { display: ["Inter"],"body-lg": ["Inter"],"headline-lg": ["Inter"],"body-md": ["Inter"],"headline-md": ["Inter"] },
+        fontSize: {
+          display: ["36px",{ lineHeight:"1.2",letterSpacing:"-0.02em",fontWeight:"700" }],
+          "body-lg": ["16px",{ lineHeight:"1.6",fontWeight:"400" }],
+          "headline-lg": ["28px",{ lineHeight:"1.3",fontWeight:"600" }],
+          "body-md": ["14px",{ lineHeight:"1.5",fontWeight:"400" }],
+          "headline-md": ["20px",{ lineHeight:"1.4",fontWeight:"600" }]
+        }
+      }
+    }
   }
 </script>
 <style>
@@ -36,11 +54,11 @@
   .nav-section-label { font-size:10px; font-weight:700; color:#a0a6b8; text-transform:uppercase; letter-spacing:0.08em; padding:0 12px; margin:16px 0 6px; }
 
   /* ── Header ── */
-  .live-time-badge { display:flex; align-items:center; gap:6px; background:#f4f7fc; border:1px solid #e2e8f0; border-radius:8px; padding:5px 11px; font-size:12px; font-weight:600; color:#424754; white-space:nowrap; }
-  .live-time-badge i { color:#0058be; font-size:14px; }
+  .live-time-badge { display:flex; align-items:center; gap:6px; background:#f2f3fd; border:1px solid #e1e2ec; border-radius:12px; padding:0 14px; height:38px; font-size:13px; font-weight:600; color:#424754; white-space:nowrap; flex-shrink:0; }
+  .live-time-badge i { color:#0058be; font-size:15px; }
 
   /* ── Page entrance ── */
-  #mainContent { opacity:0; transform:translateY(8px); transition:opacity 0.4s ease-out,transform 0.4s ease-out; }
+  #mainContent { opacity:0; transform:translateY(8px); transition:opacity 0.6s ease-out,transform 0.6s ease-out; }
 
   /* ── Table ── */
   .tbl-th { padding:12px 16px; font-size:10px; font-weight:700; color:#727785; text-transform:uppercase; letter-spacing:0.06em; border-bottom:1px solid #edf0f7; background:#ffffff; white-space:nowrap; }
@@ -68,12 +86,12 @@
 
   /* ── Form Fields ── */
   .field-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:#727785; display:block; margin-bottom:8px; }
-  .field-input { width:100%; background:#f4f7fc; border:1.5px solid transparent; border-radius:12px; padding:12px 16px; font-family:'Inter',sans-serif; font-size:14px; color:#191b23; outline:none; transition:border-color 0.15s,box-shadow 0.15s, background-color 0.15s; }
+  .field-input { width:100%; background:#f4f7fc; border:1.5px solid transparent; border-radius:12px; padding:10px 14px; font-family:'Inter',sans-serif; font-size:13.5px; color:#191b23; outline:none; transition:border-color 0.15s,box-shadow 0.15s, background-color 0.15s; }
   .field-input:hover { background:#eef2f9; }
   .field-input:focus { border-color:#0058be; background:#ffffff; box-shadow:0 0 0 3px rgba(0,88,190,0.08); }
   .field-input::placeholder { color:#8e9aa8; font-weight:400; }
   
-  .dropdown-trigger { width:100%; display:flex; align-items:center; justify-content:between; background:#f4f7fc; border:1.5px solid transparent; border-radius:12px; padding:12px 16px; font-family:'Inter',sans-serif; font-size:14px; color:#191b23; font-weight:500; cursor:pointer; text-align:left; transition:all 0.15s; }
+  .dropdown-trigger { width:100%; display:flex; align-items:center; justify-content:between; background:#f4f7fc; border:1.5px solid transparent; border-radius:12px; padding:10px 14px; font-family:'Inter',sans-serif; font-size:13.5px; color:#191b23; font-weight:500; cursor:pointer; text-align:left; transition:all 0.15s; }
   .dropdown-trigger:hover { background:#eef2f9; }
   .dropdown-trigger:focus { border-color:#0058be; background:#ffffff; box-shadow:0 0 0 3px rgba(0,88,190,0.08); outline:none; }
   
@@ -95,6 +113,25 @@
   .spill-opt, .rpill-opt { display:flex; align-items:center; width:100%; padding:10px 14px; border-radius:10px; border:none; background:none; font-size:13px; font-family:'Inter',sans-serif; font-weight:500; color:#424754; cursor:pointer; transition:background 0.12s; text-align:left; }
   .spill-opt:hover, .rpill-opt:hover { background:#f4f7fc; color:#191b23; }
   .spill-opt.active, .rpill-opt.active { background:#e8f0fd; color:#0058be; font-weight:600; }
+
+  /* ── View button (matches copyright.html style) ── */
+  .btn-view {
+    display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px 5px 10px;
+    border-radius: 8px; font-size: 12px; font-weight: 600; color: #0058be;
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    border: 1px solid #bfdbfe; cursor: pointer;
+    transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.15s, box-shadow 0.18s;
+    position: relative; overflow: hidden; white-space: nowrap;
+  }
+  .btn-view::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, #0058be 0%, #1d4ed8 100%);
+    opacity: 0; transition: opacity 0.18s; border-radius: inherit;
+  }
+  .btn-view:hover::before { opacity: 1; }
+  .btn-view:hover { color: #fff; border-color: #0058be; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,88,190,0.25); }
+  .btn-view:active { transform: translateY(0); box-shadow: none; }
+  .btn-view i, .btn-view span { position: relative; z-index: 1; }
 </style>
 </head>
 <body>
@@ -136,12 +173,12 @@
       <div class="h-6 w-px bg-[#e2e8f0]"></div>
       <div class="relative" id="profileWrap">
         <div onclick="toggleProfile(event)" class="w-10 h-10 rounded-full bg-[#f4f7fc] flex items-center justify-center border border-[#e2e8f0] cursor-pointer hover:ring-2 hover:ring-[#0058be]/30 transition-all shadow-sm">
-          <span class="text-[12px] font-bold text-[#0058be]">SA</span>
+          <span class="text-[12px] font-bold text-[#0058be]" id="profile-initials">SA</span>
         </div>
         <div id="profileDropdown" class="hidden absolute right-0 top-[calc(100%+8px)] min-w-[160px] bg-white border border-[#e2e8f0] rounded-xl p-1.5 shadow-lg z-50">
           <div class="px-3 py-2.5 border-b border-[#f0f2f7] mb-1">
-            <p class="text-[13px] font-semibold text-[#191b23]">Super Admin</p>
-            <p class="text-[10px] font-bold text-[#727785] uppercase tracking-wider mt-0.5">Administrator</p>
+            <p class="text-[13px] font-semibold text-[#191b23]" id="profile-name">Super Admin</p>
+            <p class="text-[10px] font-bold text-[#727785] uppercase tracking-wider mt-0.5" id="profile-role">Administrator</p>
           </div>
           <button onclick="window.location.href='index.html'" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] font-semibold text-[#dc2626] hover:bg-[#fef2f2] transition-colors text-left">
             Log Out
@@ -152,16 +189,16 @@
   </div>
 </header>
 
-<main id="mainContent" class="pl-[260px] pt-[64px] min-h-screen">
-  <div class="py-8 px-8 max-w-[1400px] mx-auto">
+<main id="mainContent" class="pl-[280px] pt-[76px] min-h-screen">
+  <div class="py-6 px-8 max-w-[1440px]">
 
     <div class="flex justify-between items-center mb-6">
       <div>
-        <h2 class="text-[24px] font-bold leading-tight text-[#191b23] tracking-tight">User Accounts</h2>
-        <p class="text-[13px] text-[#727785] mt-1 font-medium">Manage system access, roles, and administrative privileges.</p>
+        <h2 class="text-[28px] font-bold leading-tight text-on-surface tracking-tight">User Accounts</h2>
+        <p class="text-[14px] text-on-surface-variant mt-1">Manage system access, roles, and administrative privileges.</p>
       </div>
       <button onclick="openAddModal()" class="h-[42px] px-5 bg-[#0058be] text-white rounded-xl font-semibold text-[13px] flex items-center justify-center hover:opacity-90 transition-all shadow-sm shadow-[#0058be]/20">
-        <span class="material-symbols-outlined text-[18px]">add</span> Add User
+        <span class="material-symbols-outlined text-[18px] mr-1.5">add</span> Add User
       </button>
     </div>
 
@@ -169,7 +206,8 @@
       <div class="flex items-center gap-3 px-6 py-4 border-b border-[#f0f2f7]">
         <div class="relative flex-1">
           <i class="ti ti-search absolute left-4 top-1/2 -translate-y-1/2 text-[#a0a6b8] text-[16px] pointer-events-none"></i>
-          <input id="tableSearch" type="text" autocomplete="off"
+          <input id="tableSearch" type="text" name="qsrch_4471" autocomplete="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-bwignore="true"
+            readonly onfocus="this.removeAttribute('readonly')"
             placeholder="Search users..."
             class="w-full h-[42px] bg-white border border-[#e2e8f0] rounded-xl pl-11 pr-4 text-[13px] text-[#191b23] outline-none focus:border-[#0058be] transition-all placeholder:text-[#a0a6b8]"/>
         </div>
@@ -186,6 +224,7 @@
               <button class="spill-opt active" data-val="all"      onclick="setStatusPill('all',this,'All Status')">All Status</button>
               <button class="spill-opt"        data-val="Active"   onclick="setStatusPill('Active',this,'Active')">Active</button>
               <button class="spill-opt"        data-val="Inactive" onclick="setStatusPill('Inactive',this,'Inactive')">Inactive</button>
+              <button class="spill-opt"        data-val="Locked"   onclick="setStatusPill('Locked',this,'Locked')">Locked</button>
             </div>
           </div>
 
@@ -250,65 +289,41 @@
 
 
 <div class="modal-overlay" id="userModal">
-  <div class="relative w-full max-w-[600px] rounded-3xl bg-white shadow-2xl flex flex-col pb-6 mx-auto transition-all overflow-visible" style="animation:modalIn 0.22s ease;">
+  <div class="relative w-full max-w-[560px] max-h-[88vh] rounded-3xl bg-white shadow-2xl flex flex-col mx-auto transition-all overflow-hidden" style="animation:modalIn 0.22s ease;">
 
-    <div class="px-8 pt-7 pb-5 border-b border-[#f0f2f7] flex items-start justify-between gap-4">
+    <div class="px-7 pt-6 pb-4 border-b border-[#f0f2f7] flex items-start justify-between gap-4 flex-shrink-0">
       <div>
-        <h3 class="text-[20px] font-bold text-[#191b23] leading-tight" id="drawerTitle">Add New User</h3>
-        <p class="text-[13px] font-medium text-[#727785] mt-1" id="drawerSubtitle">Fill in the user details below.</p>
-        <div id="drawerIdRow" class="hidden mt-3 inline-flex items-center gap-2 bg-[#f4f7fc] rounded-lg px-3 py-1.5 border border-[#e2e8f0]">
-          <span class="text-[10px] font-bold text-[#727785] uppercase tracking-wider">ID</span>
-          <span class="text-[11px] font-bold text-[#424754] font-mono" id="drawerUserId"></span>
-        </div>
-      </div>
-      <button onclick="closeModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-[#a0a6b8] hover:bg-[#f4f7fc] hover:text-[#191b23] transition-all flex-shrink-0">
+        <h3 class="text-[18px] font-bold text-[#191b23] leading-tight" id="drawerTitle">Add New User</h3>
+        <p class="text-[12.5px] font-medium text-[#727785] mt-1" id="drawerSubtitle">Fill in the user details below.</p>
+</div>
+      <button onclick="requestModalClose()" class="w-8 h-8 rounded-full flex items-center justify-center text-[#a0a6b8] hover:bg-[#f4f7fc] hover:text-[#191b23] transition-all flex-shrink-0">
         <i class="ti ti-x" style="font-size:18px;"></i>
       </button>
     </div>
 
-    <div class="px-8 py-6 space-y-6 overflow-visible">
+    <div class="px-7 py-5 space-y-5 overflow-y-auto flex-1 min-h-0" id="modalBody">
 
-      <div id="formSectionPersonal" class="space-y-4">
+      <div id="normalFormView" class="space-y-5">
+      <div id="formSectionPersonal" class="space-y-3">
         <div class="text-[11px] font-extrabold tracking-widest text-[#0058be] uppercase border-b border-[#edf0f7] pb-1">Personal Details</div>
         <div>
           <label class="field-label">Full Name <span class="text-[#dc2626]">*</span></label>
-          <div class="grid grid-cols-3 gap-4">
-            <input class="field-input" id="umFname" type="text" placeholder="First Name"/>
-            <input class="field-input" id="umMname" type="text" placeholder="Middle Name"/>
-            <input class="field-input" id="umLname" type="text" placeholder="Last Name"/>
+          <div class="grid grid-cols-3 gap-3">
+            <input class="field-input" id="umFname" type="text" placeholder="First Name" oninput="markDirty()"/>
+            <input class="field-input" id="umMname" type="text" placeholder="Middle Name" oninput="markDirty()"/>
+            <input class="field-input" id="umLname" type="text" placeholder="Last Name" oninput="markDirty()"/>
           </div>
         </div>
         <div>
           <label class="field-label">Email Address <span class="text-[#dc2626]">*</span></label>
-          <input class="field-input" id="umEmail" type="email" placeholder="e.g. user@university.edu"/>
+          <input class="field-input" id="umEmail" type="email" placeholder="e.g. user@university.edu" oninput="markDirty()"/>
         </div>
       </div>
 
-      <div id="formSectionSecurity" class="space-y-4">
-        <div class="text-[11px] font-extrabold tracking-widest text-[#0058be] uppercase border-b border-[#edf0f7] pb-1">Security Credentials</div>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="field-label" id="passLabel">Password <span class="text-[#dc2626]">*</span></label>
-            <div class="pw-wrap">
-              <input class="field-input" id="umPass" type="password" placeholder="Enter password"/>
-              <button class="pw-eye" type="button" onclick="togglePw('umPass', 'pwIcon')"><i class="ti ti-eye" id="pwIcon"></i></button>
-            </div>
-          </div>
-          <div>
-            <label class="field-label">Confirm Password <span class="text-[#dc2626]">*</span></label>
-            <div class="pw-wrap">
-              <input class="field-input" id="umConfirmPass" type="password" placeholder="Confirm password entry"/>
-              <button class="pw-eye" type="button" onclick="togglePw('umConfirmPass', 'pwConfirmIcon')"><i class="ti ti-eye" id="pwConfirmIcon"></i></button>
-            </div>
-          </div>
-        </div>
-        <p class="text-[12px] font-medium text-[#8e9aa8]" id="passHint">Minimum 6 alphanumeric characters required. Special characters are blocked.</p>
-      </div>
-
-      <div id="formSectionSystem" class="space-y-4 overflow-visible">
+      <div id="formSectionSystem" class="space-y-3">
         <div class="text-[11px] font-extrabold tracking-widest text-[#0058be] uppercase border-b border-[#edf0f7] pb-1">System Allocation</div>
-        <div class="grid grid-cols-2 gap-5 overflow-visible">
-          <div class="relative overflow-visible">
+        <div class="grid grid-cols-2 gap-3">
+          <div class="relative">
             <label class="field-label">Role <span class="text-[#dc2626]">*</span></label>
             <button type="button" id="roleSelectTrigger" onclick="toggleModalDropdown(event, 'roleModalDropdown')" class="dropdown-trigger">
               <span id="roleSelectLabel">Select Role</span>
@@ -321,18 +336,80 @@
             <input type="hidden" id="umRole" value=""/>
           </div>
 
-          <div class="relative overflow-visible">
-            <label class="field-label">Status <span class="text-[#dc2626]">*</span></label>
-            <button type="button" id="statusSelectTrigger" onclick="toggleModalDropdown(event, 'statusModalDropdown')" class="dropdown-trigger">
+          <div class="relative">
+            <label class="field-label">Status</label>
+            <div id="statusSelectTrigger" class="dropdown-trigger" style="cursor:not-allowed; background:#f4f6fb; color:#727785;">
               <span id="statusSelectLabel">Active</span>
-              <i class="ti ti-chevron-down text-[#727785] text-[15px] ml-auto"></i>
-            </button>
-            <div id="statusModalDropdown" style="display:none; position:absolute; left:0; right:0; top:calc(100% + 4px); background:#fff; border:1px solid #e4e9f2; border-radius:14px; padding:6px; box-shadow:0 10px 25px rgba(0,0,0,0.12); z-index:999;">
-              <button type="button" class="spill-opt" onclick="selectModalOption('status', 'Active', 'Active')">Active</button>
-              <button type="button" class="spill-opt" onclick="selectModalOption('status', 'Inactive', 'Inactive')">Inactive</button>
+              <span class="text-[10px] text-[#a0a6b8] ml-auto whitespace-nowrap">System-managed</span>
             </div>
             <input type="hidden" id="umStatus" value="Active"/>
           </div>
+        </div>
+        <p class="text-[11px] text-[#8e9aa8]">New accounts start Active. The system marks an account Inactive after 30 days without login, and Locked after 5 failed login attempts.</p>
+      </div>
+
+      <div id="formSectionSecurity" class="space-y-3">
+        <div class="text-[11px] font-extrabold tracking-widest text-[#0058be] uppercase border-b border-[#edf0f7] pb-1">Security Credentials</div>
+
+        <!-- VIEW MODE: read-only password + change button -->
+        <div id="passViewRow" class="hidden">
+          <div class="flex items-center justify-between mb-2">
+            <label class="field-label mb-0">Password</label>
+            <button type="button" id="changePassBtn" onclick="unlockPassword()" class="flex items-center gap-1.5 text-[12px] font-bold text-[#0058be] hover:text-[#004fa6] transition-colors">
+              <i class="ti ti-lock-open" style="font-size:13px;"></i>Change Password
+            </button>
+          </div>
+          <div class="pw-wrap">
+            <input class="field-input opacity-60 cursor-not-allowed" id="umPassDisplay" type="password" readonly tabindex="-1"/>
+            <button class="pw-eye" type="button" onclick="togglePw('umPassDisplay','pwDisplayIcon')"><i class="ti ti-eye" id="pwDisplayIcon"></i></button>
+          </div>
+        </div>
+
+        <!-- EDIT MODE: new password + confirm (shown on add, or after unlock) -->
+        <div id="passEditRow" class="space-y-3">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="field-label" id="passLabel">Password <span class="text-[#dc2626]">*</span></label>
+              <div class="pw-wrap">
+                <input class="field-input" id="umPass" type="password" placeholder="Enter password" oninput="markDirty()"/>
+                <button class="pw-eye" type="button" onclick="togglePw('umPass','pwIcon')"><i class="ti ti-eye" id="pwIcon"></i></button>
+              </div>
+            </div>
+            <div>
+              <label class="field-label">Confirm Password <span class="text-[#dc2626]">*</span></label>
+              <div class="pw-wrap">
+                <input class="field-input" id="umConfirmPass" type="password" placeholder="Confirm password entry" oninput="markDirty()"/>
+                <button class="pw-eye" type="button" onclick="togglePw('umConfirmPass','pwConfirmIcon')"><i class="ti ti-eye" id="pwConfirmIcon"></i></button>
+              </div>
+            </div>
+          </div>
+          <!-- Cancel change password (only shown in edit mode when unlocked) -->
+          <div id="passCancelRow" class="hidden">
+            <button type="button" onclick="lockPassword()" class="flex items-center gap-1.5 text-[12px] font-bold text-[#727785] hover:text-[#424754] transition-colors">
+              <i class="ti ti-lock" style="font-size:13px;"></i>Keep existing password
+            </button>
+          </div>
+          <p class="text-[11.5px] font-medium text-[#8e9aa8]" id="passHint">Minimum 6 alphanumeric characters required. Special characters are blocked.</p>
+        </div>
+      </div>
+      </div>
+
+      <!-- LOCKED ACCOUNT VIEW: shown instead of the normal form when the account is Locked -->
+      <div id="lockedView" class="hidden">
+        <div class="flex flex-col items-center text-center py-4">
+          <div class="w-14 h-14 rounded-2xl bg-[#fee2e2] border border-[#fecaca] flex items-center justify-center mb-4">
+            <i class="ti ti-lock" style="font-size:24px;color:#dc2626;"></i>
+          </div>
+          <p class="text-[16px] font-bold text-[#191b23]" id="lockedUserName">—</p>
+          <p class="text-[13px] text-[#727785] mt-0.5" id="lockedUserEmail">—</p>
+          <span class="badge mt-3" style="background:#fee2e2;color:#991b1b;border:1px solid #fecaca;">Locked</span>
+          <p class="text-[13px] font-medium text-[#727785] mt-4 max-w-[360px] leading-relaxed">
+            This account was automatically locked after 5 failed login attempts. Unlocking it will restore the account to Active status.
+          </p>
+          <button type="button" onclick="unlockAccount()"
+            class="mt-5 px-5 py-2.5 text-[13px] font-bold text-white bg-[#0058be] rounded-xl hover:bg-[#004fa6] transition-all flex items-center gap-2 shadow-sm shadow-[#0058be]/20">
+            <i class="ti ti-lock-open" style="font-size:15px;"></i>Unlock Account
+          </button>
         </div>
       </div>
 
@@ -342,14 +419,14 @@
       </div>
     </div>
 
-    <div class="px-8 pt-5 flex items-center justify-between gap-3 border-t border-[#f0f2f7] bg-white">
+    <div class="px-7 py-4 flex items-center justify-between gap-3 border-t border-[#f0f2f7] bg-white flex-shrink-0">
       <button id="deleteBtn" onclick="triggerDelete()" class="hidden text-[13px] font-bold text-[#dc2626] hover:text-[#b91c1c] transition-colors flex items-center gap-1.5">
         <i class="ti ti-trash" style="font-size:14px;"></i>Delete Account
       </button>
       <div class="flex gap-3 ml-auto">
-        <button onclick="closeModal()" class="px-6 py-2.5 text-[13px] font-bold text-[#424754] bg-white border border-[#e2e8f0] rounded-xl hover:bg-[#f4f7fc] transition-all">Cancel</button>
+        <button onclick="requestModalClose()" class="px-5 py-2.5 text-[13px] font-bold text-[#424754] bg-white border border-[#e2e8f0] rounded-xl hover:bg-[#f4f7fc] transition-all">Cancel</button>
         <button onclick="interceptFormSubmit()" id="umSaveBtn"
-          class="px-6 py-2.5 text-[13px] font-bold text-white bg-[#0058be] rounded-xl hover:bg-[#004fa6] transition-all flex items-center justify-center shadow-sm shadow-[#0058be]/20">
+          class="px-5 py-2.5 text-[13px] font-bold text-white bg-[#0058be] rounded-xl hover:bg-[#004fa6] transition-all flex items-center justify-center shadow-sm shadow-[#0058be]/20">
           <span id="umSaveLabel">Save User</span>
         </button>
       </div>
@@ -368,6 +445,34 @@
     <div class="flex gap-3">
       <button onclick="closeConfirm()" class="flex-1 py-2.5 border border-[#e2e8f0] rounded-xl text-[13px] font-bold text-[#424754] hover:bg-[#f4f7fc] transition-all">Cancel</button>
       <button id="confBtn" class="flex-1 py-2.5 rounded-xl text-[13px] font-bold text-white transition-all bg-[#dc2626] hover:bg-[#b91c1c]" onclick="executeConfirm()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- UNSAVED CHANGES WARNING -->
+<div class="confirm-overlay" id="unsavedModal" style="z-index:350;">
+  <div class="w-full max-w-md rounded-2xl bg-white shadow-2xl overflow-hidden border border-[#e2e8f0]" style="animation:modalIn 0.2s ease;">
+    <div class="bg-amber-50 border-b border-amber-200 px-7 py-5 flex items-center gap-3.5">
+      <div class="w-10 h-10 rounded-xl bg-amber-100 border border-amber-200 flex items-center justify-center flex-shrink-0">
+        <i class="ti ti-alert-triangle" style="font-size:18px;color:#b45309;"></i>
+      </div>
+      <div>
+        <h3 class="text-[16px] font-bold text-amber-900">Unsaved Changes</h3>
+        <p class="text-[12px] text-amber-700 font-medium mt-0.5">Your edits haven't been saved yet</p>
+      </div>
+    </div>
+    <div class="px-7 py-6">
+      <p class="text-[14px] text-[#424754] leading-relaxed">You have made changes that haven't been saved. If you leave now, all unsaved edits will be permanently lost.</p>
+    </div>
+    <div class="px-7 pb-7 flex flex-col gap-3">
+      <button onclick="discardChangesAndProceed()"
+        class="w-full py-3 text-[13px] font-bold text-white bg-[#dc2626] hover:bg-[#b91c1c] rounded-xl transition-all hover:-translate-y-0.5">
+        Discard Changes &amp; Leave
+      </button>
+      <button onclick="closeUnsavedModal()"
+        class="w-full py-3 text-[13px] font-bold text-[#191b23] bg-white border-2 border-[#e2e8f0] hover:border-[#0058be] hover:text-[#0058be] rounded-xl transition-all">
+        Go Back &amp; Continue Editing
+      </button>
     </div>
   </div>
 </div>
@@ -395,22 +500,66 @@ let allUsers    = [];
 let filtered    = [];
 let currentPage = 1;
 let editingId   = null;   
+let isViewMode  = false;  // true = fields are read-only until "Edit" is pressed
+let isDirty     = false;  // true = user has made unsaved changes in the form
 let pendingDeleteId = null;
 let confirmActionCallback = null;
+
+function getCurrentUser() {
+  try {
+    const stored = sessionStorage.getItem('itso_user');
+    return stored ? JSON.parse(stored) : null;
+  } catch { return null; }
+}
 
 /* ══════════════════════════════════
    INITIALIZATION
 ══════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
+  // Auth guard — redirect to login if no itso_user session
+  const currentUser = getCurrentUser();
+  if (!currentUser) {
+    window.location.href = 'index.html';
+    return;
+  }
+
+  // Populate profile dropdown with real data from itso_user
+  const fullName = [currentUser.fname, currentUser.lname].filter(Boolean).join(' ') || 'Admin';
+  const initials  = ((currentUser.fname?.[0] || '') + (currentUser.lname?.[0] || '')).toUpperCase() || 'AD';
+  const roleLabel = (currentUser.role || 'admin');
+  const roleCap   = roleLabel.charAt(0).toUpperCase() + roleLabel.slice(1);
+
+  const initialsEl = document.getElementById('profile-initials');
+  const nameEl     = document.getElementById('profile-name');
+  const roleEl     = document.getElementById('profile-role');
+  if (initialsEl) initialsEl.textContent = initials;
+  if (nameEl)     nameEl.textContent     = fullName;
+  if (roleEl)     roleEl.textContent     = roleCap;
+
   const mc = document.getElementById('mainContent');
   setTimeout(() => { if(mc) { mc.style.opacity='1'; mc.style.transform='translateY(0)'; } }, 80);
   const searchInput = document.getElementById('tableSearch');
   if (searchInput) {
     searchInput.value = '';
     searchInput.addEventListener('input', filterAndRender);
+    // Force clear search box after password managers attempt to autofill
+    setTimeout(() => { searchInput.value = ''; filterAndRender(); }, 500);
   }
   startClock();
   loadUsers();
+});
+
+/* Fix: browsers restore old input values from bfcache on back/forward
+   navigation without re-firing DOMContentLoaded. Force a clean reload
+   of the search box + data whenever that happens. */
+window.addEventListener('pageshow', (e) => {
+  if (e.persisted) {
+    const searchInput = document.getElementById('tableSearch');
+    if (searchInput) searchInput.value = '';
+    _activeStatus = 'all';
+    _activeRole   = 'all';
+    loadUsers();
+  }
 });
 
 /* Global Window Clicks */
@@ -426,10 +575,6 @@ document.addEventListener('click', e => {
   const rmt = document.getElementById('roleSelectTrigger');
   if (rmt && !rmt.contains(e.target) && !document.getElementById('roleModalDropdown').contains(e.target)) {
     document.getElementById('roleModalDropdown').style.display = 'none';
-  }
-  const smt = document.getElementById('statusSelectTrigger');
-  if (smt && !smt.contains(e.target) && !document.getElementById('statusModalDropdown').contains(e.target)) {
-    document.getElementById('statusModalDropdown').style.display = 'none';
   }
 });
 
@@ -457,27 +602,42 @@ function startClock() {
    MODAL DROPDOWN HANDLERS
 ══════════════════════════════════ */
 function toggleModalDropdown(e, targetId) {
+  if (isViewMode) return; // must press Edit first
   e.stopPropagation();
   const targetMenu = document.getElementById(targetId);
   const isOpen = targetMenu.style.display === 'block';
-  
-  document.getElementById('roleModalDropdown').style.display = 'none';
-  document.getElementById('statusModalDropdown').style.display = 'none';
-  
+
+  closeModalDropdowns();
+
   if (!isOpen) {
+    const trigger = e.currentTarget;
+    const rect = trigger.getBoundingClientRect();
+    targetMenu.style.position = 'fixed';
+    targetMenu.style.left  = rect.left + 'px';
+    targetMenu.style.right = 'auto';
+    targetMenu.style.top   = (rect.bottom + 4) + 'px';
+    targetMenu.style.width = rect.width + 'px';
     targetMenu.style.display = 'block';
   }
 }
+
+function closeModalDropdowns() {
+  document.getElementById('roleModalDropdown').style.display = 'none';
+}
+
+/* Close the dropdown if the modal body is scrolled, since a
+   fixed-position menu would otherwise drift away from its trigger */
+document.addEventListener('DOMContentLoaded', () => {
+  const mb = document.getElementById('modalBody');
+  if (mb) mb.addEventListener('scroll', closeModalDropdowns);
+});
 
 function selectModalOption(type, value, displayLabel) {
   if (type === 'role') {
     document.getElementById('umRole').value = value;
     document.getElementById('roleSelectLabel').textContent = displayLabel;
     document.getElementById('roleModalDropdown').style.display = 'none';
-  } else if (type === 'status') {
-    document.getElementById('umStatus').value = value;
-    document.getElementById('statusSelectLabel').textContent = displayLabel;
-    document.getElementById('statusModalDropdown').style.display = 'none';
+    markDirty();
   }
 }
 
@@ -595,19 +755,22 @@ function renderTable() {
         ? `<span class="text-[13px] font-medium text-[#424754]">Admin</span>`
         : `<span class="text-[13px] font-medium text-[#424754]">Staff</span>`;
 
-    const statusBadge = u.status === 'Active'
-      ? `<span class="badge badge-status-active">Active</span>`
-      : `<span class="badge badge-status-inactive">Inactive</span>`;
+    let statusBadge = '';
+    if (u.status === 'Active') {
+      statusBadge = `<span class="badge badge-status-active">Active</span>`;
+    } else if (u.status === 'Locked') {
+      statusBadge = `<span class="badge" style="background:#fee2e2;color:#991b1b;border:1px solid #fecaca;">Locked</span>`;
+    } else {
+      statusBadge = `<span class="badge badge-status-inactive">Inactive</span>`;
+    }
 
     // Flexible fallback engine para sa Last Login date field structures
     const rawLastLogin = u.lastLogin || u.last_login || u.lastlogin;
-    const username = (u.email || '').split('@')[0] || '—';
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td class="tbl-td">
         <p class="text-[13px] font-medium text-[#191b23]">${fullName}</p>
-        <p class="text-[12px] text-[#a0a6b8] mt-0.5">${username}</p>
       </td>
       <td class="tbl-td text-[#727785]">${u.email||''}</td>
       <td class="tbl-td">${roleBadge}</td>
@@ -615,8 +778,8 @@ function renderTable() {
       <td class="tbl-td text-[#a0a6b8] text-[12px]">${u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '—'}</td>
       <td class="tbl-td text-[#a0a6b8] text-[12px]">${rawLastLogin ? new Date(rawLastLogin).toLocaleDateString() : '—'}</td>
       <td class="tbl-td text-center">
-        <button onclick="openViewEdit('${uid}')" class="inline-flex items-center justify-center px-4 py-2 rounded-lg border border-[#dbeafe] bg-[#f4f7fc] text-[12px] font-bold text-[#0058be] hover:bg-[#dbeafe] transition-all">
-          View
+        <button onclick="openViewEdit('${uid}')" class="btn-view">
+          <i class="ti ti-eye" style="font-size:13px;"></i><span>View</span>
         </button>
       </td>`;
     tbody.appendChild(tr);
@@ -642,16 +805,29 @@ function renderTable() {
 ══════════════════════════════════ */
 function openAddModal() {
   editingId = null;
+  isViewMode = false;
+  clearDirty();
   clearForm();
   document.getElementById('drawerTitle').textContent    = 'Add New User';
   document.getElementById('drawerSubtitle').textContent = 'Fill in the details to create a new account.';
-  document.getElementById('drawerIdRow').classList.add('hidden');
   document.getElementById('deleteBtn').classList.add('hidden');
   document.getElementById('umSaveLabel').textContent    = 'Save User';
-  
+  document.getElementById('umSaveBtn').onclick = interceptFormSubmit;
+
   document.getElementById('roleSelectLabel').textContent = 'Select Role';
   document.getElementById('statusSelectLabel').textContent = 'Active';
-  
+
+  setFieldsEditable(true);
+
+  // Add mode: show password fields directly
+  document.getElementById('passViewRow').classList.add('hidden');
+  document.getElementById('passEditRow').classList.remove('hidden');
+  document.getElementById('passCancelRow').classList.add('hidden');
+
+  showEl('normalFormView');
+  hide('lockedView');
+  showEl('umSaveBtn');
+
   hideErr();
   document.getElementById('userModal').classList.add('open');
 }
@@ -660,23 +836,51 @@ function openViewEdit(uid) {
   const u = allUsers.find(x => (x._id || x.id) == uid);
   if (!u) return;
   editingId = uid;
+  clearDirty();
+
+  const currentStatus = u.status || 'Active';
+  const fullNameVal = [u.fname, u.mname, u.lname].filter(Boolean).join(' ');
+
+  // Is this the account of the admin currently logged in? Self-delete is blocked
+  // by the backend, so hide the Delete button entirely to avoid a confusing error.
+  const actor = getCurrentUser();
+  const isSelf = actor && (actor._id || actor.id) == uid;
+
+  // LOCKED ACCOUNT: show the dedicated locked view instead of the normal edit form
+  if (currentStatus === 'Locked') {
+    isViewMode = false;
+    document.getElementById('drawerTitle').textContent    = 'Account Locked';
+    document.getElementById('drawerSubtitle').textContent = `This account needs to be unlocked before it can be edited.`;
+    document.getElementById('lockedUserName').textContent  = fullNameVal || '—';
+    document.getElementById('lockedUserEmail').textContent = u.email || '—';
+
+    hide('normalFormView');
+    showEl('lockedView');
+    hide('umSaveBtn');
+    document.getElementById('deleteBtn').classList.toggle('hidden', isSelf);
+    hideErr();
+    document.getElementById('userModal').classList.add('open');
+    return;
+  }
 
   document.getElementById('drawerTitle').textContent    = 'User Details';
-  document.getElementById('drawerSubtitle').textContent = `View or update this user's account information.`;
-  document.getElementById('drawerIdRow').classList.remove('hidden');
-  document.getElementById('drawerUserId').textContent   = uid;
+  document.getElementById('drawerSubtitle').textContent = `View this user's account information.`;
   document.getElementById('umFname').value  = u.fname || '';
   document.getElementById('umMname').value  = u.mname || '';
   document.getElementById('umLname').value  = u.lname || '';
   document.getElementById('umEmail').value  = u.email || '';
   
-  // FIXED LOGIC: Kinukuha na rito ang totoong password mula sa backend para hindi na maging ******
-  const assignedPassword = u.password || '';
-  document.getElementById('umPass').value   = assignedPassword;
-  document.getElementById('umConfirmPass').value = assignedPassword;
+  // Show locked password view — read-only muna, unlock kapag gusto i-change
+  // Show actual password if available, otherwise show placeholder dots
+  const assignedPassword = u.password || '••••••••';
+  document.getElementById('umPassDisplay').value = assignedPassword;
+  document.getElementById('umPass').value = '';
+  document.getElementById('umConfirmPass').value = '';
+  document.getElementById('passViewRow').classList.remove('hidden');
+  document.getElementById('passEditRow').classList.add('hidden');
+  document.getElementById('passCancelRow').classList.add('hidden');
   
   const currentRole = (u.role || '').toLowerCase();
-  const currentStatus = u.status || 'Active';
 
   document.getElementById('umRole').value   = currentRole;
   document.getElementById('umStatus').value = currentStatus;
@@ -684,15 +888,169 @@ function openViewEdit(uid) {
   document.getElementById('roleSelectLabel').textContent = currentRole === 'admin' ? 'Admin' : 'Staff';
   document.getElementById('statusSelectLabel').textContent = currentStatus;
 
-  document.getElementById('deleteBtn').classList.remove('hidden');
-  document.getElementById('umSaveLabel').textContent   = 'Update User';
+  showEl('normalFormView');
+  hide('lockedView');
+  showEl('umSaveBtn');
+
+  document.getElementById('deleteBtn').classList.toggle('hidden', isSelf);
+
+  // Start in VIEW MODE: fields read-only, footer button says "Edit"
+  isViewMode = true;
+  setFieldsEditable(false);
+  document.getElementById('umSaveLabel').textContent = 'Edit';
+  document.getElementById('umSaveBtn').onclick = enterEditMode;
+
   hideErr();
   document.getElementById('userModal').classList.add('open');
+}
+
+/* ══════════════════════════════════
+   VIEW MODE <-> EDIT MODE TOGGLE
+══════════════════════════════════ */
+function setFieldsEditable(editable) {
+  const textFieldIds = ['umFname', 'umMname', 'umLname', 'umEmail'];
+  textFieldIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.readOnly = !editable;
+    el.classList.toggle('opacity-60', !editable);
+    el.classList.toggle('cursor-not-allowed', !editable);
+  });
+
+  const roleTrigger = document.getElementById('roleSelectTrigger');
+  if (roleTrigger) {
+    roleTrigger.disabled = !editable;
+    roleTrigger.style.cursor = editable ? 'pointer' : 'not-allowed';
+    roleTrigger.style.background = editable ? '' : '#f4f6fb';
+    roleTrigger.style.color = editable ? '' : '#727785';
+  }
+
+  const changePassBtn = document.getElementById('changePassBtn');
+  if (changePassBtn) changePassBtn.classList.toggle('hidden', !editable);
+}
+
+function enterEditMode() {
+  isViewMode = false;
+  setFieldsEditable(true);
+  document.getElementById('drawerSubtitle').textContent = `Update this user's account information.`;
+  document.getElementById('umSaveLabel').textContent = 'Update User';
+  document.getElementById('umSaveBtn').onclick = interceptFormSubmit;
+}
+
+
+function unlockPassword() {
+  if (isViewMode) return; // must press Edit first
+  document.getElementById('passViewRow').classList.add('hidden');
+  document.getElementById('passEditRow').classList.remove('hidden');
+  document.getElementById('passCancelRow').classList.remove('hidden');
+  document.getElementById('umPass').value = '';
+  document.getElementById('umConfirmPass').value = '';
+  document.getElementById('umPass').focus();
+}
+
+function lockPassword() {
+  document.getElementById('passViewRow').classList.remove('hidden');
+  document.getElementById('passEditRow').classList.add('hidden');
+  document.getElementById('passCancelRow').classList.add('hidden');
+  document.getElementById('umPass').value = '';
+  document.getElementById('umConfirmPass').value = '';
+}
+
+/* ══════════════════════════════════
+   UNLOCK ACCOUNT (Locked status only)
+   Requires the logged-in admin to re-enter their own
+   password as confirmation before the account is unlocked.
+══════════════════════════════════ */
+function unlockAccount() {
+  const msg = `
+    <p class="mb-3 text-left">For security, please enter <b>your admin password</b> to confirm unlocking this account.</p>
+    <input type="password" id="unlockAdminPass" class="field-input" placeholder="Your admin password" autocomplete="current-password" style="margin-bottom:4px;"/>
+    <p id="unlockAdminPassErr" class="hidden text-[12px] font-medium text-[#dc2626] text-left mt-1">Please enter your password.</p>
+  `;
+
+  openConfirmModal(
+    'Confirm Unlock',
+    msg,
+    'ti-lock-open',
+    '#0058be',
+    'Unlock Account',
+    () => {
+      const inp = document.getElementById('unlockAdminPass');
+      const adminPassword = inp ? inp.value : '';
+      if (!adminPassword) {
+        const err = document.getElementById('unlockAdminPassErr');
+        if (err) err.classList.remove('hidden');
+        return false; // keep the confirm modal open
+      }
+      performUnlockAccount(adminPassword);
+    }
+  );
+
+  setTimeout(() => {
+    const inp = document.getElementById('unlockAdminPass');
+    if (inp) inp.focus();
+  }, 50);
+}
+
+async function performUnlockAccount(adminPassword) {
+  try {
+    const actor = getCurrentUser();
+    const res = await fetch(`${API_BASE}/users/${editingId}/unlock`, {
+      method: 'PUT',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ adminPassword, actor_email: actor?.email })
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.message || 'Incorrect admin password.');
+    }
+    closeModal();
+    showToast('Account Unlocked', 'The user can now log in again.');
+    await loadUsers();
+  } catch (err) {
+    showToast('Unlock Failed', err.message);
+  }
 }
 
 function closeModal() {
   document.getElementById('userModal').classList.remove('open');
   hideErr();
+  clearDirty();
+}
+
+/* ══════════════════════════════════
+   UNSAVED CHANGES TRACKING
+══════════════════════════════════ */
+function markDirty() {
+  if (isViewMode) return; // fields are read-only in view mode, ignore
+  isDirty = true;
+}
+function clearDirty() {
+  isDirty = false;
+}
+
+/* Cancel / X button both route through here so unsaved edits
+   are never lost silently */
+function requestModalClose() {
+  if (isDirty) {
+    showUnsavedModal(() => { clearDirty(); closeModal(); });
+  } else {
+    closeModal();
+  }
+}
+
+let pendingUnsavedAction = null;
+function showUnsavedModal(fn) {
+  pendingUnsavedAction = fn;
+  document.getElementById('unsavedModal').classList.add('open');
+}
+function closeUnsavedModal() {
+  document.getElementById('unsavedModal').classList.remove('open');
+  pendingUnsavedAction = null;
+}
+function discardChangesAndProceed() {
+  document.getElementById('unsavedModal').classList.remove('open');
+  if (pendingUnsavedAction) { pendingUnsavedAction(); pendingUnsavedAction = null; }
 }
 
 function clearForm() {
@@ -715,6 +1073,9 @@ function interceptFormSubmit() {
   const pass = document.getElementById('umPass').value;
   const confirmPass = document.getElementById('umConfirmPass').value;
 
+  // Check if password is currently locked (view mode, hindi binago)
+  const passLocked = editingId && !document.getElementById('passViewRow').classList.contains('hidden');
+
   if (!fname || !lname || !email || !role) {
     return showErr('Please fill in all required fields.');
   }
@@ -734,19 +1095,22 @@ function interceptFormSubmit() {
     return showErr('This email is already in use by another account.');
   }
 
-  // STRICT RULE: Confirm password match block
-  if (pass !== confirmPass) {
-    return showErr('Passwords do not match.');
-  }
-
-  // STRICT RULE: Minimum length must be at least 6 characters & No special characters block
-  if (pass) {
-    if (pass.length < 6) {
-      return showErr('Password must be at least 6 characters long.');
+  // Skip password validation if locked (hindi binago ng user)
+  if (!passLocked) {
+    // STRICT RULE: Confirm password match block
+    if (pass !== confirmPass) {
+      return showErr('Passwords do not match.');
     }
-    const alphaNumericRegex = /^[a-zA-Z0-9]+$/;
-    if (!alphaNumericRegex.test(pass)) {
-      return showErr('Password can only contain letters and numbers.');
+
+    // STRICT RULE: Minimum length must be at least 6 characters & No special characters block
+    if (pass) {
+      if (pass.length < 6) {
+        return showErr('Password must be at least 6 characters long.');
+      }
+      const alphaNumericRegex = /^[a-zA-Z0-9]+$/;
+      if (!alphaNumericRegex.test(pass)) {
+        return showErr('Password can only contain letters and numbers.');
+      }
     }
   }
 
@@ -761,7 +1125,7 @@ function interceptFormSubmit() {
       <p class="text-[12px] text-[#727785] mb-2">${email}</p>
       <div class="flex items-center gap-2 text-[12px] font-semibold">
         <span class="px-2 py-0.5 rounded-md bg-[#e0f2fe] text-[#0369a1]">${roleLabel}</span>
-        <span class="px-2 py-0.5 rounded-md ${statusVal === 'Active' ? 'bg-[#dcfce7] text-[#15803d]' : 'bg-[#f3f4f6] text-[#4b5563]'}">${statusVal}</span>
+        <span class="px-2 py-0.5 rounded-md ${statusVal === 'Active' ? 'bg-[#dcfce7] text-[#15803d]' : statusVal === 'Locked' ? 'bg-[#fee2e2] text-[#991b1b]' : 'bg-[#f3f4f6] text-[#4b5563]'}">${statusVal}</span>
       </div>
     </div>`;
 
@@ -787,14 +1151,17 @@ async function saveUser() {
     role: document.getElementById('umRole').value,
     status: document.getElementById('umStatus').value || 'Active'
   };
+  const passLocked = editingId && !document.getElementById('passViewRow').classList.contains('hidden');
   const pass = document.getElementById('umPass').value;
-  if (pass) payload.password = pass;
+  if (!passLocked && pass) payload.password = pass;
 
   const btn = document.getElementById('umSaveBtn');
   btn.disabled = true;
   btn.innerHTML = 'Processing...';
 
   try {
+    const actor = getCurrentUser();
+    if (actor?.email) payload.actor_email = actor.email;
     let res = await fetch(`${API_BASE}/users${editingId ? '/' + editingId : ''}`, {
       method: editingId ? 'PUT' : 'POST',
       headers: {'Content-Type':'application/json'},
@@ -837,21 +1204,52 @@ function openConfirmModal(title, msg, iconClass, btnBgColor, actionText, callbac
 
 function triggerDelete() {
   pendingDeleteId = editingId;
+
+  const msg = `
+    <p class="mb-3 text-left">This will permanently delete this account. This action cannot be undone.</p>
+    <p class="mb-3 text-left">For security, please enter <b>your admin password</b> to confirm.</p>
+    <input type="password" id="deleteAdminPass" class="field-input" placeholder="Your admin password" autocomplete="current-password" style="margin-bottom:4px;"/>
+    <p id="deleteAdminPassErr" class="hidden text-[12px] font-medium text-[#dc2626] text-left mt-1">Please enter your password.</p>
+  `;
+
   openConfirmModal(
     'Delete User',
-    'This will permanently delete this account. This action cannot be undone.',
+    msg,
     'ti-trash',
     '#dc2626',
     'Delete',
-    () => { deleteUser(); }
+    () => {
+      const inp = document.getElementById('deleteAdminPass');
+      const adminPassword = inp ? inp.value : '';
+      if (!adminPassword) {
+        const err = document.getElementById('deleteAdminPassErr');
+        if (err) err.classList.remove('hidden');
+        return false; // keep the confirm modal open
+      }
+      deleteUser(adminPassword);
+    }
   );
+
+  setTimeout(() => {
+    const inp = document.getElementById('deleteAdminPass');
+    if (inp) inp.focus();
+  }, 50);
 }
 
-async function deleteUser() {
+async function deleteUser(adminPassword) {
   if (!pendingDeleteId) return;
   try {
-    const res = await fetch(`${API_BASE}/users/${pendingDeleteId}`, { method: 'DELETE' });
-    if (!res.ok) throw new Error('Could not delete this user. Please try again.');
+    const actor = getCurrentUser();
+    const actorQuery = actor?.email ? `?actor_email=${encodeURIComponent(actor.email)}` : '';
+    const res = await fetch(`${API_BASE}/users/${pendingDeleteId}${actorQuery}`, {
+      method: 'DELETE',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ adminPassword, actor_email: actor?.email })
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.message || 'Could not delete this user. Please try again.');
+    }
     closeModal();
     showToast('User Deleted', 'The account has been removed.');
     await loadUsers();
@@ -869,7 +1267,8 @@ function closeConfirm() {
 
 function executeConfirm() {
   if (confirmActionCallback) {
-    confirmActionCallback();
+    const result = confirmActionCallback();
+    if (result === false) return; // callback signalled validation failure — keep modal open
     closeConfirm();
   }
 }

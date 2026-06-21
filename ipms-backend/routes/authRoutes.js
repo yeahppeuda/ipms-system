@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/User"); // Gagamitin ang User model natin
-const bcrypt = require("bcryptjs"); // Para sa pag-verify ng hashed password
-const { createLog } = require("../utils/logger"); // Para ma-log ang activity ng pag-login
+const User = require("../models/User"); 
+const bcrypt = require("bcryptjs"); 
+const { createLog } = require("../utils/logger"); 
 
 // POST: http://localhost:5000/api/auth/login
 router.post("/login", async (req, res) => {
@@ -17,24 +17,61 @@ router.post("/login", async (req, res) => {
     // 2. Hanapin ang user sa database gamit ang email
     const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
-      return res.status(401).json({ success: false, message: "Invalid email or password." });
+      return res.status(401).json({ success: false, message: "Account not registered." });
     }
 
-    // 3. I-verify kung "Active" ang status ng account
-    if (user.status !== "Active") {
+    // 3. I-verify kung "Locked" ang status ng account
+    if (user.status === "Locked") {
       return res.status(403).json({ 
         success: false, 
-        message: `Your account is ${user.status}. Please contact the system administrator.` 
+        message: "Your account is locked due to multiple failed login attempts. Please contact the system administrator." 
       });
     }
 
-    // 4. I-compare ang password gamit ang bcrypt kumpara sa naka-save na hash sa DB
+    // 4. I-compare ang password gamit ang bcrypt
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({ success: false, message: "Invalid email or password." });
+      const MAX_ATTEMPTS = 5;
+      user.failedAttempts = (user.failedAttempts || 0) + 1;
+
+      // I-lock ang account pagkatapos ng 5 magkakasunod na maling attempt
+      if (user.failedAttempts >= MAX_ATTEMPTS) {
+        user.status = "Locked";
+        await user.save();
+
+        await createLog({
+          user: user.email,
+          action: "Lock",
+          module: "Authentication",
+          desc: `Account locked: ${user.email}. Reason: Too many failed login attempts (${user.failedAttempts}).`,
+          ip: req.ip,
+          severity: "critical"
+        });
+
+        return res.status(403).json({
+          success: false,
+          message: "Your account is locked due to multiple failed login attempts. Please contact the system administrator."
+        });
+      }
+
+      await user.save();
+
+      const attemptsLeft = MAX_ATTEMPTS - user.failedAttempts;
+      return res.status(401).json({
+        success: false,
+        message: `Invalid email or password. ${attemptsLeft} attempt${attemptsLeft === 1 ? '' : 's'} remaining before this account is locked.`
+      });
     }
 
-    // 5. Mag-record ng matagumpay na login sa iyong Activity Logs
+    // 5. Tamang password — i-reset ang failed attempts, update lastLogin at ibalik sa Active kung galing sa Inactive
+    user.failedAttempts = 0;
+    user.lastLogin = new Date();
+    if (user.status === "Inactive") {
+      user.status = "Active";
+    }
+    await user.save();
+
+    // 6. Mag-record ng matagumpay na login sa Activity Logs
     await createLog({
       user: user.email,
       action: "Login",
@@ -44,8 +81,6 @@ router.post("/login", async (req, res) => {
       severity: "info"
     });
 
-    // 6. I-send ang tagumpay na tugon sa frontend
-    // Tandaan: Ang 'password' at '_id' ay awtomatikong matatago dahil sa toJSON transform sa User.js!
     res.json({
       success: true,
       user
@@ -70,20 +105,19 @@ router.post("/suspend", async (req, res) => {
 
     const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
-      // Don't reveal if user exists or not
       return res.json({ success: true });
     }
 
-    // Only suspend if currently Active — don't touch already Suspended/Inactive
-    if (user.status === "Active") {
-      user.status = "Suspended";
+    // Gawing Locked ang account kung hindi pa siya Locked
+    if (user.status !== "Locked") {
+      user.status = "Locked";
       await user.save();
 
       await createLog({
         user: email,
-        action: "Suspend",
+        action: "Lock",
         module: "Authentication",
-        desc: `Account suspended: ${email}. Reason: ${reason || "Too many failed login attempts"}.`,
+        desc: `Account locked: ${email}. Reason: ${reason || "Too many failed login attempts"}.`,
         ip: req.ip,
         severity: "critical"
       });
