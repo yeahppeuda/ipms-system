@@ -323,7 +323,7 @@
             <p class="text-[13.5px] font-bold text-on-surface leading-tight" id="profileName">User</p>
             <p class="text-[11px] text-on-surface-variant mt-0.5" id="profileRole">Administrator</p>
           </div>
-          <button onclick="window.location.href='index.html'" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] font-semibold text-red-600 hover:bg-red-50 transition-colors text-left">
+          <button onclick="sessionStorage.removeItem('itso_user'); window.location.replace('index.html');" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] font-semibold text-red-600 hover:bg-red-50 transition-colors text-left">
             <i class="ti ti-logout" style="font-size:16px;"></i><span>Log Out</span>
           </button>
         </div>
@@ -798,6 +798,21 @@ const PH_HOLIDAYS = {
   '12-25': 'Christmas Day',
   '12-30': 'Rizal Day'
 };
+
+/* ═══════════════════════════════════════════
+   AUTH GUARD — protects against bfcache showing
+   this page after logout (back/forward button)
+═══════════════════════════════════════════ */
+function guardLoggedIn() {
+  const stored = sessionStorage.getItem('itso_user');
+  if (!stored) {
+    window.location.replace('index.html');
+  }
+}
+guardLoggedIn();
+window.addEventListener('pageshow', (e) => {
+  if (e.persisted) guardLoggedIn();
+});
 
 /* ═══════════════════════════════════════════
    INIT

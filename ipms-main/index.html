@@ -327,9 +327,9 @@ async function login(e) {
     }
 
     if (data.user.role === "admin") {
-      window.location.href = "admin-dashboard.html";
+      window.location.replace("admin-dashboard.html");
     } else {
-      window.location.href = "dashboard.html";
+      window.location.replace("dashboard.html");
     }
 
   } catch (err) {
@@ -376,6 +376,24 @@ function showError(msg, isLock = false) {
     setTimeout(() => form.classList.remove('shake'), 350);
   }
 }
+</script>
+
+<script>
+// Already-logged-in guard — prevents the back/forward button from
+// showing this login page once a session exists (e.g. right after
+// logging in, or via a stale bfcache snapshot).
+function guardAlreadyLoggedIn() {
+  const stored = sessionStorage.getItem('itso_user');
+  if (!stored) return;
+  try {
+    const u = JSON.parse(stored);
+    window.location.replace(u.role === 'admin' ? 'admin-dashboard.html' : 'dashboard.html');
+  } catch {}
+}
+guardAlreadyLoggedIn();
+window.addEventListener('pageshow', (e) => {
+  if (e.persisted) guardAlreadyLoggedIn();
+});
 </script>
 
 <script>

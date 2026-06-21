@@ -134,7 +134,7 @@
             <p class="text-[13px] font-semibold text-[#191b23]" id="profile-name">Super Admin</p>
             <p class="text-[10px] font-bold text-[#727785] uppercase tracking-wider mt-0.5" id="profile-role">Administrator</p>
           </div>
-          <button onclick="window.location.href='index.html'" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] font-semibold text-[#dc2626] hover:bg-[#fef2f2] transition-colors text-left">
+          <button onclick="logoutAdmin()" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] font-semibold text-[#dc2626] hover:bg-[#fef2f2] transition-colors text-left">
             Log Out
           </button>
         </div>
@@ -450,6 +450,11 @@ function getCurrentUser() {
 function toggleProfileDropdown(e) {
   e.stopPropagation();
   document.getElementById('profileDropdown').classList.toggle('hidden');
+}
+
+function logoutAdmin() {
+  sessionStorage.removeItem('itso_user');
+  window.location.href = 'index.html';
 }
 
 /* ═══════════════════════════════════════
