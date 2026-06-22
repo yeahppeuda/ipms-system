@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Utility Model Registry | IP Management System</title>
+<title>QCU ITSO</title>
 <link rel="icon" href="/favicon.ico" />
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -11,6 +11,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script>
   tailwind.config = {
     theme: {
@@ -135,6 +137,20 @@
     0%,100% { opacity: 1; transform: scale(1); }
     50%     { opacity: 0.5; transform: scale(0.8); }
   }
+  @keyframes modalIn {
+    from { opacity: 0; transform: translateY(-12px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .modal-enter { animation: modalIn 0.22s cubic-bezier(0.34,1.3,0.64,1) both; }
+
+  /* ── PDF Preview modal table ── */
+  .preview-table { border-collapse: collapse; width: 100%; font-size: 11px; font-family: Inter, sans-serif; }
+  .preview-table th {
+    background: #fff; color: #191b23; padding: 7px 10px; text-align: left;
+    font-weight: 700; font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em;
+    border: 1px solid #555; border-bottom: 2px solid #191b23;
+  }
+  .preview-table td { padding: 6px 10px; border: 1px solid #bbb; color: #191b23; vertical-align: middle; background: #fff; }
 </style>
 </head>
 <body class="bg-surface text-on-surface font-sans antialiased flex min-h-screen">
@@ -260,7 +276,7 @@
             <button onclick="applyStatusFilter('Approved with Certificate')"         class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Approved with Certificate">Approved with Certificate<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
           </div>
         </div>
-        <button title="Export" class="w-9 h-9 flex items-center justify-center bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors shrink-0">
+        <button onclick="openExportModal()" title="Export to PDF" class="w-9 h-9 flex items-center justify-center bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors shrink-0">
           <i class="ti ti-download" style="font-size:16px;"></i>
         </button>
       </div>
@@ -294,6 +310,103 @@
     </section>
   </div>
 </main>
+
+<!-- EXPORT PREVIEW MODAL -->
+<div id="pdf-preview-modal" class="fixed inset-0 z-[60] flex items-center justify-center p-4"
+  style="display:none; background:rgba(15,23,42,0.75); backdrop-filter:blur(4px);"
+  onclick="handlePdfBackdrop(event)">
+  <div id="pdf-preview-inner" class="bg-white w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden flex flex-col modal-enter" style="max-height:92vh;">
+
+    <div class="px-7 py-5 border-b border-outline-variant flex items-center justify-between bg-white shrink-0">
+      <div>
+        <h2 class="text-[18px] font-bold text-on-surface flex items-center gap-2">
+          <i class="ti ti-file-type-pdf text-red-500" style="font-size:20px;"></i>
+          Print Preview
+        </h2>
+        <p class="text-[12px] text-outline mt-0.5">Set date range, preview the table, then download as PDF.</p>
+      </div>
+      <button onclick="closePdfModal()" class="p-2 hover:bg-slate-100 rounded-full transition-colors text-outline">
+        <span class="material-symbols-outlined text-[22px]">close</span>
+      </button>
+    </div>
+
+    <div class="px-7 py-4 bg-slate-50 border-b border-outline-variant flex flex-wrap items-end gap-4 shrink-0">
+      <div>
+        <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-1.5">Date Applied — Range</label>
+        <div class="flex items-center gap-2 flex-wrap">
+          <input type="date" id="export-date-from" onchange="refreshPreview()"
+            class="text-[12px] border border-slate-200 rounded-lg px-3 py-1.5 bg-white outline-none focus:border-primary transition-colors"/>
+          <span class="text-outline text-[12px] font-medium">to</span>
+          <input type="date" id="export-date-to" onchange="refreshPreview()"
+            class="text-[12px] border border-slate-200 rounded-lg px-3 py-1.5 bg-white outline-none focus:border-primary transition-colors"/>
+          <button onclick="clearDateRange()"
+            class="text-[11px] text-outline hover:text-red-500 font-semibold px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg hover:border-red-200 transition-colors whitespace-nowrap">
+            All Records
+          </button>
+        </div>
+      </div>
+      <div class="ml-auto flex items-center gap-3">
+        <span id="preview-count" class="text-[12px] text-outline font-semibold"></span>
+        <button onclick="downloadPDF()"
+          class="flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-[13px] font-bold rounded-xl hover:bg-blue-700 transition-all hover:-translate-y-0.5 shadow-sm whitespace-nowrap">
+          <i class="ti ti-download" style="font-size:15px;"></i>
+          Download PDF
+        </button>
+      </div>
+    </div>
+
+    <div class="overflow-auto flex-1 p-6">
+      <div class="mb-5 pb-4 border-b border-slate-300">
+        <div style="text-align:center; padding-bottom:12px; border-bottom:3px double #c0a020; margin-bottom:12px;">
+          <div style="display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:6px;">
+            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/92/Quezon_City_University_logo.png/200px-Quezon_City_University_logo.png"
+                alt="QCU Seal" style="height:68px; width:auto; object-fit:contain;" onerror="this.style.display='none'"/>
+            <div>
+              <div style="font-size:10px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:#555; margin-bottom:2px;">Republic of the Philippines</div>
+              <div style="font-size:22px; font-weight:800; color:#002d72; letter-spacing:0.04em; line-height:1.1; font-family:Georgia,serif;">QUEZON CITY UNIVERSITY</div>
+              <div style="font-size:9px; letter-spacing:0.18em; color:#888; margin-top:2px;">San Bartolome &nbsp;|&nbsp; Batasan &nbsp;|&nbsp; San Francisco</div>
+              <div style="font-size:11px; font-weight:700; color:#191b23; margin-top:5px; letter-spacing:0.04em;">OFFICE OF THE PRESIDENT</div>
+              <div style="width:100%; height:2px; background:linear-gradient(90deg,#002d72,#c0a020,#002d72); margin:4px 0;"></div>
+              <div style="font-size:10px; font-weight:700; color:#191b23; letter-spacing:0.06em;">RESEARCH, EXTENSION, PLANNING, AND LINKAGES</div>
+              <div style="font-size:9.5px; color:#555; font-style:italic;">Innovation and Technology Support Office</div>
+            </div>
+            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/92/Quezon_City_University_logo.png/200px-Quezon_City_University_logo.png"
+                alt="QCU Logo" style="height:68px; width:auto; object-fit:contain;" onerror="this.style.display='none'"/>
+          </div>
+        </div>
+        <div style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:8px; padding-top:4px;">
+          <div>
+            <div style="font-size:15px; font-weight:800; color:#191b23; text-transform:uppercase; letter-spacing:0.04em;">Utility Model Registry Report</div>
+            <div style="font-size:11px; color:#727785; margin-top:2px;">IP Management System &mdash; Utility Model Module</div>
+          </div>
+          <div style="text-align:right; font-size:11px; color:#555; line-height:1.8;">
+            <div>Date Generated: <span id="preview-gen-date" style="font-weight:700; color:#191b23;"></span></div>
+            <div>Period: <span id="preview-period" style="font-weight:700; color:#191b23;">All Records</span></div>
+            <div>Total Records: <span id="preview-total-count" style="font-weight:800; color:#0058be;">0</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="preview-table-container" class="overflow-x-auto">
+        <table class="preview-table">
+          <thead>
+            <tr>
+              <th style="width:110px;">Reference No.</th>
+              <th style="min-width:180px;">Utility Model Title</th>
+              <th style="min-width:140px;">Creator(s)</th>
+              <th style="min-width:130px;">Department</th>
+              <th style="width:130px;">Status</th>
+              <th style="width:100px;">Date Applied</th>
+            </tr>
+          </thead>
+          <tbody id="preview-table-body">
+            <tr><td colspan="6" style="text-align:center;padding:24px;color:#727785;font-style:italic;">No records for selected range.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- VIEW/EDIT MODAL -->
 <div class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-on-surface/40 backdrop-blur-sm"
@@ -332,8 +445,13 @@
       <!-- Title -->
       <div>
         <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Title</label>
-        <input id="field-title" type="text" disabled oninput="markDirty()"
-          class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all"/>
+        <textarea id="field-title" disabled oninput="markDirty();autoExpand(this);updateTitleCharCount(this)"
+          maxlength="200"
+          class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all resize-none overflow-hidden"
+          rows="1"></textarea>
+        <div id="title-char-count" class="hidden flex justify-end mt-1">
+          <span class="text-[10px] text-outline"><span id="title-chars-used">0</span>/200</span>
+        </div>
       </div>
 
       <!-- Ref No + College -->
@@ -341,7 +459,7 @@
         <div>
           <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Reference No.</label>
           <input id="field-ref" type="text" disabled
-            class="w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all cursor-default"/>
+            class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all"/>
         </div>
         <div>
           <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">College</label>
@@ -368,8 +486,10 @@
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Creator</label>
-          <input id="field-creator" type="text" disabled oninput="markDirty()"
-            class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all"/>
+          <textarea id="field-creator" disabled oninput="markDirty();autoExpand(this);validateAuthorField(this)"
+            class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all resize-none overflow-hidden"
+            placeholder="Comma-separated names" rows="1"></textarea>
+          <p id="author-validation-msg" class="hidden text-[10px] text-red-500 font-semibold mt-1">Only letters, spaces, hyphens (-), apostrophes ('), and periods (.) are allowed.</p>
         </div>
         <div>
           <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Date Applied</label>
@@ -384,13 +504,29 @@
           Google Drive Link
           <span class="text-[10px] font-normal text-outline normal-case tracking-normal ml-1">(optional)</span>
         </label>
-        <div class="relative">
-          <i class="ti ti-brand-google-drive absolute left-3.5 top-1/2 -translate-y-1/2" style="font-size:16px; color:#1a73e8;"></i>
-          <input id="field-gdrive" type="url" disabled oninput="markDirty()"
-            class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 pl-9 border border-slate-200 bg-slate-50 outline-none transition-all"
-            placeholder="https://drive.google.com/…"/>
+        <div class="relative flex items-center gap-2">
+          <div class="relative flex-1">
+            <i class="ti ti-brand-google-drive absolute left-3.5 top-1/2 -translate-y-1/2" style="font-size:16px; color:#1a73e8;"></i>
+            <input id="field-gdrive" type="url" disabled oninput="markDirty();toggleGDriveBtn()"
+              class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 pl-9 border border-slate-200 bg-slate-50 outline-none transition-all"
+              placeholder="https://drive.google.com/…"/>
+          </div>
+          <button id="btn-open-gdrive" type="button" onclick="openGDriveLink()"
+            class="flex-shrink-0 flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-[12px] font-semibold text-white transition-all whitespace-nowrap hover:opacity-90 active:scale-95"
+            title="Open in new tab" style="height:42px; background:#0058be; border:1px solid #0058be;">
+            <i class="ti ti-external-link" style="font-size:14px;"></i>
+            <span>Open</span>
+          </button>
         </div>
         <p class="text-[10px] text-outline mt-1">Paste a Google Drive folder or file link for related documents</p>
+      </div>
+
+      <div class="border-t border-slate-100"></div>
+
+      <!-- ── STATUS HISTORY TIMELINE ── -->
+      <div id="status-history-section" class="rounded-xl border border-slate-100 bg-slate-50 px-4 pt-3 pb-2">
+        <p class="text-[10px] font-bold text-outline uppercase tracking-widest mb-3">Status History</p>
+        <div id="status-history-steps" class="space-y-0"></div>
       </div>
     </div>
 
@@ -546,6 +682,7 @@ let activeMongoId   = null;
 let activeSnapshot  = null;
 let isDirty         = false;
 let pendingAction    = null;
+let isEditModeActive = false;
 
 /* COLLEGE → DEPARTMENT MAP */
 const MODAL_COLLEGE_DEPTS = {
@@ -733,21 +870,32 @@ function mapRecord(item) {
 
   const referenceNo = item.referenceId || item.referenceNo || item.refNo || null;
 
+  // ── Auto-record ang "Submitted to IPOPHL" gamit ang date applied ──
+  // Dahil fixed/automatic ang status na ito sa pag-add ng research,
+  // dapat ma-record din agad ang date nito sa statusHistory kapag wala pa.
+  let statusHistory = Array.isArray(item.statusHistory) ? [...item.statusHistory] : [];
+  const hasSubmittedEntry = statusHistory.some(h => h.status === 'Submitted to IPOPHL' && h.date);
+  if (!hasSubmittedEntry && dateApplied) {
+    statusHistory = [{ status: 'Submitted to IPOPHL', date: dateApplied }, ...statusHistory];
+  }
+
   return {
     _id: String(item._id),
-    referenceNo: referenceNo || String(item._id),
+    referenceNo: referenceNo || '',
     title, creator, dept,
     status: item.status || 'Submitted to IPOPHL',
     dateApplied,
     googleDriveLink: item.googleDriveLink || '',
-    archived: item.archived === true || item.archived === 'true'
+    archived: item.archived === true || item.archived === 'true',
+    statusChangedAt: item.statusChangedAt || '',
+    statusHistory,
   };
 }
 
 /* FETCH DATA */
 async function fetchUtilityModels() {
   try {
-    const res  = await fetch(`${API_URL}/${CATEGORY}`);
+    const res  = await fetch(API_URL);
     const data = await res.json();
     const records = Array.isArray(data) ? data : (data.data ?? []);
     ALL_RECORDS = records.filter(item => (item.category || '').trim().toLowerCase() === CATEGORY).map(mapRecord);
@@ -766,11 +914,13 @@ function openResearchModal(mongoId) {
   activeMongoId  = rec._id;
   activeSnapshot = { ...rec };
 
-  document.getElementById('modal-subtitle-id').textContent = rec.referenceNo || rec._id;
+  document.getElementById('modal-subtitle-id').textContent = rec.referenceNo || '—';
   document.getElementById('field-ref').value     = rec.referenceNo || '';
   document.getElementById('field-title').value   = rec.title || '';
   document.getElementById('field-creator').value = rec.creator || '';
   document.getElementById('field-date').value    = rec.dateApplied || '';
+  document.getElementById('field-gdrive').value  = rec.googleDriveLink || '';
+  toggleGDriveBtn();
 
   // Parse "College — Department" stored value
   const parts   = rec.dept ? rec.dept.split(' — ') : [];
@@ -787,8 +937,30 @@ function openResearchModal(mongoId) {
   [...statusSel.options].forEach(o => o.selected = o.value === rec.status);
   updateStatusStyle(statusSel);
 
+  // ── STATUS HISTORY ──
+  _statusHistory = rec.statusHistory ? JSON.parse(JSON.stringify(rec.statusHistory)) : [];
+  // I-backfill gamit ang statusChangedAt kung may steps (hanggang sa current status)
+  // na naabot na pero wala pang naka-record na date.
+  if (rec.statusChangedAt) {
+    const d = new Date(rec.statusChangedAt);
+    const dateStr = !isNaN(d) ? d.toISOString().split('T')[0] : '';
+    if (dateStr) {
+      const stepIdx = STATUS_STEPS.indexOf(rec.status);
+      STATUS_STEPS.forEach((step, i) => {
+        const alreadyHas = _statusHistory.some(h => h.status === step && h.date);
+        if (i <= stepIdx && !alreadyHas) { _statusHistory.push({ status: step, date: dateStr }); }
+      });
+    }
+  }
+
   setViewMode();
   document.getElementById('research-modal').style.display = 'flex';
+  requestAnimationFrame(() => {
+    ['field-title', 'field-creator'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
+    });
+  });
 }
 
 /* CLOSE MODAL */
@@ -822,7 +994,7 @@ function discardChangesAndProceed() {
 window.addEventListener('beforeunload', e => { if (isDirty) { e.preventDefault(); e.returnValue = ''; } });
 
 /* VIEW / EDIT MODE */
-const EDITABLE_FIELDS  = ['field-title', 'field-creator', 'field-date', 'field-gdrive'];
+const EDITABLE_FIELDS  = ['field-title', 'field-creator', 'field-date', 'field-gdrive', 'field-ref'];
 const EDITABLE_SELECTS = ['field-dept', 'field-status', 'field-college'];
 
 function setViewMode() {
@@ -846,6 +1018,11 @@ function setViewMode() {
   document.getElementById('btn-edit').classList.remove('hidden');
   document.getElementById('btn-cancel-edit').classList.add('hidden');
   document.getElementById('btn-save').classList.add('hidden');
+  document.getElementById('btn-open-gdrive').classList.remove('hidden');
+  document.getElementById('title-char-count').classList.add('hidden');
+  document.getElementById('author-validation-msg').classList.add('hidden');
+  isEditModeActive = false;
+  renderStatusHistory();
 }
 
 function enterEditMode() {
@@ -869,6 +1046,15 @@ function enterEditMode() {
   document.getElementById('btn-edit').classList.add('hidden');
   document.getElementById('btn-cancel-edit').classList.remove('hidden');
   document.getElementById('btn-save').classList.remove('hidden');
+  document.getElementById('btn-open-gdrive').classList.add('hidden');
+  isEditModeActive = true;
+  const titleEl = document.getElementById('field-title');
+  if (titleEl) {
+    document.getElementById('title-chars-used').textContent = titleEl.value.length;
+    document.getElementById('title-char-count').classList.remove('hidden');
+  }
+  document.getElementById('author-validation-msg').classList.add('hidden');
+  renderStatusHistory();
 }
 
 function exitEditMode() {
@@ -877,6 +1063,8 @@ function exitEditMode() {
     document.getElementById('field-creator').value = activeSnapshot.creator || '';
     document.getElementById('field-date').value    = activeSnapshot.dateApplied || '';
     document.getElementById('field-gdrive').value  = activeSnapshot.googleDriveLink || '';
+    toggleGDriveBtn();
+    document.getElementById('field-ref').value     = activeSnapshot.referenceNo || '';
 
     // Restore college + dept
     const parts   = activeSnapshot.dept ? activeSnapshot.dept.split(' — ') : [];
@@ -891,6 +1079,15 @@ function exitEditMode() {
     const statusSel = document.getElementById('field-status');
     [...statusSel.options].forEach(o => o.selected = o.value === activeSnapshot.status);
     updateStatusStyle(statusSel);
+
+    _statusHistory = activeSnapshot.statusHistory ? JSON.parse(JSON.stringify(activeSnapshot.statusHistory)) : [];
+
+    requestAnimationFrame(() => {
+      ['field-title', 'field-creator'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
+      });
+    });
   }
   clearDirty();
   setViewMode();
@@ -917,16 +1114,25 @@ async function confirmSave() {
   const deptVal = document.getElementById('field-dept').value;
   const department = college && deptVal ? `${college} — ${deptVal}` : college || deptVal;
 
+  // ── Auto-record date when status changes ──
+  const newStatus = document.getElementById('field-status').value;
+  const statusChanged = activeSnapshot && newStatus !== activeSnapshot.status;
+  if (statusChanged && !getHistoryForStatus(newStatus)) {
+    setHistoryDate(newStatus, todayISO());
+  }
+
   const payload = {
     researchTitle: document.getElementById('field-title').value.trim(),
     department,
-    status:        document.getElementById('field-status').value,
+    status:        newStatus,
     date:          document.getElementById('field-date').value,
     referenceId:   document.getElementById('field-ref').value.trim(),
     authors: document.getElementById('field-creator').value
                .split(',').map(a => a.trim()).filter(Boolean),
     googleDriveLink: document.getElementById('field-gdrive').value.trim(),
     actor_email: getCurrentUser()?.email || '',
+    statusChangedAt: new Date().toISOString(),
+    statusHistory: JSON.parse(JSON.stringify(_statusHistory)),
   };
 
   const confirmBtn = document.getElementById('btn-confirm-save');
@@ -954,6 +1160,7 @@ async function confirmSave() {
     };
 
     const mapped = mapRecord(merged);
+    mapped.statusHistory = JSON.parse(JSON.stringify(_statusHistory));
     const idx    = ALL_RECORDS.findIndex(r => r._id === activeMongoId);
     if (idx !== -1) ALL_RECORDS[idx] = mapped;
     activeSnapshot = { ...mapped };
@@ -990,7 +1197,342 @@ function showToast() {
   }, 3300);
 }
 
+/* ── STATUS HISTORY ── */
+const STATUS_STEPS = [
+  'Submitted to IPOPHL',
+  'Received E-SOA',
+  'Paid',
+  'Approved with Certificate',
+];
+
+let _statusHistory = [];
+
+function todayISO() {
+  const d = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+
+function formatHistoryDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr + 'T00:00:00');
+  if (isNaN(d)) return dateStr;
+  return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+function getHistoryForStatus(status) {
+  return _statusHistory.find(h => h.status === status) || null;
+}
+
+function setHistoryDate(status, date) {
+  const idx = _statusHistory.findIndex(h => h.status === status);
+  if (idx !== -1) { _statusHistory[idx].date = date; }
+  else { _statusHistory.push({ status, date }); }
+}
+
+function removeHistoryEntry(status) {
+  _statusHistory = _statusHistory.filter(h => h.status !== status);
+}
+
+function renderStatusHistory() {
+  const currentStatus = document.getElementById('field-status').value;
+  const currentIdx    = STATUS_STEPS.indexOf(currentStatus);
+  const isEdit        = isEditModeActive;
+  const container     = document.getElementById('status-history-steps');
+  if (!container) return;
+
+  container.innerHTML = STATUS_STEPS.map((step, i) => {
+    const entry    = getHistoryForStatus(step);
+    const reached  = entry && entry.date;
+    const isCurrent = step === currentStatus;
+    const isLast   = i === STATUS_STEPS.length - 1;
+
+    const dotColor   = reached ? (isCurrent ? '#0058be' : '#22c55e') : '#d1d5db';
+    const lineColor  = (i < STATUS_STEPS.length - 1) ?
+      (getHistoryForStatus(STATUS_STEPS[i+1])?.date ? '#22c55e' : '#e5e7eb') : '';
+    const labelColor = reached ? (isCurrent ? '#0058be' : '#191b23') : '#9ca3af';
+    const dateColor  = '#727785';
+
+    const inputId = `sh-input-${i}`;
+    const rowId   = `sh-row-${i}`;
+    const dispId  = `sh-disp-${i}`;
+
+    return `
+    <div class="flex gap-3 ${isLast ? '' : 'mb-0'}">
+      <div class="flex flex-col items-center" style="width:20px;flex-shrink:0;">
+        <div style="width:14px;height:14px;border-radius:50%;background:${dotColor};border:2px solid ${reached ? dotColor : '#d1d5db'};flex-shrink:0;margin-top:2px;"></div>
+        ${!isLast ? `<div style="width:2px;flex:1;min-height:18px;background:${lineColor};margin:3px 0;"></div>` : ''}
+      </div>
+      <div class="pb-${isLast ? '1' : '3'} flex-1 min-w-0">
+        <div class="text-[12px] font-semibold" style="color:${labelColor};">${step}</div>
+        <div class="flex items-center gap-1 mt-0.5 group/ts" id="${rowId}">
+          ${reached ? `
+            <span id="${dispId}" class="text-[11px]" style="color:${dateColor};">${formatHistoryDate(entry.date)}</span>
+            ${isEdit ? `
+              <button onclick="openHistoryEdit(${i},'${step}')" title="Edit date"
+                class="opacity-0 group-hover/ts:opacity-60 hover:!opacity-100 transition-opacity p-0.5 rounded focus:outline-none"
+                style="line-height:1; color:#727785;">
+                <i class="ti ti-pencil" style="font-size:10px;"></i>
+              </button>
+              <span id="${inputId}-wrap" class="hidden items-center gap-1">
+                <input id="${inputId}" type="date" value="${entry.date}"
+                  class="text-[11px] rounded px-1.5 py-0.5 border border-[#93c5fd] bg-white outline-none"
+                  style="color-scheme:light;"/>
+                <button onclick="confirmHistoryEdit(${i},'${step}')"
+                  class="text-[10px] font-bold text-white bg-primary rounded px-1.5 py-0.5">OK</button>
+                <button onclick="cancelHistoryEdit(${i})"
+                  class="text-[10px] font-bold text-on-surface-variant bg-slate-100 rounded px-1.5 py-0.5">✕</button>
+              </span>
+            ` : ''}
+          ` : `
+            <span class="text-[11px]" style="color:#d1d5db;">Not yet reached</span>
+            ${isEdit && i <= currentIdx + 1 ? `
+              <button onclick="openHistoryEdit(${i},'${step}')" title="Add date"
+                class="opacity-0 group-hover/ts:opacity-60 hover:!opacity-100 transition-opacity p-0.5 rounded focus:outline-none"
+                style="line-height:1; color:#727785;">
+                <i class="ti ti-plus" style="font-size:10px;"></i>
+              </button>
+              <span id="${inputId}-wrap" class="hidden items-center gap-1">
+                <input id="${inputId}" type="date"
+                  class="text-[11px] rounded px-1.5 py-0.5 border border-[#93c5fd] bg-white outline-none"
+                  style="color-scheme:light;"/>
+                <button onclick="confirmHistoryEdit(${i},'${step}')"
+                  class="text-[10px] font-bold text-white bg-primary rounded px-1.5 py-0.5">OK</button>
+                <button onclick="cancelHistoryEdit(${i})"
+                  class="text-[10px] font-bold text-on-surface-variant bg-slate-100 rounded px-1.5 py-0.5">✕</button>
+              </span>
+            ` : ''}
+          `}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openHistoryEdit(idx, step) {
+  const wrap = document.getElementById(`sh-input-${idx}-wrap`);
+  if (!wrap) return;
+  wrap.classList.remove('hidden');
+  wrap.classList.add('inline-flex');
+  const inp = document.getElementById(`sh-input-${idx}`);
+  if (inp) inp.focus();
+}
+
+function confirmHistoryEdit(idx, step) {
+  const inp = document.getElementById(`sh-input-${idx}`);
+  if (!inp || !inp.value) { cancelHistoryEdit(idx); return; }
+  setHistoryDate(step, inp.value);
+  markDirty();
+  renderStatusHistory();
+}
+
+function cancelHistoryEdit(idx) {
+  const wrap = document.getElementById(`sh-input-${idx}-wrap`);
+  if (wrap) { wrap.classList.add('hidden'); wrap.classList.remove('inline-flex'); }
+}
+
 /* INIT */
+/* ── TEXTAREA AUTO-EXPAND ── */
+function autoExpand(el) {
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+
+/* ── TITLE CHAR COUNTER ── */
+function updateTitleCharCount(el) {
+  document.getElementById('title-chars-used').textContent = el.value.length;
+}
+
+/* ── AUTHOR VALIDATION ── */
+function validateAuthorField(el) {
+  const invalid = /[^a-zA-ZÀ-ÿ\s,\-'.]/;
+  const msg = document.getElementById('author-validation-msg');
+  if (invalid.test(el.value)) {
+    el.value = el.value.replace(/[^a-zA-ZÀ-ÿ\s,\-'.]/g, '');
+    msg.classList.remove('hidden');
+    setTimeout(() => msg.classList.add('hidden'), 3000);
+  }
+}
+
+/* ── OPEN GDRIVE LINK ── */
+function openGDriveLink() {
+  const url = document.getElementById('field-gdrive').value.trim();
+  if (!url) return;
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+function toggleGDriveBtn() {
+  const url = document.getElementById('field-gdrive').value.trim();
+  const btn = document.getElementById('btn-open-gdrive');
+  if (btn) btn.style.display = url ? '' : 'none';
+}
+
+/* ══════════════════════════════════════
+   EXPORT / PDF PREVIEW
+══════════════════════════════════════ */
+function toShortDate(ds) {
+  if (!ds) return '—';
+  const d = new Date(ds + 'T00:00:00');
+  if (isNaN(d)) return '—';
+  return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+
+function openExportModal() {
+  document.getElementById('export-date-from').value = '';
+  document.getElementById('export-date-to').value   = '';
+  document.getElementById('preview-gen-date').textContent =
+    new Date().toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
+  refreshPreview();
+  document.getElementById('pdf-preview-modal').style.display = 'flex';
+}
+function closePdfModal() { document.getElementById('pdf-preview-modal').style.display = 'none'; }
+function handlePdfBackdrop(e) { if (e.target === document.getElementById('pdf-preview-modal')) closePdfModal(); }
+function clearDateRange() { document.getElementById('export-date-from').value = ''; document.getElementById('export-date-to').value = ''; refreshPreview(); }
+
+function getExportRecords() {
+  const fromVal = document.getElementById('export-date-from').value;
+  const toVal   = document.getElementById('export-date-to').value;
+  const from    = fromVal ? new Date(fromVal + 'T00:00:00') : null;
+  const to      = toVal   ? new Date(toVal   + 'T23:59:59') : null;
+  return ALL_RECORDS.filter(r => !r.archived).filter(r => {
+    if (!from && !to) return true;
+    if (!r.dateApplied) return false;
+    const d = new Date(r.dateApplied + 'T00:00:00');
+    return (!from || d >= from) && (!to || d <= to);
+  });
+}
+
+function refreshPreview() {
+  const records = getExportRecords();
+  const fromVal = document.getElementById('export-date-from').value;
+  const toVal   = document.getElementById('export-date-to').value;
+
+  document.getElementById('preview-count').textContent       = `${records.length} record${records.length !== 1 ? 's' : ''}`;
+  document.getElementById('preview-total-count').textContent = records.length;
+
+  if (!fromVal && !toVal) { document.getElementById('preview-period').textContent = 'All Records'; }
+  else {
+    const p = []; if (fromVal) p.push(`From ${toShortDate(fromVal)}`); if (toVal) p.push(`to ${toShortDate(toVal)}`);
+    document.getElementById('preview-period').textContent = p.join(' ');
+  }
+
+  const tbody = document.getElementById('preview-table-body');
+  if (!records.length) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:24px;color:#727785;font-style:italic;">No records found for selected date range.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = records.map(r => {
+    const deptText = r.dept ? (r.dept.includes(' — ') ? r.dept.split(' — ')[1] : r.dept) : '—';
+    return `<tr>
+      <td style="padding:6px 10px;border:1px solid #bbb;font-size:11px;font-weight:700;white-space:nowrap;">${r.referenceNo || '—'}</td>
+      <td style="padding:6px 10px;border:1px solid #bbb;font-size:11px;max-width:180px;">${r.title || '—'}</td>
+      <td style="padding:6px 10px;border:1px solid #bbb;font-size:11px;">${r.creator || '—'}</td>
+      <td style="padding:6px 10px;border:1px solid #bbb;font-size:11px;">${deptText}</td>
+      <td style="padding:6px 10px;border:1px solid #bbb;font-size:11px;white-space:nowrap;">${r.status || '—'}</td>
+      <td style="padding:6px 10px;border:1px solid #bbb;font-size:11px;white-space:nowrap;">${toShortDate(r.dateApplied)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function downloadPDF() {
+  const records = getExportRecords();
+  const fromVal = document.getElementById('export-date-from').value;
+  const toVal   = document.getElementById('export-date-to').value;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+  const pw = 210, ph = 297, margin = 15, cx = pw / 2;
+
+  let ty = 14;
+
+  // ── Navy + Gold double rule ──
+  doc.setDrawColor(0, 45, 114); doc.setLineWidth(0.5);
+  doc.line(margin, ty, pw - margin, ty);
+  ty += 1.6;
+  doc.setDrawColor(192, 160, 32); doc.setLineWidth(0.5);
+  doc.line(margin, ty, pw - margin, ty);
+
+  // ── REPL ──
+  ty += 9;
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(20, 20, 20);
+  doc.text('RESEARCH, EXTENSION, PLANNING, AND LINKAGES', cx, ty, { align: 'center' });
+  ty += 5.5;
+  doc.setFont('helvetica', 'italic'); doc.setFontSize(8.5); doc.setTextColor(60, 60, 60);
+  doc.text('Innovation and Technology Support Office', cx, ty, { align: 'center' });
+
+  // ── Thin gray separator ──
+  ty += 6;
+  doc.setDrawColor(180, 180, 180); doc.setLineWidth(0.3);
+  doc.line(margin, ty, pw - margin, ty);
+
+  // ── Report title ──
+  ty += 14;
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(20, 20, 20);
+  doc.text('UTILITY MODEL REGISTRY REPORT', cx, ty, { align: 'center' });
+
+  // ── Period / Generated / Total ──
+  ty += 11;
+  let period = 'All Records';
+  if (fromVal || toVal) {
+    const p = [];
+    if (fromVal) p.push(`From: ${toShortDate(fromVal)}`);
+    if (toVal)   p.push(`To: ${toShortDate(toVal)}`);
+    period = p.join('  |  ');
+  }
+  const genDate = new Date().toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(40, 40, 40);
+  doc.text(`Period: ${period}`, margin, ty);
+  doc.text(`Generated: ${genDate}`, pw - margin, ty, { align: 'right' });
+  ty += 6;
+  doc.text(`Total Records: ${records.length}`, margin, ty);
+
+  // ── Table ──
+  const tableData = records.map(r => {
+    const dept = r.dept ? (r.dept.includes(' — ') ? r.dept.split(' — ')[1] : r.dept) : '—';
+    return [ r.referenceNo || '—', r.title || '—', r.creator || '—', dept, r.status || '—', toShortDate(r.dateApplied) ];
+  });
+
+  doc.autoTable({
+    startY: ty + 7,
+    head: [['Reference No.', 'Title', 'Creator(s)', 'Department', 'Status', 'Date Applied']],
+    body: tableData,
+    theme: 'grid',
+    headStyles: {
+      fillColor: [255, 255, 255], textColor: [20, 20, 20], fontStyle: 'bold',
+      fontSize: 7.5, cellPadding: { top: 3, bottom: 3, left: 2, right: 2 },
+      lineColor: [80, 80, 80], lineWidth: 0.25, halign: 'left', valign: 'middle',
+    },
+    bodyStyles: {
+      fontSize: 7, cellPadding: { top: 2.5, bottom: 2.5, left: 2, right: 2 },
+      textColor: [30, 30, 30], fillColor: [255, 255, 255],
+      lineColor: [160, 160, 160], lineWidth: 0.25, valign: 'middle', overflow: 'linebreak',
+    },
+    columnStyles: {
+      0: { cellWidth: 24, fontStyle: 'bold' },
+      1: { cellWidth: 40, fontStyle: 'bold' },
+      2: { cellWidth: 34, fontStyle: 'bold' },
+      3: { cellWidth: 25, fontStyle: 'bold' },
+      4: { cellWidth: 21 },
+      5: { cellWidth: 16 },
+    },
+    alternateRowStyles: { fillColor: [255, 255, 255] },
+    margin: { left: 25, right: 25 },
+    tableWidth: 160,
+  });
+
+  // ── Footer ──
+  const pages = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= pages; i++) {
+    doc.setPage(i);
+    doc.setFontSize(7); doc.setTextColor(160, 160, 160);
+    doc.text('Utility Model Registry — IP Management System | Quezon City University', margin, ph - 8);
+    doc.text(`Page ${i} of ${pages}`, pw - margin, ph - 8, { align: 'right' });
+  }
+
+  const fname = `Utility_Model_Registry_${fromVal||toVal ? (fromVal||'start')+'_to_'+(toVal||'end')+'_' : 'All_'}${new Date().toISOString().split('T')[0]}.pdf`;
+  doc.save(fname);
+  showToast();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   startLiveClock();
   populateProfileInfo();

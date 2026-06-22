@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title> Dashboard | ITSO Research Management Office</title>
+<title>QCU ITSO</title>
 <link rel="icon" href="/favicon.ico" />
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
@@ -145,7 +145,7 @@
   .review-row { display:flex; flex-direction:column; gap:2px; padding:10px 0; border-bottom:1px solid #f1f5f9; }
   .review-row:last-child { border-bottom:none; }
   .review-label { font-size:10px; font-weight:700; color:#727785; text-transform:uppercase; letter-spacing:0.08em; }
-  .review-value { font-size:13px; color:#191b23; font-weight:500; line-height:1.5; }
+  .review-value { font-size:13px; color:#191b23; font-weight:500; line-height:1.5; overflow-wrap:break-word; word-break:break-word; }
   .review-badge { display:inline-flex; align-items:center; gap:5px; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-radius:20px; padding:3px 10px; font-size:12px; font-weight:600; }
   .cat-badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:600; }
 
@@ -646,11 +646,11 @@
     <div class="p-7 overflow-y-auto space-y-5 flex-1">
       <div>
         <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Research Title</label>
-        <textarea id="rm-title" rows="2" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-[13px] text-on-surface resize-none focus:border-primary focus:ring-2 focus:ring-primary/10 focus:bg-white outline-none transition-all placeholder:text-outline" placeholder="Enter the full research title…"></textarea>
+        <textarea id="rm-title" rows="2" maxlength="200" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-[13px] text-on-surface resize-none focus:border-primary focus:ring-2 focus:ring-primary/10 focus:bg-white outline-none transition-all placeholder:text-outline" placeholder="Enter the full research title…"></textarea>
       </div>
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Reference Number</label>
+          <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Reference Number <span class="text-[10px] font-normal text-outline normal-case tracking-normal ml-1">(optional)</span></label>
           <input id="rm-id" type="text" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-[13px] text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/10 focus:bg-white outline-none transition-all placeholder:text-outline" placeholder="e.g. 2026-12345"/>
         </div>
         <div>
@@ -696,7 +696,7 @@
           <span class="material-symbols-outlined text-[13px]">error</span>
           <span id="rm-author-error-text"></span>
         </p>
-        <p id="rm-author-hint" class="text-[11px] text-outline mt-2">Add at least one author (max 20). Paste multiple names on separate lines and they'll split automatically.</p>
+        <p id="rm-author-hint" class="text-[11px] text-outline mt-2 hidden"></p>
       </div>
 
       <!-- Google Drive Link Field -->
@@ -745,18 +745,19 @@
           <div class="review-row pr-4"><span class="review-label">Reference No.</span><span class="review-value font-mono" id="rv-id">—</span></div>
           <div class="review-row pl-4 border-l border-slate-100"><span class="review-label">Date</span><span class="review-value" id="rv-date">—</span></div>
         </div>
+        <div class="review-row"><span class="review-label">College</span><span class="review-value" id="rv-college">—</span></div>
         <div class="review-row"><span class="review-label">Department</span><span class="review-value" id="rv-dept">—</span></div>
-        <div class="review-row"><span class="review-label">Status</span><span class="review-badge"><span class="material-symbols-outlined text-[13px]">send</span>Submitted to IPOPHL</span></div>
+        <div class="review-row"><span class="review-label">Status</span><span class="review-badge" style="align-self:flex-start;">Submitted to IPOPHL</span></div>
         <div class="review-row"><span class="review-label">Authors</span><div id="rv-authors" class="flex flex-wrap gap-1.5 mt-1"></div></div>
         <div class="review-row"><span class="review-label">Google Drive Link</span><span class="review-value" id="rv-gdrive">—</span></div>
       </div>
     </div>
     <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex gap-3 justify-end">
       <button onclick="backToResearchFromReview()" type="button" class="px-5 py-2.5 text-[13px] font-semibold text-on-surface-variant border border-slate-200 rounded-xl hover:bg-slate-100 transition-all flex items-center gap-1.5">
-        <span class="material-symbols-outlined text-[15px]">arrow_back</span> Back
+        Back
       </button>
       <button onclick="confirmResearchEntry()" type="button" class="px-6 py-2.5 text-[13px] font-bold text-white bg-primary rounded-xl hover:bg-blue-700 hover:-translate-y-0.5 transition-all flex items-center gap-1.5">
-        <span class="material-symbols-outlined text-[15px]">check</span> Confirm & Save
+        Confirm & Save
       </button>
     </div>
   </div>
@@ -1071,9 +1072,9 @@ function runSearch() {
     const item = document.createElement('div');
     item.className = 'flex flex-col px-3 py-2 hover:bg-surface-container-low rounded-lg cursor-pointer transition-colors';
     item.innerHTML = `
-      <div class="flex justify-between items-center mb-0.5">
-        <span class="text-[13px] font-semibold text-on-surface truncate">${title}</span>
-        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-surface-container-highest text-primary whitespace-nowrap ml-2">${catLabel}</span>
+      <div class="flex justify-between items-start gap-2 mb-0.5">
+        <span class="text-[13px] font-semibold text-on-surface leading-snug" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${title}</span>
+        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-surface-container-highest text-primary whitespace-nowrap flex-shrink-0">${catLabel}</span>
       </div>
       <span class="text-[11px] text-on-surface-variant truncate">${r.referenceId || 'No ID'} • ${r.college||(r.department?r.department.split('—')[0].split('--')[0].trim():'')||'—'}</span>
     `;
@@ -1635,7 +1636,7 @@ function renderRecentList(records) {
         <span class="material-symbols-outlined text-[15px]" style="color:${color};font-variation-settings:'FILL' 1;">description</span>
       </div>
       <div class="flex-1 min-w-0">
-        <p class="text-[13px] font-semibold text-on-surface truncate">${title}</p>
+        <p class="text-[13px] font-semibold text-on-surface leading-snug" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${title}</p>
         <p class="text-[11px] text-on-surface-variant truncate">${authors} · ${dateStr}</p>
       </div>
       <span class="text-[10px] font-bold px-2 py-1 rounded-full flex-shrink-0 whitespace-nowrap" style="background:${bg};color:${color};">${catLabel}</span>`;
@@ -1854,6 +1855,14 @@ function backToCategory(){hideResearchModal();openCategoryModal();}
 ═══════════════════════════════════════════ */
 let pendingSubmission=null;
 
+function updateTitleCount(){
+  const ta=document.getElementById('rm-title'),counter=document.getElementById('rm-title-count');
+  if(!ta||!counter)return;
+  const len=ta.value.length;
+  counter.textContent=`${len} / 200`;
+  counter.className=len>=180?'text-[10px] font-semibold text-red-500 bg-red-50 border border-red-200 rounded-full px-2 py-0.5':'text-[10px] font-semibold text-on-surface-variant bg-surface-container-highest rounded-full px-2 py-0.5';
+}
+
 function hideResearchModal(){
   const m=document.getElementById('research-modal');
   m.classList.add('hidden'); m.classList.remove('flex');
@@ -1895,6 +1904,7 @@ function openResearchFormFresh(){
   badge.style.cssText=`color:${cat.color};`;
   badge.innerHTML=`${cat.label}`;
   document.getElementById('rm-title').value='';
+  updateTitleCount();
   document.getElementById('rm-id').value='';
   document.getElementById('rm-date').value='';
   document.getElementById('rm-college').value='';
@@ -1931,6 +1941,8 @@ function addAuthorField(value='',skipFocus=false){
   const container=document.getElementById('rm-authors'),row=document.createElement('div');row.className='author-row';
   const input=document.createElement('input');input.type='text';input.value=value;input.placeholder='Author name';
   input.className='flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-[13px] text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/10 focus:bg-white outline-none transition-all placeholder:text-outline';
+  input.addEventListener('keypress',e=>{if(!/[a-zA-Z\s\.\-,ñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ]/.test(e.key)){e.preventDefault();showAuthorError('Numbers and special characters are not allowed in author names.');}});
+  input.addEventListener('input',()=>{const cleaned=input.value.replace(/[^a-zA-Z\s\.\-,ñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ]/g,'');if(cleaned!==input.value){input.value=cleaned;showAuthorError('Numbers and special characters are not allowed in author names.');}});
   input.addEventListener('paste',e=>{const text=(e.clipboardData||window.clipboardData).getData('text');const lines=text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);if(lines.length<=1)return;e.preventDefault();clearAuthorError();const slotsLeft=MAX_AUTHORS-currentAuthorCount();if(slotsLeft<=0){showAuthorError(`Maximum ${MAX_AUTHORS} authors already reached.`);return;}const accepted=lines.slice(0,slotsLeft);const rejected=lines.length-accepted.length;input.value=accepted[0];accepted.slice(1).forEach(name=>addAuthorField(name,true));updateAuthorUI();if(rejected>0)showAuthorError(`Only ${accepted.length} of ${lines.length} names were added — max is ${MAX_AUTHORS}.`);});
   const removeBtn=document.createElement('button');removeBtn.type='button';removeBtn.className='remove-author';removeBtn.innerHTML='<i class="ti ti-x"></i>';removeBtn.title='Remove';removeBtn.onclick=()=>{if(currentAuthorCount()>1){row.remove();clearAuthorError();updateAuthorUI();}};
   row.appendChild(input);row.appendChild(removeBtn);container.appendChild(row);updateAuthorUI();if(!skipFocus)input.focus();return true;
@@ -1947,15 +1959,18 @@ function reviewResearchEntry(){
   const authors=getAuthorValues();
   const googleDriveLink=document.getElementById('rm-gdrive').value.trim();
   const errorEl=document.getElementById('rm-error');
-  if(!title||!id||!date||!authors.length||!college){errorEl.textContent='Please fill in all required fields (including College) and add at least one author.';errorEl.classList.remove('hidden');return;}
+  if(!title||!date||!authors.length||!college){errorEl.textContent='Please fill in all required fields (including College) and add at least one author.';errorEl.classList.remove('hidden');return;}
   if(authors.length>MAX_AUTHORS){errorEl.textContent='Too many authors.';errorEl.classList.remove('hidden');return;}
+  const invalidAuthor=authors.find(a=>/[^a-zA-Z\s\.\-,ñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ]/.test(a));
+  if(invalidAuthor){errorEl.textContent=`Invalid author name "${invalidAuthor}" — only letters, spaces, and basic punctuation (., -) are allowed. No numbers or special characters.`;errorEl.classList.remove('hidden');return;}
   errorEl.classList.add('hidden');
   pendingSubmission={title,id,department:dept,college,date,authors,googleDriveLink,category:selectedCategory,status:'Submitted to IPOPHL'};
   const cat=CATEGORIES.find(c=>c.id===selectedCategory);
   document.getElementById('rv-cat').innerHTML=`<span class="cat-badge" style="background:${cat.bg};color:${cat.color};border:1px solid ${cat.color}33;font-size:12px;"><i class="${cat.icon}" style="font-size:13px;"></i>${cat.label}</span>`;
   document.getElementById('rv-title').textContent=title;
-  document.getElementById('rv-id').textContent=id;
-  document.getElementById('rv-dept').textContent=dept;
+  document.getElementById('rv-id').textContent=id||'—';
+  document.getElementById('rv-college').textContent=college||'—';
+  document.getElementById('rv-dept').textContent=deptSel||'—';
   const[yr,mo,dy]=date.split('-');
   document.getElementById('rv-date').textContent=new Date(yr,mo-1,dy).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
   const authorsEl=document.getElementById('rv-authors');authorsEl.innerHTML='';
