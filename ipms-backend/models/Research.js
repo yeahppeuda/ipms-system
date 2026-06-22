@@ -10,7 +10,9 @@ const ResearchSchema = new mongoose.Schema({
   status:            { type: String, default: "Submitted to IPOPHL" },
   date:              { type: String, default: "" },  
   googleDriveLink:   { type: String, trim: true, default: "" },  
-  
+  statusChangedAt:   { type: String, default: "" },
+  statusHistory:     { type: [{ status: String, date: String }], default: [] },
+
   // Archive Retention System Fields
   archived:          { type: Boolean, default: false },
   archiveDate:       { type: String, default: "" }, // "YYYY-MM-DD"

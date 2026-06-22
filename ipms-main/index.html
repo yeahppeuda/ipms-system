@@ -156,16 +156,15 @@
           <div class="absolute -top-24 -right-24 w-48 h-48 bg-brand-accent/5 blur-3xl rounded-full"></div>
           <div class="relative z-10">
 
-            <div class="mb-10">
+            <div class="mb-10 relative">
               <h2 class="text-3xl font-semibold text-on-surface mb-2">Sign In</h2>
-              <div class="h-1 w-12 bg-brand-accent rounded-full mb-4"></div>
+              <div class="h-1 w-12 bg-brand-accent rounded-full mb-1"></div>
               <p class="text-on-surface-variant text-sm">Enter your institutional credentials to access the IP Management System.</p>
-            </div>
-
-            <!-- Error banner -->
-            <div id="loginError" class="hidden mb-6 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm flex items-start gap-2">
-              <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="loginErrorSvg"><path id="loginErrorIcon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
-              <span id="loginErrorText">Invalid email or password. Please try again.</span>
+              <!-- Error message — absolute so it never affects layout/card size -->
+              <div id="loginError" class="hidden absolute left-0 right-0 flex items-center justify-center gap-1.5 text-red-500 text-xs mt-3">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+                <span id="loginErrorText">Invalid email or password. Please try again.</span>
+              </div>
             </div>
 
             <form id="loginForm" class="space-y-8" onsubmit="login(event)">
@@ -311,19 +310,26 @@ async function login(e) {
     }
 
     // SUCCESS — store session then redirect
-    sessionStorage.setItem('itso_authenticated', 'true');
-    sessionStorage.setItem('itso_user', JSON.stringify(data.user));
-
-    // Save credentials if "Keep me signed in" is checked
+    // "Keep me signed in" → localStorage (persists across browser restarts)
+    // Otherwise → sessionStorage only (cleared when browser/tab closes)
     const remember = document.getElementById('remember');
-    if (remember && remember.checked) {
-      localStorage.setItem('itso_saved_email', email);
-      localStorage.setItem('itso_saved_password', password);
-      localStorage.setItem('itso_remember', 'true');
+    const keepSignedIn = remember && remember.checked;
+
+    // Always clear the other storage to avoid stale sessions
+    sessionStorage.removeItem('itso_user');
+    sessionStorage.removeItem('itso_authenticated');
+    localStorage.removeItem('itso_user');
+    localStorage.removeItem('itso_authenticated');
+    localStorage.removeItem('itso_keep_signed_in');
+
+    const userPayload = JSON.stringify(data.user);
+    if (keepSignedIn) {
+      localStorage.setItem('itso_user', userPayload);
+      localStorage.setItem('itso_authenticated', 'true');
+      localStorage.setItem('itso_keep_signed_in', 'true');
     } else {
-      localStorage.removeItem('itso_saved_email');
-      localStorage.removeItem('itso_saved_password');
-      localStorage.removeItem('itso_remember');
+      sessionStorage.setItem('itso_user', userPayload);
+      sessionStorage.setItem('itso_authenticated', 'true');
     }
 
     if (data.user.role === "admin") {
@@ -382,13 +388,28 @@ function showError(msg, isLock = false) {
 // Already-logged-in guard — prevents the back/forward button from
 // showing this login page once a session exists (e.g. right after
 // logging in, or via a stale bfcache snapshot).
+// Also handles "Keep me signed in" — if itso_user exists in localStorage,
+// the user chose persistent login and should be auto-redirected on every
+// page load (new tab, browser restart, etc.) without re-entering credentials.
 function guardAlreadyLoggedIn() {
-  const stored = sessionStorage.getItem('itso_user');
+  // Check localStorage first (persistent "Keep me signed in" session)
+  let stored = localStorage.getItem('itso_user');
+  if (!stored) {
+    // Fall back to sessionStorage (tab/browser-session-only login)
+    stored = sessionStorage.getItem('itso_user');
+  }
   if (!stored) return;
   try {
     const u = JSON.parse(stored);
     window.location.replace(u.role === 'admin' ? 'admin-dashboard.html' : 'dashboard.html');
-  } catch {}
+  } catch {
+    // Corrupted data — clear it
+    localStorage.removeItem('itso_user');
+    localStorage.removeItem('itso_authenticated');
+    localStorage.removeItem('itso_keep_signed_in');
+    sessionStorage.removeItem('itso_user');
+    sessionStorage.removeItem('itso_authenticated');
+  }
 }
 guardAlreadyLoggedIn();
 window.addEventListener('pageshow', (e) => {
@@ -396,21 +417,5 @@ window.addEventListener('pageshow', (e) => {
 });
 </script>
 
-<script>
-// Auto-fill saved credentials on page load
-document.addEventListener('DOMContentLoaded', () => {
-  const saved = localStorage.getItem('itso_remember') === 'true';
-  if (saved) {
-    const savedEmail    = localStorage.getItem('itso_saved_email') || '';
-    const savedPassword = localStorage.getItem('itso_saved_password') || '';
-    const emailEl       = document.getElementById('email');
-    const passwordEl    = document.getElementById('password');
-    const rememberEl    = document.getElementById('remember');
-    if (emailEl)    emailEl.value    = savedEmail;
-    if (passwordEl) passwordEl.value = savedPassword;
-    if (rememberEl) rememberEl.checked = true;
-  }
-});
-</script>
 </body>
-</html>
+</html> 

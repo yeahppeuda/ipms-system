@@ -430,21 +430,26 @@ function updateGreeting() {
   // Read from itso_user — same key used by index.html login
   let firstName = 'Admin';
   try {
-    const stored = sessionStorage.getItem('itso_user');
-    if (stored) {
-      const u = JSON.parse(stored);
-      firstName = (u.fname || '').trim() || 'Admin';
-    }
+    const u = getStoredUser();
+    if (u) firstName = (u.fname || '').trim() || 'Admin';
   } catch {}
 
   document.getElementById('dynamicGreeting').textContent = `${g}, ${firstName}!`;
 }
 
-function getCurrentUser() {
+/** Read itso_user from whichever storage has it. localStorage wins (persistent session). */
+function getStoredUser() {
   try {
-    const stored = sessionStorage.getItem('itso_user');
-    return stored ? JSON.parse(stored) : null;
-  } catch { return null; }
+    const ls = localStorage.getItem('itso_user');
+    if (ls) return JSON.parse(ls);
+    const ss = sessionStorage.getItem('itso_user');
+    if (ss) return JSON.parse(ss);
+  } catch {}
+  return null;
+}
+
+function getCurrentUser() {
+  return getStoredUser();
 }
 
 function toggleProfileDropdown(e) {
@@ -453,8 +458,12 @@ function toggleProfileDropdown(e) {
 }
 
 function logoutAdmin() {
+  localStorage.removeItem('itso_user');
+  localStorage.removeItem('itso_authenticated');
+  localStorage.removeItem('itso_keep_signed_in');
   sessionStorage.removeItem('itso_user');
-  window.location.href = 'index.html';
+  sessionStorage.removeItem('itso_authenticated');
+  window.location.replace('index.html');
 }
 
 /* ═══════════════════════════════════════
@@ -494,10 +503,10 @@ function showApiStatus(ok, msg) {
    MAIN LOAD
 ═══════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
-  // Auth guard — redirect to login if no itso_user session
+  // Auth guard — redirect to login if no itso_user session (checks both localStorage and sessionStorage)
   const currentUser = getCurrentUser();
   if (!currentUser) {
-    window.location.href = 'index.html';
+    window.location.replace('index.html');
     return;
   }
 

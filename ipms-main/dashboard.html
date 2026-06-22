@@ -323,7 +323,7 @@
             <p class="text-[13.5px] font-bold text-on-surface leading-tight" id="profileName">User</p>
             <p class="text-[11px] text-on-surface-variant mt-0.5" id="profileRole">Administrator</p>
           </div>
-          <button onclick="sessionStorage.removeItem('itso_user'); window.location.replace('index.html');" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] font-semibold text-red-600 hover:bg-red-50 transition-colors text-left">
+          <button onclick="logoutUser()" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] font-semibold text-red-600 hover:bg-red-50 transition-colors text-left">
             <i class="ti ti-logout" style="font-size:16px;"></i><span>Log Out</span>
           </button>
         </div>
@@ -780,8 +780,8 @@
 /* ═══════════════════════════════════════════
    CONFIG
 ═══════════════════════════════════════════ */
-const API_BASE = 'https://ipms-system.vercel.app/api';
-const CALENDAR_API = 'https://ipms-system.vercel.app/api/calendar'; 
+const API_BASE = "https://ipms-system.vercel.app/api";
+const CALENDAR_API = "https://ipms-system.vercel.app/api/calendar"; 
 
 const MAX_AUTHORS = 20;
 
@@ -800,12 +800,38 @@ const PH_HOLIDAYS = {
 };
 
 /* ═══════════════════════════════════════════
+   AUTH HELPERS — shared session read/clear
+═══════════════════════════════════════════ */
+
+/** Read itso_user from whichever storage has it. localStorage wins (persistent session). */
+function getStoredUser() {
+  try {
+    const ls = localStorage.getItem('itso_user');
+    if (ls) return JSON.parse(ls);
+    const ss = sessionStorage.getItem('itso_user');
+    if (ss) return JSON.parse(ss);
+  } catch {}
+  return null;
+}
+
+/** Clear ALL auth data from both storages and redirect to login. */
+function logoutUser() {
+  localStorage.removeItem('itso_user');
+  localStorage.removeItem('itso_authenticated');
+  localStorage.removeItem('itso_keep_signed_in');
+  sessionStorage.removeItem('itso_user');
+  sessionStorage.removeItem('itso_authenticated');
+  window.location.replace('index.html');
+}
+
+/* ═══════════════════════════════════════════
    AUTH GUARD — protects against bfcache showing
-   this page after logout (back/forward button)
+   this page after logout (back/forward button).
+   Also supports persistent "Keep me signed in"
+   sessions stored in localStorage.
 ═══════════════════════════════════════════ */
 function guardLoggedIn() {
-  const stored = sessionStorage.getItem('itso_user');
-  if (!stored) {
+  if (!getStoredUser()) {
     window.location.replace('index.html');
   }
 }
@@ -853,11 +879,8 @@ function updateGreeting() {
   // Read from itso_user — same key used by index.html login
   let firstName = 'User';
   try {
-    const stored = sessionStorage.getItem('itso_user');
-    if (stored) {
-      const u = JSON.parse(stored);
-      firstName = (u.fname || '').trim() || 'User';
-    }
+    const u = getStoredUser();
+    if (u) firstName = (u.fname || '').trim() || 'User';
   } catch {}
 
   const greetingEl = document.getElementById('dynamicGreeting');
@@ -865,10 +888,7 @@ function updateGreeting() {
 }
 
 function getCurrentUser() {
-  try {
-    const stored = sessionStorage.getItem('itso_user');
-    return stored ? JSON.parse(stored) : null;
-  } catch { return null; }
+  return getStoredUser();
 }
 
 function populateProfileInfo() {

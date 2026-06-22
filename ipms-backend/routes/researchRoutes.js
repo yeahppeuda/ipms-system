@@ -60,7 +60,9 @@ router.put("/:id", async (req, res) => {
     if (b.status          !== undefined) updateData.status         = b.status;
     if (b.date            !== undefined) updateData.date           = b.date;
     if (b.category        !== undefined) updateData.category       = b.category;
-    if (b.googleDriveLink !== undefined) updateData.googleDriveLink = strOrNull(b.googleDriveLink);
+    if (b.googleDriveLink  !== undefined) updateData.googleDriveLink  = strOrNull(b.googleDriveLink);
+    if (b.statusChangedAt  !== undefined) updateData.statusChangedAt  = b.statusChangedAt;
+    if (b.statusHistory    !== undefined) updateData.statusHistory     = b.statusHistory;
     
     // Archive Flow variables mapping
     if (b.archived        !== undefined) updateData.archived       = b.archived;

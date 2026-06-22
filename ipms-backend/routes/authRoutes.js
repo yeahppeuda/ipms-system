@@ -81,9 +81,12 @@ router.post("/login", async (req, res) => {
       severity: "info"
     });
 
+    // I-strip ang sensitive fields bago ibalik sa frontend
+    const { password: _pw, failedAttempts: _fa, ...safeUser } = user.toObject();
+
     res.json({
       success: true,
-      user
+      user: safeUser
     });
 
   } catch (err) {
@@ -126,6 +129,43 @@ router.post("/suspend", async (req, res) => {
     res.json({ success: true });
   } catch (err) {
     console.error("🔥 SUSPEND ERROR:", err);
+    res.status(500).json({ success: false, message: "Internal Server Error", error: err.message });
+  }
+});
+
+
+// Ginagamit ng frontend auth guard on page load para i-verify kung valid pa ang session.
+// Naghahanap ng user sa database gamit ang email na nakaimbak sa localStorage/sessionStorage.
+// Kung hindi na makita o locked na ang account, ibabalik ang 401/403 para mag-redirect sa login.
+router.get("/validate", async (req, res) => {
+  try {
+    const email = req.query.email || req.headers["x-user-email"];
+
+    if (!email) {
+      return res.status(400).json({ success: false, message: "Email is required." });
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+
+    if (!user) {
+      return res.status(401).json({ success: false, message: "User not found." });
+    }
+
+    if (user.status === "Locked") {
+      return res.status(403).json({ success: false, message: "Account is locked." });
+    }
+
+    if (user.status === "Inactive") {
+      return res.status(403).json({ success: false, message: "Account is inactive." });
+    }
+
+    // I-strip ang sensitive fields
+    const { password: _pw, failedAttempts: _fa, ...safeUser } = user.toObject();
+
+    res.json({ success: true, user: safeUser });
+
+  } catch (err) {
+    console.error("🔥 VALIDATE ERROR:", err);
     res.status(500).json({ success: false, message: "Internal Server Error", error: err.message });
   }
 });

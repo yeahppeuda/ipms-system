@@ -275,7 +275,7 @@
               <p class="text-[13px] font-semibold text-[#191b23]" id="headerUserName">User</p>
               <p class="text-[10px] font-bold text-[#727785] uppercase tracking-wider mt-0.5" id="headerUserRole">Role</p>
             </div>
-            <button onclick="handleNavAway('index.html')" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] font-semibold text-[#dc2626] hover:bg-[#fef2f2] transition-colors text-left">
+            <button onclick="logoutUser()" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] font-semibold text-[#dc2626] hover:bg-[#fef2f2] transition-colors text-left">
               Log Out
             </button>
           </div>
@@ -546,6 +546,7 @@
             <option value="Approved with Certificate">Approved with Certificate</option>
           </select>
         </div>
+
         <div class="space-y-4">
           <div>
             <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Patent Title</label>
@@ -604,6 +605,12 @@
             </div>
             <p class="text-[10px] text-outline mt-1">Paste a Google Drive folder or file link for related documents</p>
           </div>
+        </div>
+
+        <!-- ── STATUS HISTORY TIMELINE ── -->
+        <div id="status-history-section" class="rounded-xl border border-slate-100 bg-slate-50 px-4 pt-3 pb-2">
+          <p class="text-[10px] font-bold text-outline uppercase tracking-widest mb-3">Status History</p>
+          <div id="status-history-steps" class="space-y-0"></div>
         </div>
       </div>
 
@@ -807,6 +814,8 @@ function startLiveClock() {
 /* ── USER INFO (same source as dashboard.html / copyright.html) ── */
 function getCurrentUser() {
   try {
+    const ls = localStorage.getItem('itso_user');
+    if (ls) return JSON.parse(ls);
     const stored = sessionStorage.getItem('itso_user');
     return stored ? JSON.parse(stored) : null;
   } catch { return null; }
@@ -909,6 +918,7 @@ function clearDirty() { isDirty = false; document.getElementById('unsaved-indica
 function requestModalClose()  { isDirty ? showUnsavedModal(() => { clearDirty(); closeModal(); })           : closeModal(); }
 function requestCancelEdit()  { isDirty ? showUnsavedModal(() => { clearDirty(); exitEditMode(true); })     : exitEditMode(true); }
 function handleNavAway(url)   { isDirty ? showUnsavedModal(() => { window.location.href = url; }) : (window.location.href = url); }
+function logoutUser()         { localStorage.removeItem('itso_user'); localStorage.removeItem('itso_authenticated'); localStorage.removeItem('itso_keep_signed_in'); sessionStorage.removeItem('itso_user'); sessionStorage.removeItem('itso_authenticated'); window.location.replace('index.html'); }
 function showUnsavedModal(fn) { pendingAction = fn; document.getElementById('unsaved-modal').style.display = 'flex'; }
 function closeUnsavedModal()  { document.getElementById('unsaved-modal').style.display = 'none'; pendingAction = null; }
 function discardChangesAndProceed() { document.getElementById('unsaved-modal').style.display = 'none'; if (pendingAction) { pendingAction(); pendingAction = null; } }
@@ -1290,6 +1300,134 @@ function renderPagination(totalPages) {
 }
 
 /* ── MAP API RECORD ── */
+/* ── STATUS HISTORY ── */
+const STATUS_STEPS = [
+  'Submitted to IPOPHL',
+  'Received E-SOA',
+  'Paid',
+  'Approved with Certificate',
+];
+
+let _statusHistory = [];
+
+function todayISO() {
+  const d = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+
+function formatHistoryDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr + 'T00:00:00');
+  if (isNaN(d)) return dateStr;
+  return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+function getHistoryForStatus(status) {
+  return _statusHistory.find(h => h.status === status) || null;
+}
+
+function setHistoryDate(status, date) {
+  const idx = _statusHistory.findIndex(h => h.status === status);
+  if (idx !== -1) { _statusHistory[idx].date = date; }
+  else { _statusHistory.push({ status, date }); }
+}
+
+function renderStatusHistory() {
+  const currentStatus = document.getElementById('field-status').value;
+  const currentIdx    = STATUS_STEPS.indexOf(currentStatus);
+  const isEdit        = isEditModeActive;
+  const container     = document.getElementById('status-history-steps');
+  if (!container) return;
+
+  container.innerHTML = STATUS_STEPS.map((step, i) => {
+    const entry    = getHistoryForStatus(step);
+    const reached  = entry && entry.date;
+    const isCurrent = step === currentStatus;
+    const isLast   = i === STATUS_STEPS.length - 1;
+
+    const dotColor  = reached ? (isCurrent ? '#0058be' : '#22c55e') : '#d1d5db';
+    const lineColor = (i < STATUS_STEPS.length - 1) ?
+      (getHistoryForStatus(STATUS_STEPS[i+1])?.date ? '#22c55e' : '#e5e7eb') : '';
+    const labelColor = reached ? (isCurrent ? '#0058be' : '#191b23') : '#9ca3af';
+    const dateColor  = '#727785';
+
+    const inputId = `sh-input-${i}`;
+
+    return `
+    <div class="flex gap-3">
+      <div class="flex flex-col items-center" style="width:20px;flex-shrink:0;">
+        <div style="width:14px;height:14px;border-radius:50%;background:${dotColor};border:2px solid ${reached ? dotColor : '#d1d5db'};flex-shrink:0;margin-top:2px;"></div>
+        ${!isLast ? `<div style="width:2px;flex:1;min-height:18px;background:${lineColor};margin:3px 0;"></div>` : ''}
+      </div>
+      <div class="pb-${isLast ? '1' : '3'} flex-1 min-w-0">
+        <div class="text-[12px] font-semibold" style="color:${labelColor};">${step}</div>
+        <div class="flex items-center gap-1 mt-0.5 group/ts">
+          ${reached ? `
+            <span id="${inputId}-disp" class="text-[11px]" style="color:${dateColor};">${formatHistoryDate(entry.date)}</span>
+            ${isEdit ? `
+              <button onclick="openHistoryEdit(${i},'${step}')" title="Edit date"
+                class="opacity-0 group-hover/ts:opacity-60 hover:!opacity-100 transition-opacity p-0.5 rounded focus:outline-none"
+                style="line-height:1; color:#727785;">
+                <i class="ti ti-pencil" style="font-size:10px;"></i>
+              </button>
+              <span id="${inputId}-wrap" class="hidden items-center gap-1">
+                <input id="${inputId}" type="date" value="${entry.date}"
+                  class="text-[11px] rounded px-1.5 py-0.5 border border-[#93c5fd] bg-white outline-none"
+                  style="color-scheme:light;"/>
+                <button onclick="confirmHistoryEdit(${i},'${step}')"
+                  class="text-[10px] font-bold text-white bg-primary rounded px-1.5 py-0.5">OK</button>
+                <button onclick="cancelHistoryEdit(${i})"
+                  class="text-[10px] font-bold text-on-surface-variant bg-slate-100 rounded px-1.5 py-0.5">✕</button>
+              </span>
+            ` : ''}
+          ` : `
+            <span class="text-[11px]" style="color:#d1d5db;">Not yet reached</span>
+            ${isEdit && i <= currentIdx + 1 ? `
+              <button onclick="openHistoryEdit(${i},'${step}')" title="Add date"
+                class="opacity-0 group-hover/ts:opacity-60 hover:!opacity-100 transition-opacity p-0.5 rounded focus:outline-none"
+                style="line-height:1; color:#727785;">
+                <i class="ti ti-plus" style="font-size:10px;"></i>
+              </button>
+              <span id="${inputId}-wrap" class="hidden items-center gap-1">
+                <input id="${inputId}" type="date"
+                  class="text-[11px] rounded px-1.5 py-0.5 border border-[#93c5fd] bg-white outline-none"
+                  style="color-scheme:light;"/>
+                <button onclick="confirmHistoryEdit(${i},'${step}')"
+                  class="text-[10px] font-bold text-white bg-primary rounded px-1.5 py-0.5">OK</button>
+                <button onclick="cancelHistoryEdit(${i})"
+                  class="text-[10px] font-bold text-on-surface-variant bg-slate-100 rounded px-1.5 py-0.5">✕</button>
+              </span>
+            ` : ''}
+          `}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openHistoryEdit(idx, step) {
+  const wrap = document.getElementById(`sh-input-${idx}-wrap`);
+  if (!wrap) return;
+  wrap.classList.remove('hidden');
+  wrap.classList.add('inline-flex');
+  const inp = document.getElementById(`sh-input-${idx}`);
+  if (inp) inp.focus();
+}
+
+function confirmHistoryEdit(idx, step) {
+  const inp = document.getElementById(`sh-input-${idx}`);
+  if (!inp || !inp.value) { cancelHistoryEdit(idx); return; }
+  setHistoryDate(step, inp.value);
+  markDirty();
+  renderStatusHistory();
+}
+
+function cancelHistoryEdit(idx) {
+  const wrap = document.getElementById(`sh-input-${idx}-wrap`);
+  if (wrap) { wrap.classList.add('hidden'); wrap.classList.remove('inline-flex'); }
+}
+
 function mapRecord(item) {
   const title = (item.researchTitle?.trim()) || (item.title?.trim()) || 'No Title';
   let author = 'Unknown';
@@ -1315,6 +1453,8 @@ function mapRecord(item) {
     dateOfFiling,
     googleDriveLink: item.googleDriveLink || '',
     archived: item.archived === true || item.archived === 'true',
+    statusChangedAt: item.statusChangedAt || '',
+    statusHistory: Array.isArray(item.statusHistory) ? item.statusHistory : [],
 
     // Add mapping for the new defects array
     defects: Array.isArray(item.defects) ? item.defects : [],
@@ -1382,6 +1522,18 @@ function openResearchModal(mongoId) {
   const sSel = document.getElementById('field-status');
   [...sSel.options].forEach(o => o.selected = o.value === rec.status);
   updateStatusStyle(sSel);
+  // ── STATUS HISTORY ──
+  _statusHistory = rec.statusHistory ? JSON.parse(JSON.stringify(rec.statusHistory)) : [];
+  if (!_statusHistory.length && rec.statusChangedAt) {
+    const d = new Date(rec.statusChangedAt);
+    const dateStr = !isNaN(d) ? d.toISOString().split('T')[0] : '';
+    if (dateStr) {
+      const stepIdx = STATUS_STEPS.indexOf(rec.status);
+      STATUS_STEPS.forEach((step, i) => {
+        if (i <= stepIdx) _statusHistory.push({ status: step, date: dateStr });
+      });
+    }
+  }
   recalcSubstantive(); clearDirty(); setViewMode();
   document.getElementById('research-modal').style.display = 'flex';
 }
@@ -1406,6 +1558,7 @@ function setViewMode() {
   document.getElementById('btn-edit').classList.remove('hidden');
   document.getElementById('btn-cancel-edit').classList.add('hidden');
   document.getElementById('btn-save').classList.add('hidden');
+  renderStatusHistory();
 }
 function enterEditMode() {
   isEditModeActive = true;
@@ -1425,6 +1578,7 @@ function enterEditMode() {
   document.getElementById('btn-edit').classList.add('hidden');
   document.getElementById('btn-cancel-edit').classList.remove('hidden');
   document.getElementById('btn-save').classList.remove('hidden');
+  renderStatusHistory();
 }
 function exitEditMode() {
   if (activeSnapshot) {
@@ -1452,6 +1606,7 @@ function exitEditMode() {
     const sSel = document.getElementById('field-status');
     [...sSel.options].forEach(o => o.selected = o.value === activeSnapshot.status);
     updateStatusStyle(sSel); recalcSubstantive();
+    _statusHistory = activeSnapshot.statusHistory ? JSON.parse(JSON.stringify(activeSnapshot.statusHistory)) : [];
   }
   clearDirty(); setViewMode();
 }
@@ -1473,6 +1628,17 @@ async function confirmSave() {
     referenceId:       document.getElementById('field-ref').value.trim(),
     authors:           document.getElementById('field-author').value.split(',').map(a => a.trim()).filter(Boolean),
     googleDriveLink:   document.getElementById('field-gdrive').value.trim(),
+
+    // ── Status history ──
+    statusChangedAt:   (() => {
+      const newStatus = document.getElementById('field-status').value;
+      const changed = activeSnapshot && newStatus !== activeSnapshot.status;
+      if (changed && !_statusHistory.find(h => h.status === newStatus)) {
+        setHistoryDate(newStatus, todayISO());
+      }
+      return new Date().toISOString();
+    })(),
+    statusHistory:     JSON.parse(JSON.stringify(_statusHistory)),
 
     // Pass the full array for the backend to handle > 2 defects
     defects:           activeDefects,
@@ -1502,6 +1668,7 @@ async function confirmSave() {
     const idx     = ALL_RECORDS.findIndex(r => r._id === activeMongoId);
     if (idx !== -1) ALL_RECORDS[idx] = merged;
     activeSnapshot = { ...merged };
+    _statusHistory = merged.statusHistory ? JSON.parse(JSON.stringify(merged.statusHistory)) : [];
     updateStats(); filterAndRender(); clearDirty(); setViewMode();
     closeConfirmation(); closeModal();
     showToastMsg('Record saved successfully', 'All changes have been applied.');

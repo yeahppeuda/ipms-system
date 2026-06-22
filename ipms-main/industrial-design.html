@@ -188,7 +188,7 @@
               <p class="text-[13px] font-semibold text-[#191b23]" id="headerUserName">User</p>
               <p class="text-[10px] font-bold text-[#727785] uppercase tracking-wider mt-0.5" id="headerUserRole">Role</p>
             </div>
-            <button onclick="handleNavAway('index.html')" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] font-semibold text-[#dc2626] hover:bg-[#fef2f2] transition-colors text-left">
+            <button onclick="logoutUser()" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] font-semibold text-[#dc2626] hover:bg-[#fef2f2] transition-colors text-left">
               Log Out
             </button>
           </div>
@@ -566,6 +566,8 @@ function startLiveClock() {
 /* ── USER INFO (same source as dashboard.html / copyright.html) ── */
 function getCurrentUser() {
   try {
+    const ls = localStorage.getItem('itso_user');
+    if (ls) return JSON.parse(ls);
     const stored = sessionStorage.getItem('itso_user');
     return stored ? JSON.parse(stored) : null;
   } catch { return null; }
@@ -637,6 +639,7 @@ function clearDirty() { isDirty = false; document.getElementById('unsaved-indica
 function requestModalClose() { isDirty ? showUnsavedModal(() => { clearDirty(); closeModal(); }) : closeModal(); }
 function requestCancelEdit() { isDirty ? showUnsavedModal(() => { clearDirty(); exitEditMode(); }) : exitEditMode(); }
 function handleNavAway(url) { isDirty ? showUnsavedModal(() => { window.location.href = url; }) : (window.location.href = url); }
+function logoutUser()       { localStorage.removeItem('itso_user'); localStorage.removeItem('itso_authenticated'); localStorage.removeItem('itso_keep_signed_in'); sessionStorage.removeItem('itso_user'); sessionStorage.removeItem('itso_authenticated'); window.location.replace('index.html'); }
 function showUnsavedModal(fn) { pendingAction = fn; document.getElementById('unsaved-modal').style.display = 'flex'; }
 function closeUnsavedModal() { document.getElementById('unsaved-modal').style.display = 'none'; pendingAction = null; }
 function discardChangesAndProceed() { document.getElementById('unsaved-modal').style.display = 'none'; if (pendingAction) { pendingAction(); pendingAction = null; } }
@@ -952,6 +955,8 @@ function exitEditMode() {
 /* CONFIRMATION MODAL */
 function getCurrentUser() {
   try {
+    const ls = localStorage.getItem('itso_user');
+    if (ls) return JSON.parse(ls);
     const stored = sessionStorage.getItem('itso_user');
     return stored ? JSON.parse(stored) : null;
   } catch { return null; }
