@@ -39,21 +39,20 @@
   /* =========================
     DATABASE CONNECTION
   ========================= */
-  if (!process.env.MONGO_URI) {
-    console.error("❌ MONGO_URI is missing in environment variables");
-    // Inalis ang process.exit(1) para hindi mag-crash ang Vercel container bago pa man makasagot sa request
-  }
+// Gagamit ng fallback string para siguradong may koneksyon kahit walang selyo sa Vercel Settings
+const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://ipms2026:2026ipms@ipms-cluster.zwbn5c9.mongodb.net/ipmsdb?retryWrites=true&w=majority&appName=ipms-cluster";
 
-  // Optimization para sa Serverless connection pooling
-  mongoose.connect(process.env.MONGO_URI, {
-    maxPoolSize: 10, 
-    serverSelectionTimeoutMS: 5000
-  })
-    .then(() => console.log("✅ MongoDB Connected Successfully"))
-    .catch((err) => {
-      console.error("❌ MongoDB Connection Error:", err.message);
-    });
-
+// Pag-isahin ang optimization para sa Serverless context
+mongoose.connect(MONGO_URI, {
+  maxPoolSize: 10, 
+  serverSelectionTimeoutMS: 5000, // Mag-timeout agad sa 5s imbes na maghang ng matagal kapag nagising ang server
+  bufferCommands: false // Patayin ang buffering para magtapon agad ng error imbes na maging frozen ang server
+})
+  .then(() => console.log("✅ MongoDB Connected Successfully inside server.js"))
+  .catch((err) => {
+    console.error("❌ MongoDB Connection Error:", err.message);
+  });
+  
   /* =========================
     ROUTES
   ========================= */
