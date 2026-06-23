@@ -12,13 +12,16 @@ const activityLogSchema = new mongoose.Schema(
   }
 );
 
-const ActivityLog = mongoose.model('ActivityLog', activityLogSchema);
+// Safe compilation check para sa Serverless (Vercel) Environment
+const ActivityLog = mongoose.models.ActivityLog || mongoose.model('ActivityLog', activityLogSchema);
 
-// AUTO-FIX INDEX BUG: Puwersahang buburahin ng code na ito ang multong 'id_1' index sa MongoDB mo!
-ActivityLog.collection.dropIndex('id_1')
-  .then(() => console.log("🧹 DATABASE CLEANUP: Successfully dropped the ghost 'id_1' index!"))
-  .catch(err => {
-    // Huwag mag-alala kung mag-error dito, ibig sabihin lang ay wala o nabura na talaga ang index kanina
-  });
+// AUTO-FIX INDEX BUG (Ligtas na pagpapatakbo nang hindi nagre-return ng unhandled crash)
+if (mongoose.connection.readyState === 1) {
+  ActivityLog.collection.dropIndex('id_1')
+    .then(() => console.log("🧹 DATABASE CLEANUP: Successfully dropped the ghost 'id_1' index!"))
+    .catch(err => {
+      // Dedmahin ang error kung wala o nabura na ang index
+    });
+}
 
-module.exports = mongoose.models.ActivityLog || mongoose.model("ActivityLog", ActivityLogSchema);
+module.exports = ActivityLog;
