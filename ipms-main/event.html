@@ -376,9 +376,11 @@
 
       <div>
         <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Event Title <span class="text-red-400">*</span></label>
-        <input id="fm-name" type="text"
-          class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-[13px] text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/10 focus:bg-white outline-none transition-all placeholder:text-outline"
-          placeholder="e.g. IP Awareness Seminar 2026"/>
+        <textarea id="fm-name" rows="3" maxlength="200"
+          class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-[13px] text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/10 focus:bg-white outline-none transition-all placeholder:text-outline resize-none"
+          placeholder="e.g. IP Awareness Seminar 2026"
+          oninput="document.getElementById('fm-name-count').textContent = this.value.length"></textarea>
+        <p class="text-right text-[11px] text-outline mt-1"><span id="fm-name-count">0</span>/200</p>
       </div>
 
       <div class="grid grid-cols-2 gap-4">
@@ -547,7 +549,7 @@
           <i id="det-type-icon" class="ti ti-calendar-event text-primary" style="font-size:18px;"></i>
         </div>
         <div class="min-w-0">
-          <h2 class="text-[17px] font-bold text-on-surface leading-tight" id="det-name">—</h2>
+          <h2 class="text-[17px] font-bold text-on-surface leading-tight break-words" id="det-name">—</h2>
           <p class="text-[12px] text-outline mt-0.5" id="det-subtitle">—</p>
         </div>
       </div>
@@ -568,7 +570,7 @@
         <div class="summary-grid">
           <div class="summary-cell-full">
             <p class="text-[10px] font-bold text-outline uppercase tracking-widest mb-1">Event Title</p>
-            <p class="text-[14px] font-semibold text-on-surface leading-snug" id="det-name-body">—</p>
+            <p class="text-[14px] font-semibold text-on-surface leading-snug break-words" id="det-name-body">—</p>
           </div>
           <div class="summary-cell">
             <p class="text-[10px] font-bold text-outline uppercase tracking-widest mb-1">Type of Activity</p>
@@ -1163,6 +1165,7 @@ function openEditModal(id) {
   editingEventId = id;
   clearForm();
   document.getElementById('fm-name').value     = ev.name;
+  document.getElementById('fm-name-count').textContent = (ev.name||'').length;
   document.getElementById('fm-type').value     = ev.type;
   document.getElementById('fm-mode').value     = ev.mode || '';
   document.getElementById('fm-date').value     = ev.date;
@@ -1198,6 +1201,7 @@ function clearForm() {
     if (el) el.value = '';
   });
   document.getElementById('fm-total-display').textContent = '0';
+  document.getElementById('fm-name-count').textContent = '0';
   document.querySelectorAll('#fm-profile-group .check-item, #fm-sector-group .check-item, #fm-age-group .check-item').forEach(el => el.classList.remove('checked'));
   document.getElementById('form-error').classList.add('hidden');
 }

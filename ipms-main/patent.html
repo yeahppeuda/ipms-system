@@ -210,9 +210,12 @@
   }
   .preview-table td { padding: 6px 10px; border: 1px solid #e2e8f0; color: #191b23; vertical-align: middle; }
 
-  /* ── Status column: never compressed ── */
-  td.status-col, th.status-col { min-width: 148px; white-space: nowrap; }
-  td.action-col, th.action-col { min-width: 88px; white-space: nowrap; }
+  /* ── Column widths: never compressed ── */
+  td.status-col,  th.status-col  { min-width: 160px; white-space: nowrap; }
+  td.action-col,  th.action-col  { min-width: 88px;  white-space: nowrap; }
+  td.college-col, th.college-col { min-width: 240px; }
+  td.date-col,    th.date-col    { min-width: 130px; white-space: nowrap; }
+  td.alert-col,   th.alert-col   { min-width: 90px;  white-space: nowrap; }
 
   /* ── Highlight animation ── */
   @keyframes highlightGlow {
@@ -346,7 +349,7 @@
       </div>
     </section>
 
-    <section class="bg-white rounded-2xl border border-outline-variant shadow-sm" style="overflow:visible;">
+    <section class="bg-white rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
       <div class="px-5 py-4 border-b border-outline-variant flex flex-wrap items-center gap-2.5">
         <div class="relative flex-1 min-w-[180px]">
           <i class="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-outline" style="font-size:15px;"></i>
@@ -380,17 +383,17 @@
         </button>
       </div>
 
-      <div class="overflow-x-auto" style="overflow-y:visible;">
-        <table class="w-full text-left border-collapse" style="min-width:960px;">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse min-w-[900px]">
           <thead>
             <tr class="bg-slate-50">
               <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant whitespace-nowrap">Reference No.</th>
               <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant">Title</th>
               <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant whitespace-nowrap">Author(s)</th>
-              <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant whitespace-nowrap">College / Department</th>
+              <th class="college-col px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant">College / Department</th>
               <th class="status-col px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant">Status</th>
-              <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant whitespace-nowrap">Date of Filing</th>
-              <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant whitespace-nowrap">Alerts</th>
+              <th class="date-col px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant">Date of Filing</th>
+              <th class="alert-col px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant">Alerts</th>
               <th class="action-col px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant text-center">Action</th>
             </tr>
           </thead>
@@ -566,12 +569,10 @@
                 class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all"/>
             </div>
             <div>
-              <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Author(s)</label>
-              <textarea id="field-author" disabled oninput="markDirty();autoExpand(this);validateAuthorField(this)"
-                class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all resize-none overflow-hidden"
-                placeholder="Comma-separated names" rows="1"></textarea>
-              <p id="author-validation-msg" class="hidden text-[10px] text-red-500 font-semibold mt-1">Only letters, spaces, hyphens (-), apostrophes ('), and periods (.) are allowed.</p>
-              <p class="text-[10px] text-outline mt-1">Separate multiple authors with commas</p>
+              <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-1.5">Date of Filing</label>
+              <div id="display-date-filing" class="text-[14px] font-medium text-on-surface py-1.5">—</div>
+              <input id="field-date-filing" type="date" disabled onchange="recalcSubstantive(); markDirty();"
+                class="modal-field w-full text-[13px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all hidden"/>
             </div>
           </div>
           <div class="grid grid-cols-2 gap-4">
@@ -593,11 +594,13 @@
               </select>
             </div>
           </div>
-          <div class="pt-2">
-            <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-1.5">Date of Filing</label>
-            <div id="display-date-filing" class="text-[14px] font-medium text-on-surface py-1.5">—</div>
-            <input id="field-date-filing" type="date" disabled onchange="recalcSubstantive(); markDirty();"
-              class="modal-field w-full text-[13px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all hidden"/>
+          <div>
+            <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Author(s)</label>
+            <textarea id="field-author" disabled oninput="markDirty();autoExpand(this);validateAuthorField(this)"
+              class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all resize-none overflow-hidden"
+              placeholder="Comma-separated names" rows="1"></textarea>
+            <p id="author-validation-msg" class="hidden text-[10px] text-red-500 font-semibold mt-1">Only letters, spaces, hyphens (-), apostrophes ('), and periods (.) are allowed.</p>
+            <p class="text-[10px] text-outline mt-1">Separate multiple authors with commas</p>
           </div>
           <div class="pt-4">
             <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">
@@ -1073,6 +1076,14 @@ function renderDefects() {
             <div class="text-[13px] font-bold ${isResolved ? 'text-emerald-700' : isWarning ? 'text-rose-700' : 'text-red-700'}">${toReadableDate(complianceDate)}</div>
           </div>
         </div>
+        <div class="mt-3">
+          <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-1">Remarks</label>
+          <div class="text-[13px] text-on-surface-variant ${isEditModeActive ? 'hidden' : 'block'} min-h-[28px]" style="word-break:break-word;white-space:pre-wrap;">${defect.remarks ? defect.remarks : '<span class="text-slate-300 italic text-[12px]">No remarks</span>'}</div>
+          <textarea
+            class="modal-field w-full text-[13px] rounded-lg py-2 px-3 border border-slate-300 bg-white resize-none ${isEditModeActive ? 'block' : 'hidden'}"
+            rows="2" placeholder="Add remarks or notes for this defect notice…"
+            oninput="updateDefectRemarks(${i}, this.value)">${defect.remarks || ''}</textarea>
+        </div>
         ${daysInfo}
         ${resolveBtn}
       </div>`;
@@ -1080,9 +1091,10 @@ function renderDefects() {
 }
 
 function updateDefectDate(i, val) { if (activeDefects[i]) { activeDefects[i].date = val; markDirty(); renderDefects(); } }
+function updateDefectRemarks(i, val) { if (activeDefects[i]) { activeDefects[i].remarks = val; markDirty(); } }
 function addDefect() {
   if (activeDefects.length >= 10) { alert('Maximum 10 Formality Defects per record.'); return; }
-  activeDefects.push({ date: new Date().toISOString().split('T')[0], confirmed: false });
+  activeDefects.push({ date: new Date().toISOString().split('T')[0], confirmed: false, remarks: '' });
   const newIndex = activeDefects.length - 1;
   markDirty(); renderDefects();
   requestAnimationFrame(() => {
@@ -1119,9 +1131,9 @@ const statusMeta = {
 function statusBadgeHTML(s) { const m = statusMeta[s] || { cls:'badge-default' }; return `<span class="status-badge ${m.cls}">${s || '—'}</span>`; }
 function flagBadgeHTML(f) {
   let b = '';
-  if (f.isUrgentCompliance)        b += `<span class="status-badge badge-urgent-red"><i class="ti ti-alert-triangle" style="font-size:11px;"></i>Defect Due</span> `;
-  if (f.isUrgentSubstantive)       b += `<span class="status-badge badge-urgent-pink"><i class="ti ti-clock-exclamation" style="font-size:11px;"></i>Exam Due</span>`;
-  if (!b && f.isComplianceWarning) b  = `<span class="status-badge" style="background:#fff7ed;color:#c2410c;border-color:#fed7aa;"><i class="ti ti-clock" style="font-size:11px;"></i>Deadline Soon</span>`;
+  if (f.isUrgentCompliance)        b += `<span class="status-badge badge-urgent-red" style="width:fit-content;"><i class="ti ti-alert-triangle" style="font-size:11px;"></i>Defect</span>`;
+  if (f.isUrgentSubstantive)       b += `<span class="status-badge badge-urgent-pink" style="width:fit-content;"><i class="ti ti-clock-exclamation" style="font-size:11px;"></i>Due</span>`;
+  if (!b && f.isComplianceWarning) b  = `<span class="status-badge" style="background:#fff7ed;color:#c2410c;border-color:#fed7aa;width:fit-content;"><i class="ti ti-clock" style="font-size:11px;"></i>Soon</span>`;
   return b || '<span class="text-[11px] text-outline">—</span>';
 }
 const statusHero = {
@@ -1264,13 +1276,13 @@ function render() {
               ${au.hasMore ? `<div class="author-tooltip">${au.full}</div>` : ''}
             </div>
           </td>
-          <td class="px-5 py-4">
+          <td class="college-col px-5 py-4">
             <div class="text-[13px] font-medium text-on-surface">${deptText}</div>
             ${collegeText ? `<div class="text-[11px] text-outline mt-0.5">${collegeText}</div>` : ''}
           </td>
           <td class="status-col px-5 py-4">${statusBadgeHTML(r.status)}</td>
-          <td class="px-5 py-4 text-[12px] text-on-surface-variant tabular-nums whitespace-nowrap">${toReadableDate(r.dateOfFiling)}</td>
-          <td class="px-5 py-4 whitespace-nowrap"><div class="flex flex-col gap-1">${flagBadgeHTML(flags)}</div></td>
+          <td class="date-col px-5 py-4 text-[12px] text-on-surface-variant tabular-nums">${toReadableDate(r.dateOfFiling)}</td>
+          <td class="alert-col px-5 py-4"><div class="flex flex-col gap-1">${flagBadgeHTML(flags)}</div></td>
           <td class="action-col px-5 py-4 text-center">
             <button onclick="openResearchModal('${r._id}')" class="btn-view">
               <i class="ti ti-eye" style="font-size:13px;"></i><span>View</span>

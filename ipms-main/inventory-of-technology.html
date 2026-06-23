@@ -81,10 +81,10 @@ html, body { overflow-x: hidden; }
 
 /* ── Form elements ── */
 .form-label{font-size:10px;font-weight:700;color:#727785;text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:5px;}
-.form-input,.form-select,.form-textarea{width:100%;border:1.5px solid #e1e2ec;border-radius:9px;background:#f9f9ff;padding:8px 13px;font-size:13px;color:#191b23;font-family:'Inter',sans-serif;outline:none;transition:border-color .15s,background .15s,box-shadow .15s;}
+.form-input,.form-select,.form-textarea{width:100%;border:1.5px solid #e1e2ec;border-radius:999px;background:#f9f9ff;padding:8px 13px;font-size:13px;color:#191b23;font-family:'Inter',sans-serif;outline:none;transition:border-color .15s,background .15s,box-shadow .15s;}
 .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:#0058be;background:#fff;box-shadow:0 0 0 3px rgba(0,88,190,.08);}
 .form-input.err,.form-select.err,.form-textarea.err{border-color:#ef4444;background:#fff9f9;}
-.form-textarea{min-height:80px;resize:vertical;}
+.form-textarea{min-height:80px;resize:vertical;border-radius:16px;}
 .err-msg{font-size:11px;color:#ef4444;margin-top:4px;display:none;}
 .err-msg.show{display:block;}
 
@@ -209,7 +209,7 @@ html, body { overflow-x: hidden; }
           </div>
           <div>
             <h2 class="text-[22px] font-bold text-on-surface tracking-tight leading-tight">Inventory of Technology</h2>
-            <p class="text-[13px] text-on-surface-variant">Subaybayan ang mga teknolohiya, antas ng kahandaan (TRL/IRL), at katayuan ng IP nito.</p>
+            <p class="text-[13px] text-on-surface-variant">Monitor technologies, their readiness levels (TRL/IRL), and IP status.</p>
           </div>
         </div>
       </div>
@@ -241,7 +241,7 @@ html, body { overflow-x: hidden; }
       <div class="px-5 py-3 border-b border-outline-variant flex flex-wrap items-center gap-3">
         <div class="relative flex-1 min-w-[200px]">
           <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[16px] pointer-events-none">search</span>
-          <input id="globalSearch" class="w-full h-[36px] bg-surface-container-low border border-outline-variant rounded-xl pl-9 pr-4 text-[13px] focus:outline-none focus:border-primary transition-all placeholder:text-on-surface-variant/50" placeholder="Maghanap ng pangalan, sector, o mananaliksik..." autocomplete="off" oninput="handleSearch(this.value)"/>
+          <input id="globalSearch" class="w-full h-[36px] bg-surface-container-low border border-outline-variant rounded-xl pl-9 pr-4 text-[13px] focus:outline-none focus:border-primary transition-all placeholder:text-on-surface-variant/50" placeholder="Search by name, sector, or researcher..." autocomplete="off" oninput="handleSearch(this.value)"/>
         </div>
         <div class="relative shrink-0">
           <button onclick="toggleDropdown('sectorDD',event)" class="h-[36px] flex items-center gap-2 px-3 bg-surface-container-low border border-outline-variant rounded-xl text-[13px] font-semibold text-on-surface-variant hover:bg-surface-container transition-all">
@@ -300,7 +300,7 @@ html, body { overflow-x: hidden; }
         </div>
         <div>
           <h3 class="text-[16px] font-bold text-on-surface" id="modalTitle">Add New Technology</h3>
-          <p class="text-[11px] text-on-surface-variant">Punan ang mga impormasyon sa ibaba. Required fields <span class="text-red-500">*</span></p>
+          <p class="text-[11px] text-on-surface-variant">Fill in the information below. Required fields <span class="text-red-500">*</span></p>
         </div>
       </div>
       <button onclick="closeModal()" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 transition-all text-slate-400 hover:text-slate-600 flex-shrink-0">
@@ -318,18 +318,18 @@ html, body { overflow-x: hidden; }
     <form id="techForm" onsubmit="saveRecord(event)" class="flex-1 overflow-y-auto p-6 space-y-6">
 
       <div class="tab-content active">
-        <div class="section-heading"><i class="ti ti-info-circle"></i> Pangunahing Impormasyon</div>
+        <div class="section-heading"><i class="ti ti-info-circle"></i> General Information</div>
         <div class="space-y-4">
           <div>
             <label class="form-label">Name of Technology <span class="text-red-500">*</span></label>
-            <input type="text" id="f-name" class="form-input" required placeholder="Hal. Electronic Pharmacy Management System"/>
-            <div class="err-msg" id="err-name">Kailangan ng pangalan ng teknolohiya.</div>
+            <input type="text" id="f-name" class="form-input" required placeholder="e.g. Electronic Pharmacy Management System"/>
+            <div class="err-msg" id="err-name">Technology name is required.</div>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="form-label">Sector <span class="text-red-500">*</span></label>
               <select id="f-sector" class="form-select" required>
-                <option value="">-- Piliin ang Sektor --</option>
+                <option value="">-- Select Sector --</option>
                 <option value="Agriculture and Horticulture">Agriculture and Horticulture</option>
                 <option value="Biotechnology">Biotechnology</option>
                 <option value="Chemicals">Chemicals</option>
@@ -339,31 +339,32 @@ html, body { overflow-x: hidden; }
                 <option value="Clean Technology and Energy">Clean Technology and Energy</option>
                 <option value="ICT and Software">ICT and Software</option>
                 <option value="Medical Devices and Digital Healthcare">Medical Devices and Digital Healthcare</option>
+                <option value="Furniture and GHD">Furniture and GHD</option>
                 <option value="Metals and Engineering">Metals and Engineering</option>
                 <option value="Pharmaceuticals">Pharmaceuticals</option>
               </select>
-              <div class="err-msg" id="err-sector">Kailangan piliin ang sektor.</div>
+              <div class="err-msg" id="err-sector">Please select a sector.</div>
             </div>
             <div>
               <label class="form-label">Mode of Technology Transfer <span class="text-red-500">*</span></label>
               <select id="f-mode" class="form-select" required>
-                <option value="">-- Piliin ang Transfer Mode --</option>
+                <option value="">-- Select Transfer Mode --</option>
                 <option value="Commercialization">Commercialization</option>
                 <option value="Extension">Extension</option>
-                <option value="Pre-Commercialization">Pre-Commercialization</option>
+                <option value="Pre-commercialization">Pre-commercialization</option>
                 <option value="Public Good">Public Good</option>
               </select>
-              <div class="err-msg" id="err-mode">Kailangan piliin ang transfer mode.</div>
+              <div class="err-msg" id="err-mode">Please select a transfer mode.</div>
             </div>
           </div>
           <div>
             <label class="form-label">Description <span class="text-red-500">*</span></label>
-            <textarea id="f-description" class="form-textarea" required placeholder="Isulat ang maikling detalye o sakop ng teknolohiya..."></textarea>
-            <div class="err-msg" id="err-description">Kailangan ng deskripsyon.</div>
+            <textarea id="f-description" class="form-textarea" required placeholder="Write a brief description or scope of the technology..."></textarea>
+            <div class="err-msg" id="err-description">Description is required.</div>
           </div>
           <div>
             <label class="form-label">Current Development Status</label>
-            <input type="text" id="f-currentDev" class="form-input" placeholder="Hal. Version 2.0 Deployment Phase"/>
+            <input type="text" id="f-currentDev" class="form-input" placeholder="e.g. Version 2.0 Deployment Phase"/>
           </div>
           <div>
             <label class="form-label">Google Drive Link</label>
@@ -374,13 +375,13 @@ html, body { overflow-x: hidden; }
       </div>
 
       <div class="tab-content">
-        <div class="section-heading"><i class="ti ti-cash"></i> Deployment at Pagpopondo</div>
+        <div class="section-heading"><i class="ti ti-cash"></i> Deployment and Funding</div>
         <div class="space-y-4">
           <div>
             <label class="form-label">Deployment Status</label>
             <select id="f-deployStatus" class="form-select">
-              <option value="">-- Wala / Di Tukoy --</option>
-              <option value="Partially Deployed – Limited Use">Partially Deployed – Limited Use</option>
+              <option value="">-- None / Not Specified --</option>
+              <option value="Partially Deployed (limited use)">Partially Deployed (limited use)</option>
               <option value="Pilot Deployment/Testing Stage">Pilot Deployment/Testing Stage</option>
             </select>
           </div>
@@ -388,11 +389,11 @@ html, body { overflow-x: hidden; }
             <div>
               <label class="form-label">Funding Agency Category</label>
               <select id="f-funding" class="form-select">
-                <option value="">-- Piliin ang Uri ng Pondo --</option>
+                <option value="">-- Select Funding Type --</option>
                 <option value="SUC Funded">SUC Funded</option>
-                <option value="DOST-PCIEERD">DOST-PCIEERD</option>
-                <option value="DOST-PCAARRD">DOST-PCAARRD</option>
-                <option value="DOST-PCHRD">DOST-PCHRD</option>
+                <option value="DOST PCIEERD">DOST PCIEERD</option>
+                <option value="DOST PCAARRD">DOST PCAARRD</option>
+                <option value="DOST PCHRD">DOST PCHRD</option>
                 <option value="DOST Central">DOST Central</option>
                 <option value="DOST Regional Office">DOST Regional Office</option>
                 <option value="Other GFA">Other GFA</option>
@@ -400,12 +401,12 @@ html, body { overflow-x: hidden; }
             </div>
             <div>
               <label class="form-label">Specific Funding Agency / Institution</label>
-              <input type="text" id="f-fundingSpecify" class="form-input" placeholder="Hal. Quezon City University Internal R&D Fund"/>
+              <input type="text" id="f-fundingSpecify" class="form-input" placeholder="e.g. Quezon City University Internal R&D Fund"/>
             </div>
           </div>
           <div>
-            <label class="form-label">Adopter Specification <span class="text-on-surface-variant font-normal" style="text-transform:none;letter-spacing:0;">(Hiwalayin ng kuwit/comma)</span></label>
-            <input type="text" id="f-adopterSpecify" class="form-input" placeholder="Hal. Generika, Mercury Drug, Local Health Unit"/>
+            <label class="form-label">Adopter Specification <span class="text-on-surface-variant font-normal" style="text-transform:none;letter-spacing:0;">(Separate with commas)</span></label>
+            <input type="text" id="f-adopterSpecify" class="form-input" placeholder="e.g. Generika, Mercury Drug, Local Health Unit"/>
           </div>
         </div>
       </div>
@@ -417,32 +418,32 @@ html, body { overflow-x: hidden; }
             <div>
               <label class="form-label">Technology Readiness Level (TRL)</label>
               <select id="f-trl" class="form-select" onchange="updateReadinessBar('trl')">
-                <option value="">-- Piliin ang TRL Level --</option>
-                <option value="TRL 1">TRL 1 - Basic Principles Observed</option>
-                <option value="TRL 2">TRL 2 - Technology Concept Formulated</option>
-                <option value="TRL 3">TRL 3 - Experimental Proof of Concept</option>
-                <option value="TRL 4">TRL 4 - Technology Validated in Lab</option>
-                <option value="TRL 5">TRL 5 - Validated in Relevant Environment</option>
-                <option value="TRL 6">TRL 6 - Demonstrated in Relevant Environment</option>
-                <option value="TRL 7">TRL 7 - System Prototype Demonstration</option>
-                <option value="TRL 8">TRL 8 - System Complete and Qualified</option>
-                <option value="TRL 9">TRL 9 - Actual System Proven Operational</option>
+                <option value="">-- Select TRL Level --</option>
+                <option value="TRL 1">TRL 1: Basic Research</option>
+                <option value="TRL 2">TRL 2: Technology Formulation</option>
+                <option value="TRL 3">TRL 3: Applied Research</option>
+                <option value="TRL 4">TRL 4: Ugly Prototype</option>
+                <option value="TRL 5">TRL 5: Large Prototype</option>
+                <option value="TRL 6">TRL 6: Open Water</option>
+                <option value="TRL 7">TRL 7: Demonstration</option>
+                <option value="TRL 8">TRL 8: Manufacturing Issues Solved</option>
+                <option value="TRL 9">TRL 9: Full Commercial</option>
               </select>
               <div class="flex gap-1 mt-2" id="trlBar"></div>
             </div>
             <div>
               <label class="form-label">Investment Readiness Level (IRL)</label>
               <select id="f-irl" class="form-select" onchange="updateReadinessBar('irl')">
-                <option value="">-- Piliin ang IRL Level --</option>
-                <option value="IRL 1">IRL 1 - Peer Review / Pitch</option>
-                <option value="IRL 2">IRL 2 - Market Interest Validated</option>
-                <option value="IRL 3">IRL 3 - Business Model Developed</option>
-                <option value="IRL 4">IRL 4 - Prototype Commercial Potential</option>
-                <option value="IRL 5">IRL 5 - Customer Validation Done</option>
-                <option value="IRL 6">IRL 6 - Scalable Model Defined</option>
-                <option value="IRL 7">IRL 7 - Strategic Partners Engaged</option>
-                <option value="IRL 8">IRL 8 - Financial Proof Realized</option>
-                <option value="IRL 9">IRL 9 - Widespread Launch Executed</option>
+                <option value="">-- Select IRL Level --</option>
+                <option value="IRL 1">IRL 1: Problem-Solution Fit</option>
+                <option value="IRL 2">IRL 2: Market Size</option>
+                <option value="IRL 3">IRL 3: First Pass Business Model</option>
+                <option value="IRL 4">IRL 4: Prototype MVP</option>
+                <option value="IRL 5">IRL 5: Product Market Fit</option>
+                <option value="IRL 6">IRL 6: Validated Revenue Model</option>
+                <option value="IRL 7">IRL 7: Second Prototype</option>
+                <option value="IRL 8">IRL 8: Validated Market and Partner</option>
+                <option value="IRL 9">IRL 9: Validated Metrics</option>
               </select>
               <div class="flex gap-1 mt-2" id="irlBar"></div>
             </div>
@@ -452,11 +453,11 @@ html, body { overflow-x: hidden; }
         <div class="section-heading"><i class="ti ti-users-group"></i> Researchers Roster</div>
         <div class="bg-blue-50 border border-blue-100 rounded-xl px-4 py-2.5 mb-4 text-[12px] text-blue-700 flex items-start gap-2">
           <i class="ti ti-info-circle text-[14px] mt-0.5 flex-shrink-0"></i>
-          Ang <strong>unang entry</strong> ay ituturing na Lead Researcher.
+          The <strong>first entry</strong> will be considered the Lead Researcher.
         </div>
         <div id="researcherRows" class="space-y-3 mb-4"></div>
         <button type="button" onclick="addResearcherRow()" class="btn-secondary text-[12px] py-1.5 px-3">
-          <span class="material-symbols-outlined text-[14px]">add</span> Dagdag Researcher
+          <span class="material-symbols-outlined text-[14px]">add</span> Add Researcher
         </button>
       </div>
 
@@ -466,28 +467,28 @@ html, body { overflow-x: hidden; }
           <div>
             <label class="form-label">Evaluation Report</label>
             <select id="f-evalReport" class="form-select">
-              <option value="">-- Wala / Di Tukoy --</option>
-              <option value="Available – Drafted by the SUC">Available – Drafted by the SUC</option>
-              <option value="Available – Drafted by IP Firm">Available – Drafted by IP Firm</option>
-              <option value="Not Yet Available">Not Yet Available</option>
+              <option value="">-- None / Not Specified --</option>
+              <option value="Available; Drafted by the SUC">Available; Drafted by the SUC</option>
+              <option value="Available; Drafted by IP Firm">Available; Drafted by IP Firm</option>
+              <option value="Not yet available">Not yet available</option>
             </select>
           </div>
           <div>
             <label class="form-label">FTO Report</label>
             <select id="f-ftoReport" class="form-select">
-              <option value="">-- Wala / Di Tukoy --</option>
-              <option value="Available – Drafted by the SUC">Available – Drafted by the SUC</option>
-              <option value="Available – Drafted by IP Firm">Available – Drafted by IP Firm</option>
-              <option value="Not Yet Available">Not Yet Available</option>
+              <option value="">-- None / Not Specified --</option>
+              <option value="Available; Drafted by the SUC">Available; Drafted by the SUC</option>
+              <option value="Available; Drafted by IP Firm">Available; Drafted by IP Firm</option>
+              <option value="Not yet available">Not yet available</option>
             </select>
           </div>
           <div>
             <label class="form-label">Commercialization Plan</label>
             <select id="f-commPlan" class="form-select">
-              <option value="">-- Wala / Di Tukoy --</option>
-              <option value="Available – Drafted by the SUC">Available – Drafted by the SUC</option>
-              <option value="Available – Drafted by IP Firm">Available – Drafted by IP Firm</option>
-              <option value="Not Yet Available">Not Yet Available</option>
+              <option value="">-- None / Not Specified --</option>
+              <option value="Available; Drafted by the SUC">Available; Drafted by the SUC</option>
+              <option value="Available; Drafted by IP Firm">Available; Drafted by IP Firm</option>
+              <option value="Not yet available">Not yet available</option>
             </select>
           </div>
         </div>
@@ -495,7 +496,7 @@ html, body { overflow-x: hidden; }
         <div class="section-heading"><i class="ti ti-certificate"></i> Intellectual Property (IP) Records</div>
         <div id="ipRows" class="space-y-3 mb-4"></div>
         <button type="button" onclick="addIPRow()" class="btn-secondary text-[12px] py-1.5 px-3">
-          <span class="material-symbols-outlined text-[14px]">add</span> Dagdag IP Record
+          <span class="material-symbols-outlined text-[14px]">add</span> Add IP Record
         </button>
       </div>
 
@@ -509,7 +510,7 @@ html, body { overflow-x: hidden; }
         <div class="flex gap-2">
           <button type="button" onclick="closeModal()" class="btn-secondary">Cancel</button>
           <button type="submit" id="btnSave" class="btn-primary">
-            <span class="material-symbols-outlined text-[15px]">save</span> I-save ang Teknolohiya
+            <span class="material-symbols-outlined text-[15px]">save</span> Save Technology
           </button>
         </div>
       </div>
@@ -545,18 +546,18 @@ html, body { overflow-x: hidden; }
     <div class="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-3">
       <span class="material-symbols-outlined text-[24px]">delete_forever</span>
     </div>
-    <h4 class="text-sm font-bold text-on-surface mb-1">Sigurado ka ba na buburahin ito?</h4>
-    <p class="text-[12px] text-on-surface-variant mb-4">Ang aksyong ito ay permanenteng aalisin ang talaan mula sa database at hindi na maibabalik.</p>
+    <h4 class="text-sm font-bold text-on-surface mb-1">Are you sure you want to delete this?</h4>
+    <p class="text-[12px] text-on-surface-variant mb-4">This action will permanently remove the record from the database and cannot be undone.</p>
     <div class="flex justify-center gap-2">
-      <button onclick="closeConfirm()" class="btn-secondary py-1.5 px-4 text-[12px]">I-cancel</button>
-      <button id="btnConfirmDelete" onclick="confirmDelete()" class="btn-danger bg-red-600 text-white py-1.5 px-4 text-[12px]" style="border-color:#dc2626;">Oo, Burahin</button>
+      <button onclick="closeConfirm()" class="btn-secondary py-1.5 px-4 text-[12px]">Cancel</button>
+      <button id="btnConfirmDelete" onclick="confirmDelete()" class="btn-danger bg-red-600 text-white py-1.5 px-4 text-[12px]" style="border-color:#dc2626;">Yes, Delete</button>
     </div>
   </div>
 </div>
 
 <div id="toast" class="bg-inverse-surface text-white px-4 py-2.5 rounded-xl shadow-lg text-[13px]">
   <span id="toastIcon" class="material-symbols-outlined text-[18px] text-green-400">check_circle</span>
-  <span id="toastMsg">Matagumpay na naisagawa!</span>
+  <span id="toastMsg">Action completed successfully!</span>
 </div>
 
 <script>
@@ -571,11 +572,11 @@ let currentTabIdx = 0;
 let searchQuery = "";
 let filterSector = "";
 
-const SECTOR_BADGE={'Agriculture and Horticulture':'badge-green','Biotechnology':'badge-teal','Chemicals':'badge-orange','Electrical and Electronic Device/Service':'badge-blue','Food and Beverage Products':'badge-orange','Food Processing':'badge-orange','Clean Technology and Energy':'badge-teal','ICT and Software':'badge-blue','Medical Devices and Digital Healthcare':'badge-purple','Metals and Engineering':'badge-gray','Pharmaceuticals':'badge-purple'};
+const SECTOR_BADGE={'Agriculture and Horticulture':'badge-green','Biotechnology':'badge-teal','Chemicals':'badge-orange','Electrical and Electronic Device/Service':'badge-blue','Food and Beverage Products':'badge-orange','Food Processing':'badge-orange','Clean Technology and Energy':'badge-teal','ICT and Software':'badge-blue','Medical Devices and Digital Healthcare':'badge-purple','Furniture and GHD':'badge-gray','Metals and Engineering':'badge-gray','Pharmaceuticals':'badge-purple'};
 const MODE_BADGE={'Commercialization':'badge-green','Extension':'badge-blue','Pre-Commercialization':'badge-orange','Public Good':'badge-teal'};
-const STATUS_BADGE={'Partially Deployed – Limited Use':'badge-orange','Pilot Deployment/Testing Stage':'badge-purple'};
-const TRL_DESC=['','Basic Principles Observed','Technology Concept Formulated','Experimental Proof of Concept','Technology Validated in Lab','Validated in Relevant Environment','Demonstrated in Relevant Environment','System Prototype Demonstration','System Complete and Qualified','Actual System Proven Operational'];
-const IRL_DESC=['','Peer Review / Pitch','Market Interest Validated','Business Model Developed','Prototype Commercial Potential','Customer Validation Done','Scalable Model Defined','Strategic Partners Engaged','Financial Proof Realized','Widespread Launch Executed'];
+const STATUS_BADGE={'Partially Deployed (limited use)':'badge-orange','Pilot Deployment/Testing Stage':'badge-purple'};
+const TRL_DESC=['','Basic Research','Technology Formulation','Applied Research','Ugly Prototype','Large Prototype','Open Water','Demonstration','Manufacturing Issues Solved','Full Commercial'];
+const IRL_DESC=['','Problem-Solution Fit','Market Size','First Pass Business Model','Prototype MVP','Product Market Fit','Validated Revenue Model','Second Prototype','Validated Market and Partner','Validated Metrics'];
 
 /* ── CLOCK ── */
 function updateClock(){
@@ -662,13 +663,13 @@ document.addEventListener('DOMContentLoaded', () => {
 async function fetchRecords() {
   try {
     const res = await fetch(API_BASE);
-    if(!res.ok) throw new Error('May error sa koneksyon sa server.');
+    if(!res.ok) throw new Error('Server connection error.');
     records = await res.json();
     renderTable();
     calculateStats();
   } catch(err) {
     showToast(err.message, 'error');
-    document.getElementById('tableBody').innerHTML = `<tr><td colspan="7" class="py-10 text-center text-[13px] text-red-500">Hindi makonekta sa database. Subukan muli.</td></tr>`;
+    document.getElementById('tableBody').innerHTML = `<tr><td colspan="7" class="py-10 text-center text-[13px] text-red-500">Cannot connect to the database. Please try again.</td></tr>`;
   }
 }
 
@@ -699,8 +700,8 @@ function renderTable() {
         <div class="w-14 h-14 rounded-xl bg-surface-container-low flex items-center justify-center">
           <i class="ti ti-device-desktop-analytics" style="font-size:24px;color:#0058be;"></i>
         </div>
-        <h4 class="text-[14px] font-semibold text-on-surface">${searchQuery||filterSector?'Walang nakitang tugma':'Walang teknolohiya pa'}</h4>
-        <p class="text-[12px] text-on-surface-variant">${searchQuery||filterSector?'Subukan ibang search term o filter.':'I-click ang "Add Technology" para sa unang entry.'}</p>
+        <h4 class="text-[14px] font-semibold text-on-surface">${searchQuery||filterSector?'No results found':'No technologies yet'}</h4>
+        <p class="text-[12px] text-on-surface-variant">${searchQuery||filterSector?'Try a different search term or filter.':'I-click ang "Add Technology" para sa unang entry.'}</p>
       </div>
     </td></tr>`;
     return;
@@ -784,7 +785,7 @@ function validateForm(p){
   mark('f-sector','err-sector', !!p.sector);
   mark('f-mode','err-mode', !!p.mode);
   mark('f-description','err-description', !!p.description);
-  if(!ok){ applyTab(0); showToast('Punan ang lahat ng required fields.', 'error'); }
+  if(!ok){ applyTab(0); showToast('Please fill in all required fields.', 'error'); }
   return ok;
 }
 
@@ -841,7 +842,7 @@ async function saveRecord(e) {
 
   const btn = document.getElementById('btnSave');
   btn.disabled = true;
-  btn.innerHTML = `<span class="spinner"></span> Sinesave...`;
+  btn.innerHTML = `<span class="spinner"></span> Saving...`;
 
   try {
     const url = editingId ? `${API_BASE}/${editingId}` : API_BASE;
@@ -855,23 +856,23 @@ async function saveRecord(e) {
 
     const data = await response.json();
 
-    // Sumalo ng error na ipinadala mula sa Mongoose validation
+    // Handle validation errors returned from Mongoose
     if(!response.ok) {
       if (data.errors && Array.isArray(data.errors)) {
         throw new Error(data.errors.join(' | '));
       } else {
-        throw new Error(data.error || 'Nabigong i-save ang data.');
+        throw new Error(data.error || 'Failed to save data.');
       }
     }
 
-    showToast(editingId ? 'Na-update na ang teknolohiya!' : 'Matagumpay na naidagdag ang bagong teknolohiya!');
+    showToast(editingId ? 'Technology updated successfully!' : 'New technology added successfully!');
     closeModal();
     fetchRecords();
   } catch(err) {
     showToast(err.message, 'error');
   } finally {
     btn.disabled = false;
-    btn.innerHTML = `<span class="material-symbols-outlined text-[15px]">save</span> I-save ang Teknolohiya`;
+    btn.innerHTML = `<span class="material-symbols-outlined text-[15px]">save</span> Save Technology`;
   }
 }
 
@@ -945,12 +946,12 @@ function viewRecord(id){
     <div class="flex items-center gap-3 py-2.5 border-b border-slate-50 last:border-0">
       <div class="flex-1 min-w-0">
         <div class="text-[13px] font-semibold text-on-surface">${escapeHTML(ip.type||'—')}</div>
-        <div class="text-[11px] text-on-surface-variant mt-0.5">${escapeHTML(ip.regNum||'Walang registration number')}</div>
+        <div class="text-[11px] text-on-surface-variant mt-0.5">${escapeHTML(ip.regNum||'No registration number')}</div>
       </div>
       <span class="badge ${ip.regStatus==='Registered'?'badge-green':ip.regStatus==='Expired Protection'?'badge-red':'badge-gray'} flex-shrink-0">${escapeHTML(ip.regStatus||'—')}</span>
-    </div>`).join('') : '<p class="text-[13px] text-on-surface-variant">Walang IP record.</p>';
+    </div>`).join('') : '<p class="text-[13px] text-on-surface-variant">No IP records.</p>';
 
-  const reportBadge = v => v ? (v.includes('Not')?`<span class="badge badge-red">${escapeHTML(v)}</span>`:`<span class="badge badge-green">${escapeHTML(v)}</span>`) : '<span class="text-[13px] text-on-surface-variant">—</span>';
+  const reportBadge = v => v ? (v.toLowerCase().includes('not')?`<span class="badge badge-red">${escapeHTML(v)}</span>`:`<span class="badge badge-green">${escapeHTML(v)}</span>`) : '<span class="text-[13px] text-on-surface-variant">—</span>';
   const trlN = parseInt((r.trl||'').replace(/\D/g,''))||0;
   const irlN = parseInt((r.irl||'').replace(/\D/g,''))||0;
   const fmtDate = d => d ? new Date(d).toLocaleDateString('en-PH',{year:'numeric',month:'long',day:'numeric'}) : '—';
@@ -986,13 +987,13 @@ function viewRecord(id){
             <div class="flex gap-1 mb-1">${Array.from({length:9},(_,i)=>`<div class="h-2 flex-1 rounded-full" style="background:${i<trlN?'#0058be':'#e2e8f0'};"></div>`).join('')}</div>
             <div class="text-[12px] font-semibold text-primary">${escapeHTML(r.trl)}</div>
             <div class="text-[11px] text-on-surface-variant mt-0.5">${TRL_DESC[trlN]||''}</div>
-          </div>`:'<p class="text-[12px] text-on-surface-variant mb-4">TRL hindi tinukoy</p>'}
+          </div>`:'<p class="text-[12px] text-on-surface-variant mb-4">TRL not specified</p>'}
           ${r.irl?`<div>
             <div class="view-label mb-2">Investment Readiness</div>
             <div class="flex gap-1 mb-1">${Array.from({length:9},(_,i)=>`<div class="h-2 flex-1 rounded-full" style="background:${i<irlN?'#6b38d4':'#e2e8f0'};"></div>`).join('')}</div>
             <div class="text-[12px] font-semibold text-secondary">${escapeHTML(r.irl)}</div>
             <div class="text-[11px] text-on-surface-variant mt-0.5">${IRL_DESC[irlN]||''}</div>
-          </div>`:'<p class="text-[12px] text-on-surface-variant">IRL hindi tinukoy</p>'}
+          </div>`:'<p class="text-[12px] text-on-surface-variant">IRL not specified</p>'}
         </div>
         <div>
           <div class="section-heading"><i class="ti ti-file-analytics text-[13px]"></i> Reports & Plans</div>
@@ -1030,18 +1031,18 @@ function closeConfirm() {
 async function confirmDelete() {
   const btn = document.getElementById('btnConfirmDelete');
   btn.disabled = true;
-  btn.innerHTML = `<span class="spinner" style="border-top-color:#fff;"></span> Buburahin...`;
+  btn.innerHTML = `<span class="spinner" style="border-top-color:#fff;"></span> Deleting...`;
   try {
     const res = await fetch(`${API_BASE}/${deleteId}`, { method: 'DELETE' });
-    if(!res.ok) throw new Error('Hindi mabura ang record.');
-    showToast('Matagumpay na nabura ang record.');
+    if(!res.ok) throw new Error('Failed to delete the record.');
+    showToast('Record deleted successfully.');
     closeConfirm();
     fetchRecords();
   } catch(err) {
     showToast(err.message, 'error');
   } finally {
     btn.disabled = false;
-    btn.innerHTML = 'Oo, Burahin';
+    btn.innerHTML = 'Yes, Delete';
   }
 }
 
@@ -1054,11 +1055,11 @@ function addResearcherRow(data = {}) {
   div.innerHTML = `
     <div class="mb-2"><span class="badge ${isLead?'badge-blue':'badge-gray'}">${isLead?'★ Lead Researcher':'Member '+(container.children.length)}</span></div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-      <div><label class="form-label">Pangalan ${isLead?'<span class=\"text-red-500\">*</span>':''}</label><input type="text" class="r-name form-input" placeholder="Pangalan ng Researcher" value="${escapeHTML(data.name || '')}" ${isLead?'required':''}/></div>
+      <div><label class="form-label">Name ${isLead?'<span class=\"text-red-500\">*</span>':''}</label><input type="text" class="r-name form-input" placeholder="Researcher Name" value="${escapeHTML(data.name || '')}" ${isLead?'required':''}/></div>
       <div><label class="form-label">Contact Number</label><input type="text" class="r-contact form-input" placeholder="+63 9XX XXX XXXX" value="${escapeHTML(data.contact || '')}"/></div>
       <div><label class="form-label">Email Address</label><input type="email" class="r-email form-input" placeholder="email@university.edu.ph" value="${escapeHTML(data.email || '')}"/></div>
     </div>
-    ${!isLead?`<button type="button" onclick="this.parentElement.remove()" class="rm-btn" title="Alisin"><i class="ti ti-x"></i></button>`:''}
+    ${!isLead?`<button type="button" onclick="this.parentElement.remove()" class="rm-btn" title="Remove"><i class="ti ti-x"></i></button>`:''}
   `;
   container.appendChild(div);
 }
@@ -1072,9 +1073,9 @@ function addIPRow(data = {}) {
     <div class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-3">IP Record #${num}</div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
       <div>
-        <label class="form-label">Uri ng Proteksyon</label>
+        <label class="form-label">Type of Protection</label>
         <select class="ip-type form-select">
-          <option value="">-- Uri ng Proteksyon --</option>
+          <option value="">-- Type of Protection --</option>
           <option value="Patent/Invention" ${data.type==='Patent/Invention'?'selected':''}>Patent/Invention</option>
           <option value="Utility Model" ${data.type==='Utility Model'?'selected':''}>Utility Model</option>
           <option value="Industrial Design" ${data.type==='Industrial Design'?'selected':''}>Industrial Design</option>
@@ -1085,7 +1086,7 @@ function addIPRow(data = {}) {
       </div>
       <div>
         <label class="form-label">Registration No.</label>
-        <input type="text" class="ip-regNum form-input" placeholder="Kung mayroon" value="${escapeHTML(data.regNum || '')}"/>
+        <input type="text" class="ip-regNum form-input" placeholder="If available" value="${escapeHTML(data.regNum || '')}"/>
       </div>
       <div>
         <label class="form-label">Status</label>
@@ -1097,7 +1098,7 @@ function addIPRow(data = {}) {
         </select>
       </div>
     </div>
-    <button type="button" onclick="this.parentElement.remove()" class="rm-btn" title="Alisin"><i class="ti ti-x"></i></button>
+    <button type="button" onclick="this.parentElement.remove()" class="rm-btn" title="Remove"><i class="ti ti-x"></i></button>
   `;
   container.appendChild(div);
 }

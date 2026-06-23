@@ -1417,62 +1417,58 @@
         const margin = 15;
         const cx = pw / 2;
 
-        // ── Header image: fetch QCU logo as base64 with fallback ──
-        let ty = 8;
+        // ── Header image: full-width banner corner to corner ──
+        let ty = 0;
+        let _headerB64 = null;
+        let _headerH = 0;
         try {
-          const logoUrl = 'https://upload.wikimedia.org/wikipedia/en/thumb/9/92/Quezon_City_University_logo.png/200px-Quezon_City_University_logo.png';
-          const resp = await fetch(logoUrl);
+          const resp = await fetch('header.png');
           const blob = await resp.blob();
-          const b64  = await new Promise(resolve => {
+          _headerB64  = await new Promise(resolve => {
             const reader = new FileReader();
             reader.onload = () => resolve(reader.result);
             reader.readAsDataURL(blob);
           });
-          const logoSize = 18;
-          doc.addImage(b64, 'PNG', cx - logoSize / 2, ty, logoSize, logoSize);
-          ty += logoSize + 3;
+          const img = new Image();
+          img.src = _headerB64;
+          await new Promise(r => { img.onload = r; img.onerror = r; });
+          const imgW = img.naturalWidth || 1400;
+          const imgH = img.naturalHeight || 180;
+          _headerH = (imgH / imgW) * 210;
+          doc.addImage(_headerB64, 'PNG', 0, 0, 210, _headerH);
+          ty = _headerH;
         } catch (_) {
-          ty += 5;
+          ty = 0;
         }
 
-        // ── Navy + Gold double rule ──
-        const ruleMargin = 8
-        doc.setDrawColor(0, 45, 114);
-        doc.setLineWidth(0.5);
-        doc.line(margin, ty, pw - margin, ty);
-        ty += 1.6;
-        doc.setDrawColor(192, 160, 32);
-        doc.setLineWidth(0.5);
-        doc.line(margin, ty, pw - margin, ty);
+        // ── Colored lines (red, yellow, blue) below header ──
+        const lineColors = [[0,56,168],[189,32,46],[240,180,0]];
+        lineColors.forEach((c, i) => {
+          doc.setDrawColor(...c);
+          doc.setLineWidth(0.3);
+          doc.line(0, ty + 2.5 + (i * 1.1), 210, ty + 2.5 + (i * 1.1));
+        });
+        ty += 10;
 
-        // ── REPL ──
-        ty += 9;
+        // ── REPL + ITSO text ──
         doc.setFont('helvetica', 'bold');
-        doc.setFontSize(10);
+        doc.setFontSize(9);
         doc.setTextColor(20, 20, 20);
         doc.text('RESEARCH, EXTENSION, PLANNING, AND LINKAGES', cx, ty, { align: 'center' });
-
-        ty += 5.5;
-        doc.setFont('helvetica', 'italic');
-        doc.setFontSize(8.5);
-        doc.setTextColor(60, 60, 60);
+        ty += 5;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(50, 50, 50);
         doc.text('Innovation and Technology Support Office', cx, ty, { align: 'center' });
+        ty += 8;
 
-        // ── Single thin gray separator ──
-        ty += 6;
+        // ── Thin gray separator corner to corner ──
         doc.setDrawColor(180, 180, 180);
         doc.setLineWidth(0.3);
-        doc.line(margin, ty, pw - margin, ty);
-
-        // ── Report title centered ──
-        ty += 14;
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(13);
-        doc.setTextColor(20, 20, 20);
-        doc.text('COPYRIGHT REGISTRY REPORT', cx, ty, { align: 'center' });
+        doc.line(0, ty, 210, ty);
+        ty += 8;
 
         // ── Period / Generated / Total ──
-        ty += 11;
         let period = 'All Records';
         if (fromVal || toVal) {
           const p = [];
@@ -1490,6 +1486,13 @@
 
         ty += 6;
         doc.text(`Total Records: ${records.length}`, margin, ty);
+
+        // ── Report title centered ──
+        ty += 14;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(13);
+        doc.setTextColor(20, 20, 20);
+        doc.text('COPYRIGHT REGISTRY REPORT', cx, ty, { align: 'center' });
 
         // ── Table ──
         const tableData = records.map(r => {
@@ -1539,14 +1542,32 @@
         5: { cellWidth: 16 },                      // Date Applied
       },
       alternateRowStyles: { fillColor: [255, 255, 255] },
-      margin: { left: 25, right: 25 },
+      margin: { left: 25, right: 25, top: _headerH + 6 },
       tableWidth: 160,
+      didDrawPage: function(data) {
+        if (data.pageNumber > 1) {
+          if (_headerB64) doc.addImage(_headerB64, 'PNG', 0, 0, 210, _headerH);
+          const lc = [[0,56,168],[189,32,46],[240,180,0]];
+          lc.forEach((c, i) => {
+            doc.setDrawColor(...c); doc.setLineWidth(0.3);
+            doc.line(0, _headerH + 2.5 + (i * 1.1), 210, _headerH + 2.5 + (i * 1.1));
+          });
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(20, 20, 20);
+          doc.text('RESEARCH, EXTENSION, PLANNING, AND LINKAGES', 105, _headerH + 12, { align: 'center' });
+          doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(50, 50, 50);
+          doc.text('Innovation and Technology Support Office', 105, _headerH + 17, { align: 'center' });
+        }
+      },
     });
 
-        // ── Footer ──
+        // ── Header on every page + footer ──
         const pages = doc.internal.getNumberOfPages();
         for (let i = 1; i <= pages; i++) {
           doc.setPage(i);
+          // Re-draw header banner on every page (page 1 already has it)
+          if (i > 1 && _headerB64) {
+            doc.addImage(_headerB64, 'PNG', 0, 0, 210, _headerH);
+          }
           doc.setFontSize(7);
           doc.setTextColor(160, 160, 160);
           doc.text('Copyright Registry — IP Management System | Quezon City University', margin, ph - 8);

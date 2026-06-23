@@ -5,7 +5,7 @@ const ResearchSchema = new mongoose.Schema({
   researchTitle:     { type: String, default: "" },
   referenceId:       { type: String, default: "" },
   department:        { type: String, default: "" },
-  college:           { type: String, default: "" }, // Idinagdag para sa view requirements ng modal mo
+  college:           { type: String, default: "" },
   authors:           { type: [String], default: [] },
   status:            { type: String, default: "Submitted to IPOPHL" },
   date:              { type: String, default: "" },  
@@ -15,9 +15,15 @@ const ResearchSchema = new mongoose.Schema({
 
   // Archive Retention System Fields
   archived:          { type: Boolean, default: false },
-  archiveDate:       { type: String, default: "" }, // "YYYY-MM-DD"
+  archiveDate:       { type: String, default: "" },
 
-  // Formality Defect tracking (for patent)
+  // Formality Defect tracking (for patent) — full array with remarks
+  defects: {
+    type: [{ date: String, confirmed: { type: Boolean, default: false }, remarks: { type: String, default: "" } }],
+    default: []
+  },
+
+  // Legacy flat fields (kept for backwards compatibility)
   defectNoticeDate:  { type: String, default: "" },  
   defectNoticeDate2: { type: String, default: "" },  
   defectNoticeDate3: { type: String, default: "" },  
