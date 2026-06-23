@@ -1,7 +1,7 @@
 // ipms-backend/config/dbConnect.js
 import mongoose from 'mongoose';
 
-const MONGO_URI = process.env.MONGO_URI;
+const MONGO_URI = "mongodb+srv://ipms2026:2026ipms@ipms-cluster.zwbn5c9.mongodb.net/ipmsdb?retryWrites=true&w=majority&appName=ipms-cluster";
 
 if (!MONGO_URI) {
   throw new Error('Please define the MONGO_URI environment variable inside Vercel Settings');
