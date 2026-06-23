@@ -1445,8 +1445,8 @@
         const lineColors = [[0,56,168],[189,32,46],[240,180,0]];
         lineColors.forEach((c, i) => {
           doc.setDrawColor(...c);
-          doc.setLineWidth(0.3);
-          doc.line(0, ty + 2.5 + (i * 1.1), 210, ty + 2.5 + (i * 1.1));
+          doc.setLineWidth(0.6);
+          doc.line(0, ty + 1.5 + (i * 1.8), 210, ty + 1.5 + (i * 1.8));
         });
         ty += 10;
 
@@ -1462,13 +1462,21 @@
         doc.text('Innovation and Technology Support Office', cx, ty, { align: 'center' });
         ty += 8;
 
-        // ── Thin gray separator corner to corner ──
+        // ── Thin gray separator ──
         doc.setDrawColor(180, 180, 180);
         doc.setLineWidth(0.3);
-        doc.line(0, ty, 210, ty);
-        ty += 8;
+        doc.line(margin, ty, pw - margin, ty);
+        ty += 4;
+
+        // ── Report title centered ──
+        ty += 14;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(13);
+        doc.setTextColor(20, 20, 20);
+        doc.text('COPYRIGHT REGISTRY REPORT', cx, ty, { align: 'center' });
 
         // ── Period / Generated / Total ──
+        ty += 11;
         let period = 'All Records';
         if (fromVal || toVal) {
           const p = [];
@@ -1486,13 +1494,6 @@
 
         ty += 6;
         doc.text(`Total Records: ${records.length}`, margin, ty);
-
-        // ── Report title centered ──
-        ty += 14;
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(13);
-        doc.setTextColor(20, 20, 20);
-        doc.text('COPYRIGHT REGISTRY REPORT', cx, ty, { align: 'center' });
 
         // ── Table ──
         const tableData = records.map(r => {
@@ -1549,8 +1550,8 @@
           if (_headerB64) doc.addImage(_headerB64, 'PNG', 0, 0, 210, _headerH);
           const lc = [[0,56,168],[189,32,46],[240,180,0]];
           lc.forEach((c, i) => {
-            doc.setDrawColor(...c); doc.setLineWidth(0.3);
-            doc.line(0, _headerH + 2.5 + (i * 1.1), 210, _headerH + 2.5 + (i * 1.1));
+            doc.setDrawColor(...c); doc.setLineWidth(0.6);
+            doc.line(0, _headerH + 1.5 + (i * 1.8), 210, _headerH + 1.5 + (i * 1.8));
           });
           doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(20, 20, 20);
           doc.text('RESEARCH, EXTENSION, PLANNING, AND LINKAGES', 105, _headerH + 12, { align: 'center' });

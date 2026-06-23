@@ -1,22 +1,25 @@
 const express = require("express");
 const router = express.Router();
-const mongoose = require("mongoose");
+const mongoose = require("mongoose"); // 🎯 Idagdag ito para ma-tsek ang connection state
 const User = require("../models/User"); 
 const bcrypt = require("bcryptjs"); 
 const { createLog } = require("../utils/logger"); 
 
+// 🎯 Ang inyong MongoDB Atlas Connection String
 const MONGO_URI = "mongodb+srv://ipms2026:2026ipms@ipms-cluster.zwbn5c9.mongodb.net/ipmsdb?retryWrites=true&w=majority&appName=ipms-cluster";
 
 // POST: http://localhost:5000/api/auth/login
 router.post("/login", async (req, res) => {
-  try {if (mongoose.connection.readyState !== 1) {
+  try {
+    // 🔥 SAPILITANG KONEKSYON SA MONGODB BAGO MAG-QUERY
+    if (mongoose.connection.readyState !== 1) {
       console.log("⏳ Kumokonekta sa MongoDB Atlas bago mag-login...");
       await mongoose.connect(MONGO_URI, {
         serverSelectionTimeoutMS: 5000 // Mag-fail agad sa loob ng 5s imbes na mag-hang nang matagal
       });
       console.log("✅ Database Connected inside authRoutes!");
     }
-    
+
     const { email, password } = req.body;
 
     // 1. Siguraduhing may laman ang email at password
@@ -33,16 +36,18 @@ router.post("/login", async (req, res) => {
     // 3. I-verify kung "Locked" ang status ng account
     if (user.status === "Locked") {
       return res.status(403).json({ 
-        success: false, 
+        success: false, \
         message: "Your account is locked due to multiple failed login attempts. Please contact the system administrator." 
       });
     }
 
-    // 4. I-compare ang password gamit ang bcrypt
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      const MAX_ATTEMPTS = 5;
-      user.failedAttempts = (user.failedAttempts || 0) + 1;
+      return res.status(401).json({ success: false, message: "Invalid email or password." });
+    }
+
+    // Patuloy ang inyong orihinal na tagumpay na response logic sa ilalim...
 
       // I-lock ang account pagkatapos ng 5 magkakasunod na maling attempt
       if (user.failedAttempts >= MAX_ATTEMPTS) {
