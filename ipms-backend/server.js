@@ -37,66 +37,30 @@ const express = require("express");
   });
 
   /* =========================
-    DATABASE CONNECTION (Serverless-safe)
+    DATABASE CONNECTION MIDDLEWARE (VERCEL FIX)
   ========================= */
   if (!process.env.MONGO_URI) {
     console.error("❌ MONGO_URI is missing in environment variables");
-    // Inalis ang process.exit(1) para hindi mag-crash ang Vercel container bago pa man makasagot sa request
   }
-
-  // Ginagamit natin ang `global` object para mag-persist ang cached connection
-  // sa pagitan ng mga invocation ng SAME warm container sa Vercel.
-  // Kung walang ganito, posibleng gumawa ng bagong koneksyon (o sumubok sa patay na
-  // koneksyon) sa BAWAT request, na sanhi ng 500 error o connection exhaustion.
-  let cached = global._mongooseConn;
-
-  if (!cached) {
-    cached = global._mongooseConn = { conn: null, promise: null };
-  }
-
-  async function connectDB() {
-    // 1 = connected. Kung connected na ang cached conn, gamitin agad ito.
-    if (cached.conn && mongoose.connection.readyState === 1) {
-      return cached.conn;
-    }
-
-    // Kung walang ongoing connection attempt, gumawa ng bago.
-    if (!cached.promise) {
-      cached.promise = mongoose
-        .connect(process.env.MONGO_URI, {
-          maxPoolSize: 5,
-          serverSelectionTimeoutMS: 5000,
-        })
-        .then((mongooseInstance) => {
-          console.log("✅ MongoDB Connected Successfully");
-          return mongooseInstance;
-        })
-        .catch((err) => {
-          console.error("❌ MongoDB Connection Error:", err.message);
-          // I-reset ang promise para puwedeng ulitin sa susunod na request
-          cached.promise = null;
-          throw err;
-        });
-    }
-
-    cached.conn = await cached.promise;
-    return cached.conn;
-  }
-
-  /* =========================
-    GLOBAL CONNECTION MIDDLEWARE
-    Tinitiyak na "buhay" ang koneksyon BAGO pumasok sa anumang route.
-  ========================= */
+  // 🎯 THE BULLETPROOF GUARD:
+  // Bawat request na papasok, dadaan muna dito para i-check kung buhay ang database.
   app.use(async (req, res, next) => {
-    try {
-      await connectDB();
-      next();
-    } catch (err) {
-      return res.status(500).json({
-        success: false,
-        message: "Database connection failed. Please try again.",
-      });
+    // Kung hindi 1 (connected) ang status, pilitin mag-connect bago ituloy ang request.
+    if (mongoose.connection.readyState !== 1) {
+      console.log(`⏳ [${req.method} ${req.url}] DB idle/disconnected. Reconnecting...`);
+      try {
+        await mongoose.connect(process.env.MONGO_URI, {
+          maxPoolSize: 10, 
+          serverSelectionTimeoutMS: 5000 // 5 seconds timeout para hindi kainin ang Vercel limit
+        });
+        console.log("✅ MongoDB Connected/Restored Successfully!");
+      } catch (err) {
+        console.error("🔥 DB Reconnection Failed:", err.message);
+        return res.status(500).json({ success: false, message: "Database connection lost." });
+      }
     }
+    // Kung connected na, ituloy na ang biyahe papunta sa mga Routes!
+    next();
   });
 
   /* =========================
