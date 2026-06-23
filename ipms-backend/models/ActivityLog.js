@@ -21,4 +21,4 @@ ActivityLog.collection.dropIndex('id_1')
     // Huwag mag-alala kung mag-error dito, ibig sabihin lang ay wala o nabura na talaga ang index kanina
   });
 
-module.exports = ActivityLog;
+module.exports = mongoose.models.ActivityLog || mongoose.model("ActivityLog", ActivityLogSchema);
