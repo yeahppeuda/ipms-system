@@ -1,4 +1,4 @@
-const express = require("express");
+  const express = require("express");
   const mongoose = require("mongoose");
   const cors = require("cors");
   require("dotenv").config();
@@ -37,31 +37,22 @@ const express = require("express");
   });
 
   /* =========================
-    DATABASE CONNECTION MIDDLEWARE (VERCEL FIX)
+    DATABASE CONNECTION
   ========================= */
   if (!process.env.MONGO_URI) {
     console.error("❌ MONGO_URI is missing in environment variables");
+    // Inalis ang process.exit(1) para hindi mag-crash ang Vercel container bago pa man makasagot sa request
   }
-  // 🎯 THE BULLETPROOF GUARD:
-  // Bawat request na papasok, dadaan muna dito para i-check kung buhay ang database.
-  app.use(async (req, res, next) => {
-    // Kung hindi 1 (connected) ang status, pilitin mag-connect bago ituloy ang request.
-    if (mongoose.connection.readyState !== 1) {
-      console.log(`⏳ [${req.method} ${req.url}] DB idle/disconnected. Reconnecting...`);
-      try {
-        await mongoose.connect(process.env.MONGO_URI, {
-          maxPoolSize: 10, 
-          serverSelectionTimeoutMS: 5000 // 5 seconds timeout para hindi kainin ang Vercel limit
-        });
-        console.log("✅ MongoDB Connected/Restored Successfully!");
-      } catch (err) {
-        console.error("🔥 DB Reconnection Failed:", err.message);
-        return res.status(500).json({ success: false, message: "Database connection lost." });
-      }
-    }
-    // Kung connected na, ituloy na ang biyahe papunta sa mga Routes!
-    next();
-  });
+
+  // Optimization para sa Serverless connection pooling
+  mongoose.connect(process.env.MONGO_URI, {
+    maxPoolSize: 10, 
+    serverSelectionTimeoutMS: 5000
+  })
+    .then(() => console.log("✅ MongoDB Connected Successfully"))
+    .catch((err) => {
+      console.error("❌ MongoDB Connection Error:", err.message);
+    });
 
   /* =========================
     ROUTES
