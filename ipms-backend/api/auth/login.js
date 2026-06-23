@@ -1,35 +1,36 @@
-// ipms-backend/api/auth/login.js
-import dbConnect from '../../config/dbConnect.js'; // Ayusin ang path depende kung nasaan ang file mo
-import User from '../../models/User.js'; // Ito yung nakita nating User model mo sa structure niyo
+import dbConnect from '../../config/dbConnect.js'; 
+import User from '../../models/User.js'; 
 
 export default async function handler(req, res) {
-  // 1. Unang hakbang: Kumonekta muna sa DB gamit ang serverless method
+  // 1. Dito natin pupwersahin na kumonekta gamit ang iyong hardcoded utility
   try {
     await dbConnect();
   } catch (err) {
-    return res.status(500).json({ error: "Hindi makakonekta sa Database cluster." });
+    console.error("❌ DB connection failed inside login route:", err);
+    return res.status(500).json({ error: "Database connection failed", details: err.message });
   }
 
-  // 2. Saluhin ang POST request mula sa index.html niyo
   if (req.method === 'POST') {
     try {
       const { email, password } = req.body;
 
-      // 3. Hanapin ang user sa MongoDB gamit ang email
+      // 2. Ligtas na itong mag-eexecute dahil nakakonekta na si dbConnect
       const user = await User.findOne({ email });
       
       if (!user) {
         return res.status(401).json({ message: "Maling email o password!" });
       }
 
-      // 4. Dito niyo i-validate kung tama ang password (halimbawa kung gumagamit kayo ng bcrypt)
-      // const isMatch = await user.comparePassword(password); // o bcrypt.compare
+      // 3. Simple checking (Palitan niyo ito kung may bcrypt / encryption kayo)
+      if (user.password !== password) {
+        return res.status(401).json({ message: "Maling email o password!" });
+      }
       
-      // Kung tugma, mag-return ng success status para makapasok sa dashboard.html
+      // Success response para sa index.html niyo
       return res.status(200).json({ 
         status: "SUCCESS", 
         message: "Login successful", 
-        user: { email: user.email, name: user.name } 
+        user: { email: user.email, role: user.role || 'user' } 
       });
 
     } catch (error) {
