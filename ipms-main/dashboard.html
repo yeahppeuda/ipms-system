@@ -646,12 +646,12 @@
     <div class="p-7 overflow-y-auto space-y-5 flex-1">
       <div>
         <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Research Title</label>
-        <textarea id="rm-title" rows="2" maxlength="200" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-[13px] text-on-surface resize-none focus:border-primary focus:ring-2 focus:ring-primary/10 focus:bg-white outline-none transition-all placeholder:text-outline" placeholder="Enter the full research title…"></textarea>
+        <textarea id="rm-title" rows="1" maxlength="300" oninput="updateTitleCount()" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-[13px] text-on-surface resize-none overflow-hidden focus:border-primary focus:ring-2 focus:ring-primary/10 focus:bg-white outline-none transition-all placeholder:text-outline" placeholder="Enter the full research title…"></textarea>
       </div>
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Reference Number <span class="text-[10px] font-normal text-outline normal-case tracking-normal ml-1">(optional)</span></label>
-          <input id="rm-id" type="text" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-[13px] text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/10 focus:bg-white outline-none transition-all placeholder:text-outline" placeholder="e.g. 2026-12345"/>
+          <input id="rm-id" type="text" maxlength="30" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-[13px] text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/10 focus:bg-white outline-none transition-all placeholder:text-outline" placeholder="e.g. 2026-12345"/>
         </div>
         <div>
           <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">College</label>
@@ -1860,8 +1860,10 @@ function updateTitleCount(){
   const ta=document.getElementById('rm-title'),counter=document.getElementById('rm-title-count');
   if(!ta||!counter)return;
   const len=ta.value.length;
-  counter.textContent=`${len} / 200`;
-  counter.className=len>=180?'text-[10px] font-semibold text-red-500 bg-red-50 border border-red-200 rounded-full px-2 py-0.5':'text-[10px] font-semibold text-on-surface-variant bg-surface-container-highest rounded-full px-2 py-0.5';
+  counter.textContent=`${len} / 300`;
+  counter.className=len>=280?'text-[10px] font-semibold text-red-500 bg-red-50 border border-red-200 rounded-full px-2 py-0.5':'text-[10px] font-semibold text-on-surface-variant bg-surface-container-highest rounded-full px-2 py-0.5';
+  ta.style.height='0px';
+  ta.style.height=ta.scrollHeight+'px';
 }
 
 function toTitleCase(str){
@@ -1978,7 +1980,28 @@ function addAuthorField(value='',skipFocus=false){
   const container=document.getElementById('rm-authors'),row=document.createElement('div');row.className='author-row';
   const input=document.createElement('input');input.type='text';input.value=value?toNameCase(value):'';input.placeholder='e.g. Dela Cruz, Juan A.';
   input.className='flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-[13px] text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/10 focus:bg-white outline-none transition-all placeholder:text-outline';
-  input.addEventListener('keypress',e=>{if(!/[a-zA-Z\s\.\-,\xc0-\xff]/.test(e.key)){e.preventDefault();showAuthorError('Numbers and special characters are not allowed in author names.');}});
+  input.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){
+      e.preventDefault();
+      const pos=input.selectionStart;
+      const full=input.value;
+      const before=toNameCase(full.slice(0,pos).trim());
+      const after=toNameCase(full.slice(pos).trim());
+      if(after){
+        // cursor is in the middle — split into two authors
+        input.value=before;
+        if(currentAuthorCount()<MAX_AUTHORS){addAuthorField(after,false);}
+        else{showAuthorError(`Maximum ${MAX_AUTHORS} authors allowed.`);}
+      } else {
+        // cursor is at end — just add a new empty box
+        input.value=before;
+        if(currentAuthorCount()<MAX_AUTHORS){addAuthorField('',false);}
+        else{showAuthorError(`Maximum ${MAX_AUTHORS} authors allowed.`);}
+      }
+      return;
+    }
+    if(e.key.length===1&&!/[a-zA-Z\s\.\-,\xc0-\xff]/.test(e.key)){e.preventDefault();showAuthorError('Numbers and special characters are not allowed in author names.');}
+  });
   input.addEventListener('input',()=>{const cleaned=input.value.replace(/[^a-zA-Z\s\.\-,\xc0-\xff]/g,'');if(cleaned!==input.value){input.value=cleaned;showAuthorError('Numbers and special characters are not allowed in author names.');}});
   input.addEventListener('blur',()=>{const nc=toNameCase(input.value);if(nc!==input.value)input.value=nc;});
   input.addEventListener('paste',e=>{

@@ -989,9 +989,14 @@
       }
       function sortByDateDesc(arr) {
         return [...arr].sort((a, b) => {
-          const da = a._rawDateTime ? new Date(a._rawDateTime) : mongoIdToDate(a._id);
-          const db = b._rawDateTime ? new Date(b._rawDateTime) : mongoIdToDate(b._id);
-          return db - da;
+          // Primary: dateOfFiling (the actual research date)
+          const da = a.dateOfFiling ? new Date(a.dateOfFiling) : new Date(0);
+          const db = b.dateOfFiling ? new Date(b.dateOfFiling) : new Date(0);
+          if (db - da !== 0) return db - da;
+          // Tiebreaker: _rawDateTime or mongo _id timestamp (when/added to DB)
+          const ta = a._rawDateTime ? new Date(a._rawDateTime) : mongoIdToDate(a._id);
+          const tb = b._rawDateTime ? new Date(b._rawDateTime) : mongoIdToDate(b._id);
+          return tb - ta;
         });
       }
 
@@ -1004,7 +1009,7 @@
       const activeRecords = ALL_RECORDS.filter(r => !r.archived);
 
       // 2. I-APPLY ANG SEARCH FILTER (Gamit ang activeRecords sa halip na ALL_RECORDS)
-      filteredRecords = activeRecords.filter(r => {
+      filteredRecords = sortByDateDesc(activeRecords.filter(r => {
         const sOk = (activeStatusFilter === 'All' || r.status === activeStatusFilter);
         const qOk = !q || (r.referenceNo || '').toLowerCase().includes(q)
                       || (r.title || '').toLowerCase().includes(q)
@@ -1012,7 +1017,7 @@
                       || (r.dept || '').toLowerCase().includes(q)
                       || (r.status || '').toLowerCase().includes(q);
         return sOk && qOk;
-      });
+      }));
 
       currentPage = 1;
       render();
@@ -1483,8 +1488,8 @@
         const lineColors = [[0,56,168],[189,32,46],[240,180,0]];
         lineColors.forEach((c, i) => {
           doc.setDrawColor(...c);
-          doc.setLineWidth(0.6);
-          doc.line(0, ty + 1.5 + (i * 1.8), 210, ty + 1.5 + (i * 1.8));
+          doc.setLineWidth(0.3);
+          doc.line(0, ty + 2.5 + (i * 1.1), 210, ty + 2.5 + (i * 1.1));
         });
         ty += 10;
 
@@ -1503,18 +1508,10 @@
         // ── Thin gray separator ──
         doc.setDrawColor(180, 180, 180);
         doc.setLineWidth(0.3);
-        doc.line(margin, ty, pw - margin, ty);
-        ty += 4;
-
-        // ── Report title centered ──
-        ty += 14;
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(13);
-        doc.setTextColor(20, 20, 20);
-        doc.text('COPYRIGHT REGISTRY REPORT', cx, ty, { align: 'center' });
+        doc.line(0, ty, 210, ty);
+        ty += 8;
 
         // ── Period / Generated / Total ──
-        ty += 11;
         let period = 'All Records';
         if (fromVal || toVal) {
           const p = [];
@@ -1533,15 +1530,22 @@
         ty += 6;
         doc.text(`Total Records: ${records.length}`, margin, ty);
 
+        // ── Report title centered ──
+        ty += 14;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(13);
+        doc.setTextColor(20, 20, 20);
+        doc.text('COPYRIGHT REGISTRY REPORT', cx, ty, { align: 'center' });
+
         // ── Table ──
         const tableData = records.map(r => {
           const dept = r.dept ? (r.dept.includes(' — ') ? r.dept.split(' — ')[1] : r.dept) : '—';
           return [
-            r.referenceNo || '—',
-            r.title || '—',
-            r.author || '—',
-            dept,
-            r.status || '—',
+            r.referenceNo || '',
+            r.title || '',
+            (r.author || '').split(/;\s*/).filter(Boolean).map((a, i, arr) => i < arr.length - 1 ? a.trim() + ',' : a.trim()).join('\n'),
+            dept === '—' ? '' : dept,
+            r.status || '',
             toShortDate(r.dateOfFiling)
           ];
         });
@@ -1574,22 +1578,22 @@
       },
       columnStyles: {
         0: { cellWidth: 24, fontStyle: 'bold' },   // Reference No.
-        1: { cellWidth: 40, fontStyle: 'bold' },   // Title
-        2: { cellWidth: 34, fontStyle: 'bold' },   // Author(s)
-        3: { cellWidth: 25, fontStyle: 'bold' },   // Department
-        4: { cellWidth: 21 },                      // Status
+        1: { cellWidth: 40 },                      // Title
+        2: { cellWidth: 52 },                      // Author(s)
+        3: { cellWidth: 20 },                      // Department
+        4: { cellWidth: 14 },                      // Status
         5: { cellWidth: 16 },                      // Date Applied
       },
       alternateRowStyles: { fillColor: [255, 255, 255] },
-      margin: { left: 25, right: 25, top: _headerH + 6 },
+      margin: { left: 25, right: 25, top: _headerH + 35 },
       tableWidth: 160,
       didDrawPage: function(data) {
         if (data.pageNumber > 1) {
           if (_headerB64) doc.addImage(_headerB64, 'PNG', 0, 0, 210, _headerH);
           const lc = [[0,56,168],[189,32,46],[240,180,0]];
           lc.forEach((c, i) => {
-            doc.setDrawColor(...c); doc.setLineWidth(0.6);
-            doc.line(0, _headerH + 1.5 + (i * 1.8), 210, _headerH + 1.5 + (i * 1.8));
+            doc.setDrawColor(...c); doc.setLineWidth(0.3);
+            doc.line(0, _headerH + 2.5 + (i * 1.1), 210, _headerH + 2.5 + (i * 1.1));
           });
           doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(20, 20, 20);
           doc.text('RESEARCH, EXTENSION, PLANNING, AND LINKAGES', 105, _headerH + 12, { align: 'center' });

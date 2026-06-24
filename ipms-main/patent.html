@@ -1686,7 +1686,7 @@ async function confirmSave() {
   const dept      = college && deptVal ? `${college} — ${deptVal}` : college || deptVal;
   const payload = {
     researchTitle:     document.getElementById('field-title').value.trim(),
-    department:        dept,
+    department:        dept === '—' ? '' : dept,
     status:            document.getElementById('field-status').value,
     date:              document.getElementById('field-date-filing').value,
     referenceId:       document.getElementById('field-ref').value.trim(),
@@ -1805,7 +1805,7 @@ function refreshPreview() {
 }
 
 /* ── DOWNLOAD PDF ── */
-function downloadPDF() {
+async function downloadPDF() {
   const records = getExportRecords();
   const fromVal = document.getElementById('export-date-from').value;
   const toVal   = document.getElementById('export-date-to').value;
@@ -1816,52 +1816,58 @@ function downloadPDF() {
   const margin = 12;
   const cx = pw / 2;
 
-  // ── Header image (1095x166px) ──
+  // ── Header: header.png corner to corner ──
+  let _headerB64 = null;
+  let _headerH = 0;
+  let ty = 0;
+  try {
+    const resp = await fetch('header.png');
+    const blob = await resp.blob();
+    _headerB64 = await new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
+    const img = new Image();
+    img.src = _headerB64;
+    await new Promise(r => { img.onload = r; img.onerror = r; });
+    const imgW = img.naturalWidth || 1400;
+    const imgH = img.naturalHeight || 180;
+    _headerH = (imgH / imgW) * 210;
+    doc.addImage(_headerB64, 'PNG', 0, 0, 210, _headerH);
+    ty = _headerH;
+  } catch (_) {
+    ty = 0;
+  }
 
-  const imgW = 200;
-  const imgH = 27.3;
-  const imgX = (pw - imgW) / 2;
-  doc.addImage(HEADER_IMG, 'PNG', imgX, 8, imgW, imgH);
+  // ── Colored lines (blue, red, yellow) below header ──
+  const lineColors = [[0,56,168],[189,32,46],[240,180,0]];
+  lineColors.forEach((c, i) => {
+    doc.setDrawColor(...c);
+    doc.setLineWidth(0.3);
+    doc.line(0, ty + 2.5 + (i * 1.1), 210, ty + 2.5 + (i * 1.1));
+  });
+  ty += 10;
 
-  let ty = 8 + imgH + 3;
-
-  // ── Navy + Gold double rule ──
-  doc.setDrawColor(0, 45, 114);
-  doc.setLineWidth(0.5);
-  doc.line(margin, ty, pw - margin, ty);
-  ty += 1.6;
-  doc.setDrawColor(192, 160, 32);
-  doc.setLineWidth(0.5);
-  doc.line(margin, ty, pw - margin, ty);
-
-  // ── REPL ──
-  ty += 9;
+  // ── REPL + ITSO text ──
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
+  doc.setFontSize(9);
   doc.setTextColor(20, 20, 20);
   doc.text('RESEARCH, EXTENSION, PLANNING, AND LINKAGES', cx, ty, { align: 'center' });
-
-  ty += 5.5;
-  doc.setFont('helvetica', 'italic');
-  doc.setFontSize(8.5);
-  doc.setTextColor(60, 60, 60);
+  ty += 5;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  doc.setTextColor(50, 50, 50);
   doc.text('Innovation and Technology Support Office', cx, ty, { align: 'center' });
+  ty += 8;
 
-  // ── Single thin gray separator ──
-  ty += 6;
+  // ── Gray separator corner to corner ──
   doc.setDrawColor(180, 180, 180);
   doc.setLineWidth(0.3);
-  doc.line(margin, ty, pw - margin, ty);
-
-  // ── Report title centered ──
-  ty += 14;
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(13);
-  doc.setTextColor(20, 20, 20);
-  doc.text('PATENT REGISTRY REPORT', cx, ty, { align: 'center' });
+  doc.line(0, ty, 210, ty);
+  ty += 8;
 
   // ── Period / Generated / Total ──
-  ty += 11;
   let period = 'All Records';
   if (fromVal || toVal) {
     const p = [];
@@ -1880,15 +1886,22 @@ function downloadPDF() {
   ty += 6;
   doc.text(`Total Records: ${records.length}`, margin, ty);
 
+  // ── Report title centered ──
+  ty += 14;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(13);
+  doc.setTextColor(20, 20, 20);
+  doc.text('PATENT REGISTRY REPORT', cx, ty, { align: 'center' });
+
   // ── Table ──
   const tableData = records.map(r => {
     const dept = r.dept ? (r.dept.includes(' — ') ? r.dept.split(' — ')[1] : r.dept) : '—';
     return [
-      r.referenceNo || '—',
-      r.title || '—',
-      r.author || '—',
-      dept,
-      r.status || '—',
+      r.referenceNo || '',
+      r.title || '',
+      (r.author || '').split(/;\s*/).filter(Boolean).map((a, i, arr) => i < arr.length - 1 ? a.trim() + ',' : a.trim()).join('\n'),
+      dept === '—' ? '' : dept,
+      r.status || '',
       toShortDate(r.dateOfFiling)
     ];
   });
@@ -1921,21 +1934,38 @@ function downloadPDF() {
     },
     columnStyles: {
       0: { cellWidth: 24, fontStyle: 'bold' },   // Reference No.
-      1: { cellWidth: 40, fontStyle: 'bold' },   // Title
-      2: { cellWidth: 34, fontStyle: 'bold' },   // Author(s)
-      3: { cellWidth: 25, fontStyle: 'bold' },   // Department
-      4: { cellWidth: 21 },                      // Status
+      1: { cellWidth: 40 },                      // Title
+      2: { cellWidth: 45 },                      // Author(s)
+      3: { cellWidth: 20 },                      // Department
+      4: { cellWidth: 15 },                      // Status
       5: { cellWidth: 16 },                      // Date Filed
     },
     alternateRowStyles: { fillColor: [255, 255, 255] },
-    margin: { left: 25, right: 25 },
+    margin: { left: 25, right: 25, top: _headerH + 35 },
     tableWidth: 160,
+    didDrawPage: function(data) {
+      if (data.pageNumber > 1) {
+        if (_headerB64) doc.addImage(_headerB64, 'PNG', 0, 0, 210, _headerH);
+        const lc = [[0,56,168],[189,32,46],[240,180,0]];
+        lc.forEach((c, i) => {
+          doc.setDrawColor(...c); doc.setLineWidth(0.3);
+          doc.line(0, _headerH + 2.5 + (i * 1.1), 210, _headerH + 2.5 + (i * 1.1));
+        });
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(20, 20, 20);
+        doc.text('RESEARCH, EXTENSION, PLANNING, AND LINKAGES', 105, _headerH + 12, { align: 'center' });
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(50, 50, 50);
+        doc.text('Innovation and Technology Support Office', 105, _headerH + 17, { align: 'center' });
+      }
+    },
   });
 
-  // ── Footer ──
+  // ── Header on every page + footer ──
   const pages = doc.internal.getNumberOfPages();
   for (let i = 1; i <= pages; i++) {
     doc.setPage(i);
+    if (i > 1 && _headerB64) {
+      doc.addImage(_headerB64, 'PNG', 0, 0, 210, _headerH);
+    }
     doc.setFontSize(7);
     doc.setTextColor(160, 160, 160);
     doc.text('Patent Registry — IP Management System | Quezon City University', margin, ph - 8);

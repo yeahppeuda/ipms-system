@@ -281,7 +281,7 @@
         </button>
       </div>
 
-      <div class="overflow-x-auto">
+      <div>
         <table class="w-full text-left border-collapse">
           <thead>
             <tr class="bg-slate-50">
@@ -470,6 +470,7 @@
             <option value="College of Engineering">College of Engineering</option>
             <option value="College of Accounting">College of Accounting</option>
             <option value="College of Business">College of Business</option>
+          <option value="Faculty">Faculty</option>
           </select>
         </div>
       </div>
@@ -486,10 +487,12 @@
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Creator</label>
+          <div id="field-creator-pills" style="display:flex;flex-wrap:wrap;gap:6px;min-height:38px;align-items:flex-start;"></div>
           <textarea id="field-creator" disabled oninput="markDirty();autoExpand(this);validateAuthorField(this)"
             class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all resize-none overflow-hidden"
-            placeholder="Comma-separated names" rows="1"></textarea>
+            placeholder="Separate creators with semicolons ( ; )" rows="1" style="display:none;"></textarea>
           <p id="author-validation-msg" class="hidden text-[10px] text-red-500 font-semibold mt-1">Only letters, spaces, hyphens (-), apostrophes ('), and periods (.) are allowed.</p>
+          <p id="creator-hint" class="text-[10px] text-outline mt-1" style="display:none;">Separate multiple creators with semicolons ( ; )</p>
         </div>
         <div>
           <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Date Applied</label>
@@ -691,6 +694,7 @@ const MODAL_COLLEGE_DEPTS = {
   'College of Engineering':      ['Industrial Engineering', 'Electronic Engineering', 'Computer Engineering'],
   'College of Accounting':       ['Accounting', 'Management Accounting'],
   'College of Business':         ['Entrepreneurship'],
+  'Faculty':                     ['Faculty'],
 };
 
 function updateModalDeptOptions() {
@@ -814,7 +818,12 @@ function render() {
       <tr data-id="${r.referenceNo}" class="hover:bg-slate-50/70 transition-colors">
         <td class="px-5 py-4 text-[12px] font-bold text-on-surface tracking-wide">${r.referenceNo || '—'}</td>
         <td class="px-5 py-4 text-[13px] text-on-surface font-medium max-w-[200px] truncate">${r.title || ''}</td>
-        <td class="px-5 py-4 text-[12px] text-on-surface-variant">${r.creator || ''}</td>
+        <td class="px-5 py-4 text-[12px] text-on-surface-variant">
+          <div class="author-cell">
+            ${(() => { const parts = authorParts(r.creator||''); const shown = parts[0]||'—'; const rem = parts.length-1; const badge = rem>0?` <span style="display:inline-flex;align-items:center;font-size:10px;font-weight:600;color:#9ca3af;background:#f3f4f6;border:1px solid #e5e7eb;padding:2px 7px;border-radius:20px;margin-left:2px;">+${rem}</span>`:''; return shown+badge; })()}
+            ${(() => { const parts = authorParts(r.creator||''); return parts.length>1?`<div class="author-tooltip">${parts.join(' · ')}</div>`:''; })()}
+          </div>
+        </td>
         <td class="px-5 py-4">
           <div class="text-[13px] font-semibold text-on-surface leading-tight">${r.dept ? r.dept.split(' — ')[1] || r.dept : '—'}</div>
           <div class="text-[11px] text-on-surface-variant mt-0.5">${r.dept ? r.dept.split(' — ')[0] : ''}</div>
@@ -852,13 +861,21 @@ function renderPagination(totalPages) {
 }
 
 /* MAP RAW API ITEM */
+function authorParts(str) {
+  if (!str) return [];
+  return str.split(';').map(a => a.trim()).filter(Boolean);
+}
+function makePill(name) {
+  return `<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;color:#424754;background:#f8fafc;border:1px solid #e2e5ef;padding:3px 9px;border-radius:20px;white-space:nowrap;"><i class='ti ti-user' style='font-size:11px;color:#727785;'></i>${name}</span>`;
+}
+
 function mapRecord(item) {
   const title =
     (item.researchTitle && item.researchTitle.trim()) ||
     (item.title         && item.title.trim())         || 'No Title';
 
   let creator = 'Unknown';
-  if (Array.isArray(item.authors) && item.authors.length > 0) creator = item.authors.join(', ');
+  if (Array.isArray(item.authors) && item.authors.length > 0) creator = item.authors.join('; ');
   else if (typeof item.author === 'string' && item.author.trim()) creator = item.author.trim();
 
   const dept = item.department || item.dept || 'N/A';
@@ -918,6 +935,9 @@ function openResearchModal(mongoId) {
   document.getElementById('field-ref').value     = rec.referenceNo || '';
   document.getElementById('field-title').value   = rec.title || '';
   document.getElementById('field-creator').value = rec.creator || '';
+  const _pc = document.getElementById('field-creator-pills');
+  const _pp = authorParts(rec.creator || '');
+  _pc.innerHTML = _pp.length ? _pp.map(makePill).join('') : '<span style="color:#9ca3af;font-size:13px;">—</span>';
   document.getElementById('field-date').value    = rec.dateApplied || '';
   document.getElementById('field-gdrive').value  = rec.googleDriveLink || '';
   toggleGDriveBtn();
@@ -1021,6 +1041,9 @@ function setViewMode() {
   document.getElementById('btn-open-gdrive').classList.remove('hidden');
   document.getElementById('title-char-count').classList.add('hidden');
   document.getElementById('author-validation-msg').classList.add('hidden');
+  document.getElementById('field-creator-pills').style.display = 'flex';
+  document.getElementById('field-creator').style.display = 'none';
+  document.getElementById('creator-hint').style.display = 'none';
   isEditModeActive = false;
   renderStatusHistory();
 }
@@ -1054,6 +1077,13 @@ function enterEditMode() {
     document.getElementById('title-char-count').classList.remove('hidden');
   }
   document.getElementById('author-validation-msg').classList.add('hidden');
+  document.getElementById('field-creator-pills').style.display = 'none';
+  document.getElementById('field-creator').style.display = '';
+  document.getElementById('creator-hint').style.display = '';
+  requestAnimationFrame(() => {
+    const el = document.getElementById('field-creator');
+    if (el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
+  });
   renderStatusHistory();
 }
 
@@ -1128,7 +1158,7 @@ async function confirmSave() {
     date:          document.getElementById('field-date').value,
     referenceId:   document.getElementById('field-ref').value.trim(),
     authors: document.getElementById('field-creator').value
-               .split(',').map(a => a.trim()).filter(Boolean),
+               .split(';').map(a => a.trim()).filter(Boolean),
     googleDriveLink: document.getElementById('field-gdrive').value.trim(),
     actor_email: getCurrentUser()?.email || '',
     statusChangedAt: new Date().toISOString(),
@@ -1165,8 +1195,10 @@ async function confirmSave() {
     if (idx !== -1) ALL_RECORDS[idx] = mapped;
     activeSnapshot = { ...mapped };
 
-    updateStats();
-    filterAndRender();
+    const _savedPage = currentPage; updateStats(); filterAndRender(); currentPage = _savedPage; render();
+    const _pc2 = document.getElementById('field-creator-pills');
+    const _pp2 = authorParts(mapped.creator || '');
+    _pc2.innerHTML = _pp2.length ? _pp2.map(makePill).join('') : '<span style="color:#9ca3af;font-size:13px;">—</span>';
     setViewMode();
     closeModal();
     showToast();
@@ -1345,10 +1377,10 @@ function updateTitleCharCount(el) {
 
 /* ── AUTHOR VALIDATION ── */
 function validateAuthorField(el) {
-  const invalid = /[^a-zA-ZÀ-ÿ\s,\-'.]/;
+  const invalid = /[^a-zA-ZÀ-ÿ\s,;\-'.]/;
   const msg = document.getElementById('author-validation-msg');
   if (invalid.test(el.value)) {
-    el.value = el.value.replace(/[^a-zA-ZÀ-ÿ\s,\-'.]/g, '');
+    el.value = el.value.replace(/[^a-zA-ZÀ-ÿ\s,;\-'.]/g, '');
     msg.classList.remove('hidden');
     setTimeout(() => msg.classList.add('hidden'), 3000);
   }
@@ -1434,43 +1466,69 @@ function refreshPreview() {
   }).join('');
 }
 
-function downloadPDF() {
+async function downloadPDF() {
   const records = getExportRecords();
   const fromVal = document.getElementById('export-date-from').value;
   const toVal   = document.getElementById('export-date-to').value;
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
-  const pw = 210, ph = 297, margin = 15, cx = pw / 2;
+  const pw = 210;
+  const ph = 297;
+  const margin = 15;
+  const cx = pw / 2;
 
-  let ty = 14;
+  // ── Header: header.png corner to corner ──
+  let _headerB64 = null;
+  let _headerH = 0;
+  let ty = 0;
+  try {
+    const resp = await fetch('header.png');
+    const blob = await resp.blob();
+    _headerB64 = await new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
+    const img = new Image();
+    img.src = _headerB64;
+    await new Promise(r => { img.onload = r; img.onerror = r; });
+    const imgW = img.naturalWidth || 1400;
+    const imgH = img.naturalHeight || 180;
+    _headerH = (imgH / imgW) * 210;
+    doc.addImage(_headerB64, 'PNG', 0, 0, 210, _headerH);
+    ty = _headerH;
+  } catch (_) {
+    ty = 0;
+  }
 
-  // ── Navy + Gold double rule ──
-  doc.setDrawColor(0, 45, 114); doc.setLineWidth(0.5);
-  doc.line(margin, ty, pw - margin, ty);
-  ty += 1.6;
-  doc.setDrawColor(192, 160, 32); doc.setLineWidth(0.5);
-  doc.line(margin, ty, pw - margin, ty);
+  // ── Colored lines (blue, red, yellow) below header ──
+  const lineColors = [[0,56,168],[189,32,46],[240,180,0]];
+  lineColors.forEach((c, i) => {
+    doc.setDrawColor(...c);
+    doc.setLineWidth(0.3);
+    doc.line(0, ty + 2.5 + (i * 1.1), 210, ty + 2.5 + (i * 1.1));
+  });
+  ty += 10;
 
-  // ── REPL ──
-  ty += 9;
-  doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(20, 20, 20);
+  // ── REPL + ITSO text ──
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
+  doc.setTextColor(20, 20, 20);
   doc.text('RESEARCH, EXTENSION, PLANNING, AND LINKAGES', cx, ty, { align: 'center' });
-  ty += 5.5;
-  doc.setFont('helvetica', 'italic'); doc.setFontSize(8.5); doc.setTextColor(60, 60, 60);
+  ty += 5;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  doc.setTextColor(50, 50, 50);
   doc.text('Innovation and Technology Support Office', cx, ty, { align: 'center' });
+  ty += 8;
 
-  // ── Thin gray separator ──
-  ty += 6;
-  doc.setDrawColor(180, 180, 180); doc.setLineWidth(0.3);
-  doc.line(margin, ty, pw - margin, ty);
-
-  // ── Report title ──
-  ty += 14;
-  doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(20, 20, 20);
-  doc.text('UTILITY MODEL REGISTRY REPORT', cx, ty, { align: 'center' });
+  // ── Gray separator corner to corner ──
+  doc.setDrawColor(180, 180, 180);
+  doc.setLineWidth(0.3);
+  doc.line(0, ty, 210, ty);
+  ty += 8;
 
   // ── Period / Generated / Total ──
-  ty += 11;
   let period = 'All Records';
   if (fromVal || toVal) {
     const p = [];
@@ -1479,16 +1537,32 @@ function downloadPDF() {
     period = p.join('  |  ');
   }
   const genDate = new Date().toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
-  doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(40, 40, 40);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(40, 40, 40);
   doc.text(`Period: ${period}`, margin, ty);
   doc.text(`Generated: ${genDate}`, pw - margin, ty, { align: 'right' });
   ty += 6;
   doc.text(`Total Records: ${records.length}`, margin, ty);
 
+  // ── Report title centered ──
+  ty += 14;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(13);
+  doc.setTextColor(20, 20, 20);
+  doc.text('UTILITY MODEL REGISTRY REPORT', cx, ty, { align: 'center' });
+
   // ── Table ──
   const tableData = records.map(r => {
-    const dept = r.dept ? (r.dept.includes(' — ') ? r.dept.split(' — ')[1] : r.dept) : '—';
-    return [ r.referenceNo || '—', r.title || '—', r.creator || '—', dept, r.status || '—', toShortDate(r.dateApplied) ];
+    const dept = r.dept ? (r.dept.includes(' — ') ? r.dept.split(' — ')[1] : r.dept) : '';
+    return [
+      r.referenceNo || '',
+      r.title || '',
+      (r.creator || '').split(/;\s*/).filter(Boolean).map((a, i, arr) => i < arr.length - 1 ? a.trim() + ',' : a.trim()).join('\n'),
+      dept,
+      r.status || '',
+      toShortDate(r.dateApplied)
+    ];
   });
 
   doc.autoTable({
@@ -1508,21 +1582,36 @@ function downloadPDF() {
     },
     columnStyles: {
       0: { cellWidth: 24, fontStyle: 'bold' },
-      1: { cellWidth: 40, fontStyle: 'bold' },
-      2: { cellWidth: 34, fontStyle: 'bold' },
-      3: { cellWidth: 25, fontStyle: 'bold' },
-      4: { cellWidth: 21 },
+      1: { cellWidth: 40 },
+      2: { cellWidth: 45 },
+      3: { cellWidth: 20 },
+      4: { cellWidth: 15 },
       5: { cellWidth: 16 },
     },
     alternateRowStyles: { fillColor: [255, 255, 255] },
-    margin: { left: 25, right: 25 },
+    margin: { left: 25, right: 25, top: _headerH + 35 },
     tableWidth: 160,
+    didDrawPage: function(data) {
+      if (data.pageNumber > 1) {
+        if (_headerB64) doc.addImage(_headerB64, 'PNG', 0, 0, 210, _headerH);
+        const lc = [[0,56,168],[189,32,46],[240,180,0]];
+        lc.forEach((c, i) => {
+          doc.setDrawColor(...c); doc.setLineWidth(0.3);
+          doc.line(0, _headerH + 2.5 + (i * 1.1), 210, _headerH + 2.5 + (i * 1.1));
+        });
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(20, 20, 20);
+        doc.text('RESEARCH, EXTENSION, PLANNING, AND LINKAGES', 105, _headerH + 12, { align: 'center' });
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(50, 50, 50);
+        doc.text('Innovation and Technology Support Office', 105, _headerH + 17, { align: 'center' });
+      }
+    },
   });
 
-  // ── Footer ──
+  // ── Header on every page + footer ──
   const pages = doc.internal.getNumberOfPages();
   for (let i = 1; i <= pages; i++) {
     doc.setPage(i);
+    if (i > 1 && _headerB64) doc.addImage(_headerB64, 'PNG', 0, 0, 210, _headerH);
     doc.setFontSize(7); doc.setTextColor(160, 160, 160);
     doc.text('Utility Model Registry — IP Management System | Quezon City University', margin, ph - 8);
     doc.text(`Page ${i} of ${pages}`, pw - margin, ph - 8, { align: 'right' });

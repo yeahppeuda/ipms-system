@@ -143,13 +143,14 @@
     }
     .highlight-row { animation:highlightGlow 2.5s ease-out !important; }
 
-    /* PDF preview table */
-    .preview-table { border-collapse:collapse; width:100%; font-size:11px; font-family:Inter,sans-serif; }
+    /* ── PDF Preview modal table — plain document style ── */
+    .preview-table { border-collapse: collapse; width: 100%; font-size: 11px; font-family: Inter, sans-serif; }
     .preview-table th {
-      background:#0058be; color:#fff; padding:8px 10px; text-align:left;
-      font-weight:700; font-size:9.5px; text-transform:uppercase; letter-spacing:0.06em; border:1px solid #1d4ed8;
+      background: #fff; color: #191b23; padding: 7px 10px; text-align: left;
+      font-weight: 700; font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em;
+      border: 1px solid #555; border-bottom: 2px solid #191b23;
     }
-    .preview-table td { padding:6px 10px; border:1px solid #e2e8f0; color:#191b23; vertical-align:middle; }
+    .preview-table td { padding: 6px 10px; border: 1px solid #bbb; color: #191b23; vertical-align: middle; background: #fff; }
 
     /* ── Highlight animation ── */
     @keyframes highlightGlow {
@@ -293,12 +294,12 @@
           </button>
         </div>
 
-        <div class="overflow-x-auto" style="overflow-y:visible;">
+        <div style="overflow-y:visible;">
           <table class="w-full text-left border-collapse" style="min-width:860px;">
             <thead>
               <tr class="bg-slate-50">
                 <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant whitespace-nowrap">Reference No.</th>
-                <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant">Mark / Title</th>
+                <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant">Title</th>
                 <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant whitespace-nowrap">Owner(s)</th>
                 <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant whitespace-nowrap">College / Department</th>
                 <th class="status-col px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant">Status</th>
@@ -330,20 +331,23 @@
 
   <!-- PDF PREVIEW MODAL -->
   <div id="pdf-preview-modal" class="fixed inset-0 z-[60] flex items-center justify-center p-4"
-    style="display:none;background:rgba(15,23,42,0.75);backdrop-filter:blur(4px);"
+    style="display:none; background:rgba(15,23,42,0.75); backdrop-filter:blur(4px);"
     onclick="handlePdfBackdrop(event)">
-    <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden flex flex-col modal-enter" style="max-height:92vh;">
+    <div id="pdf-preview-inner" class="bg-white w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden flex flex-col modal-enter" style="max-height:92vh;">
+
       <div class="px-7 py-5 border-b border-outline-variant flex items-center justify-between bg-white shrink-0">
         <div>
           <h2 class="text-[18px] font-bold text-on-surface flex items-center gap-2">
-            <i class="ti ti-file-type-pdf text-red-500" style="font-size:20px;"></i>Export — Print Preview
+            <i class="ti ti-file-type-pdf text-red-500" style="font-size:20px;"></i>
+            Print Preview
           </h2>
-          <p class="text-[12px] text-outline mt-0.5">Set date range, preview, then download as PDF.</p>
+          <p class="text-[12px] text-outline mt-0.5">Set date range, preview the table, then download as PDF.</p>
         </div>
         <button onclick="closePdfModal()" class="p-2 hover:bg-slate-100 rounded-full transition-colors text-outline">
           <span class="material-symbols-outlined text-[22px]">close</span>
         </button>
       </div>
+
       <div class="px-7 py-4 bg-slate-50 border-b border-outline-variant flex flex-wrap items-end gap-4 shrink-0">
         <div>
           <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-1.5">Date Applied — Range</label>
@@ -353,39 +357,65 @@
             <span class="text-outline text-[12px] font-medium">to</span>
             <input type="date" id="export-date-to" onchange="refreshPreview()"
               class="text-[12px] border border-slate-200 rounded-lg px-3 py-1.5 bg-white outline-none focus:border-primary transition-colors"/>
-            <button onclick="clearDateRange()" class="text-[11px] text-outline hover:text-red-500 font-semibold px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg hover:border-red-200 transition-colors whitespace-nowrap">All Records</button>
+            <button onclick="clearDateRange()"
+              class="text-[11px] text-outline hover:text-red-500 font-semibold px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg hover:border-red-200 transition-colors whitespace-nowrap">
+              All Records
+            </button>
           </div>
         </div>
         <div class="ml-auto flex items-center gap-3">
           <span id="preview-count" class="text-[12px] text-outline font-semibold"></span>
-          <button onclick="downloadPDF()" class="flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-[13px] font-bold rounded-xl hover:bg-blue-700 transition-all hover:-translate-y-0.5 shadow-sm whitespace-nowrap">
-            <i class="ti ti-download" style="font-size:15px;"></i>Download PDF
+          <button onclick="downloadPDF()"
+            class="flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-[13px] font-bold rounded-xl hover:bg-blue-700 transition-all hover:-translate-y-0.5 shadow-sm whitespace-nowrap">
+            <i class="ti ti-download" style="font-size:15px;"></i>
+            Download PDF
           </button>
         </div>
       </div>
+
       <div class="overflow-auto flex-1 p-6">
-        <div class="mb-5 pb-4 border-b-2 border-slate-200">
-          <div class="flex items-start justify-between flex-wrap gap-3">
-            <div>
-              <h3 class="text-[17px] font-bold text-on-surface">Trademark Registry Report</h3>
-              <p class="text-[12px] text-outline mt-0.5">IP Management System — Trademark Module</p>
+        <div class="mb-5 pb-4 border-b border-slate-300">
+          <!-- Official Document Header -->
+          <div style="text-align:center; padding-bottom:12px; border-bottom:3px double #c0a020; margin-bottom:12px;">
+            <div style="display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:6px;">
+              <img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/92/Quezon_City_University_logo.png/200px-Quezon_City_University_logo.png"
+                  alt="QCU Seal" style="height:68px; width:auto; object-fit:contain;" onerror="this.style.display='none'"/>
+              <div>
+                <div style="font-size:10px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:#555; margin-bottom:2px;">Republic of the Philippines</div>
+                <div style="font-size:22px; font-weight:800; color:#002d72; letter-spacing:0.04em; line-height:1.1; font-family:Georgia,serif;">QUEZON CITY UNIVERSITY</div>
+                <div style="font-size:9px; letter-spacing:0.18em; color:#888; margin-top:2px;">San Bartolome &nbsp;|&nbsp; Batasan &nbsp;|&nbsp; San Francisco</div>
+                <div style="font-size:11px; font-weight:700; color:#191b23; margin-top:5px; letter-spacing:0.04em;">OFFICE OF THE PRESIDENT</div>
+                <div style="width:100%; height:2px; background:linear-gradient(90deg,#002d72,#c0a020,#002d72); margin:4px 0;"></div>
+                <div style="font-size:10px; font-weight:700; color:#191b23; letter-spacing:0.06em;">RESEARCH, EXTENSION, PLANNING, AND LINKAGES</div>
+                <div style="font-size:9.5px; color:#555; font-style:italic;">Innovation and Technology Support Office</div>
+              </div>
+              <img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/92/Quezon_City_University_logo.png/200px-Quezon_City_University_logo.png"
+                  alt="QCU Logo" style="height:68px; width:auto; object-fit:contain;" onerror="this.style.display='none'"/>
             </div>
-            <div class="text-right text-[11px] text-outline space-y-0.5">
-              <p>Generated: <span id="preview-gen-date" class="font-semibold text-on-surface"></span></p>
-              <p>Period: <span id="preview-period" class="font-semibold text-on-surface">All Records</span></p>
-              <p>Total: <span id="preview-total-count" class="font-bold text-primary">0</span> record(s)</p>
+          </div>
+          <!-- Report Title Block -->
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:8px; padding-top:4px;">
+            <div>
+              <div style="font-size:15px; font-weight:800; color:#191b23; text-transform:uppercase; letter-spacing:0.04em;">Trademark Registry Report</div>
+              <div style="font-size:11px; color:#727785; margin-top:2px;">IP Management System &mdash; Trademark Module</div>
+            </div>
+            <div style="text-align:right; font-size:11px; color:#555; line-height:1.8;">
+              <div>Date Generated: <span id="preview-gen-date" style="font-weight:700; color:#191b23;"></span></div>
+              <div>Period: <span id="preview-period" style="font-weight:700; color:#191b23;">All Records</span></div>
+              <div>Total Records: <span id="preview-total-count" style="font-weight:800; color:#0058be;">0</span></div>
             </div>
           </div>
         </div>
-        <div class="overflow-x-auto">
+
+        <div id="preview-table-container" class="overflow-x-auto">
           <table class="preview-table">
             <thead>
               <tr>
                 <th style="width:110px;">Reference No.</th>
-                <th style="min-width:160px;">Mark / Title</th>
-                <th style="min-width:130px;">Owner(s)</th>
-                <th style="min-width:120px;">Department</th>
-                <th style="width:120px;">Status</th>
+                <th style="min-width:180px;">Title</th>
+                <th style="min-width:140px;">Owner(s)</th>
+                <th style="min-width:130px;">Department</th>
+                <th style="width:130px;">Status</th>
                 <th style="width:100px;">Date Applied</th>
               </tr>
             </thead>
@@ -428,7 +458,7 @@
         </div>
         <div class="border-t border-slate-100"></div>
         <div>
-          <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Mark / Title</label>
+          <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Title</label>
           <textarea id="field-title" disabled oninput="markDirty();autoExpand(this);updateTitleCharCount(this)"
             maxlength="200"
             class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all resize-none overflow-hidden"
@@ -464,11 +494,12 @@
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Owner(s)</label>
+            <div id="field-owner-pills" style="display:flex;flex-wrap:wrap;gap:6px;min-height:38px;align-items:flex-start;"></div>
             <textarea id="field-owner" disabled oninput="markDirty();autoExpand(this);validateAuthorField(this)"
               class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all resize-none overflow-hidden"
-              placeholder="Comma-separated names" rows="1"></textarea>
+              placeholder="Separate owners with semicolons ( ; )" rows="1" style="display:none;"></textarea>
             <p id="author-validation-msg" class="hidden text-[10px] text-red-500 font-semibold mt-1">Only letters, spaces, hyphens (-), apostrophes ('), and periods (.) are allowed.</p>
-            <p class="text-[10px] text-outline mt-1">Separate multiple owners with commas</p>
+            <p id="owner-hint" class="text-[10px] text-outline mt-1" style="display:none;">Separate multiple owners with semicolons ( ; )</p>
           </div>
           <div>
             <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Date Applied</label>
@@ -652,14 +683,27 @@
   }
 
   /* ── AUTHOR FORMAT: max 2, "+N more" ── */
+  function authorParts(str) {
+    if (!str) return [];
+    return str.split(';').map(a => a.trim()).filter(Boolean);
+  }
+  function makePill(name) {
+    return `<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;color:#424754;background:#f8fafc;border:1px solid #e2e5ef;padding:3px 9px;border-radius:20px;white-space:nowrap;"><i class='ti ti-user' style='font-size:11px;color:#727785;'></i>${name}</span>`;
+  }
   function formatAuthors(str) {
-    if (!str || str === 'Unknown') return { html: str || '—', full: str || '—', hasMore: false };
-    const parts = str.split(',').map(a => a.trim()).filter(Boolean);
-    if (parts.length <= 2) return { html: parts.join(', '), full: parts.join(', '), hasMore: false };
-    const shown = parts.slice(0,2).join(', '), remaining = parts.length - 2;
+    if (!str || str === 'Unknown') return { html: '—', full: '—', hasMore: false, parts: [] };
+    const parts = authorParts(str);
+    if (parts.length === 0) return { html: '—', full: '—', hasMore: false, parts: [] };
+    const shownText = parts[0];
+    const remaining = parts.length - 1;
+    const moreBadge = remaining > 0
+      ? ` <span style="display:inline-flex;align-items:center;font-size:10px;font-weight:600;color:#9ca3af;background:#f3f4f6;border:1px solid #e5e7eb;padding:2px 7px;border-radius:20px;margin-left:2px;">+${remaining}</span>`
+      : '';
     return {
-      html: `${shown} <span style="display:inline-flex;align-items:center;font-size:10px;font-weight:700;color:#0058be;background:#eff6ff;border:1px solid #bfdbfe;padding:1px 7px;border-radius:20px;margin-left:2px;">+${remaining} more</span>`,
-      full: parts.join(', '), hasMore: true, count: remaining,
+      html: shownText + moreBadge,
+      full: parts.join(' · '),
+      hasMore: remaining > 0,
+      parts,
     };
   }
 
@@ -676,6 +720,7 @@
     'College of Engineering':      ['Industrial Engineering','Electronic Engineering','Computer Engineering'],
     'College of Accounting':       ['Accounting','Management Accounting'],
     'College of Business':         ['Entrepreneurship'],
+    'Faculty':                     ['Faculty'],
   };
   function updateModalDeptOptions() {
     const col = document.getElementById('field-college').value;
@@ -982,7 +1027,7 @@
     function mapRecord(item) {
     const title = (item.researchTitle?.trim()) || (item.title?.trim()) || 'No Title';
     let owner = 'Unknown';
-    if (Array.isArray(item.authors) && item.authors.length) owner = item.authors.join(', ');
+    if (Array.isArray(item.authors) && item.authors.length) owner = item.authors.join('; ');
     else if (typeof item.author === 'string' && item.author.trim()) owner = item.author.trim();
     const dept = item.department || item.dept || 'N/A';
     const rawDateTime = item.createdAt || null;
@@ -1032,6 +1077,9 @@
     document.getElementById('field-ref').value   = rec.referenceNo || '';
     document.getElementById('field-title').value = rec.title || '';
     document.getElementById('field-owner').value = rec.owner || '';
+    const _pc = document.getElementById('field-owner-pills');
+    const _pp = authorParts(rec.owner || '');
+    _pc.innerHTML = _pp.length ? _pp.map(makePill).join('') : '<span style="color:#9ca3af;font-size:13px;">—</span>';
     document.getElementById('field-date').value  = rec.dateOfFiling || '';
     document.getElementById('field-gdrive').value = rec.googleDriveLink || '';
     toggleGDriveBtn();
@@ -1089,6 +1137,9 @@
     document.getElementById('btn-open-gdrive').classList.remove('hidden');
     document.getElementById('title-char-count').classList.add('hidden');
     document.getElementById('author-validation-msg').classList.add('hidden');
+    document.getElementById('field-owner-pills').style.display = 'flex';
+    document.getElementById('field-owner').style.display = 'none';
+    document.getElementById('owner-hint').style.display = 'none';
     renderStatusHistory();
   }
   function enterEditMode() {
@@ -1111,6 +1162,13 @@
       document.getElementById('title-char-count').classList.remove('hidden');
     }
     document.getElementById('author-validation-msg').classList.add('hidden');
+    document.getElementById('field-owner-pills').style.display = 'none';
+    document.getElementById('field-owner').style.display = '';
+    document.getElementById('owner-hint').style.display = '';
+    requestAnimationFrame(() => {
+      const el = document.getElementById('field-owner');
+      if (el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
+    });
     renderStatusHistory();
   }
   function exitEditMode() {
@@ -1164,7 +1222,7 @@
       status:        document.getElementById('field-status').value,
       date:          document.getElementById('field-date').value,
       referenceId:   document.getElementById('field-ref').value.trim(),
-      authors:       document.getElementById('field-owner').value.split(',').map(a => a.trim()).filter(Boolean),
+      authors:       document.getElementById('field-owner').value.split(';').map(a => a.trim()).filter(Boolean),
       googleDriveLink: document.getElementById('field-gdrive').value.trim(),
       actor_email:   getCurrentUser()?.email || '',
       statusChangedAt: (() => {
@@ -1187,7 +1245,11 @@
       if (idx !== -1) ALL_RECORDS[idx] = merged;
       activeSnapshot = { ...merged };
       _statusHistory = merged.statusHistory ? JSON.parse(JSON.stringify(merged.statusHistory)) : [];
-      updateStats(); filterAndRender(); clearDirty(); setViewMode();
+      const _savedPage = currentPage; updateStats(); filterAndRender(); currentPage = _savedPage; render();
+      const _pc2 = document.getElementById('field-owner-pills');
+      const _pp2 = authorParts(merged.owner || '');
+      _pc2.innerHTML = _pp2.length ? _pp2.map(makePill).join('') : '<span style="color:#9ca3af;font-size:13px;">—</span>';
+      clearDirty(); setViewMode();
       closeConfirmation(); closeModal();
       showToastMsg('Record saved successfully', 'All changes have been applied.');
     } catch (err) {
@@ -1197,153 +1259,226 @@
   }
 
   /* ── PDF EXPORT ── */
+  function openExportModal() {
+    document.getElementById('export-date-from').value = '';
+    document.getElementById('export-date-to').value   = '';
+    document.getElementById('preview-gen-date').textContent =
+      new Date().toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
+    refreshPreview();
+    document.getElementById('pdf-preview-modal').style.display = 'flex';
+  }
+  function closePdfModal() { document.getElementById('pdf-preview-modal').style.display = 'none'; }
+  function handlePdfBackdrop(event) { if (event.target === document.getElementById('pdf-preview-modal')) closePdfModal(); }
+  function clearDateRange() { document.getElementById('export-date-from').value = ''; document.getElementById('export-date-to').value = ''; refreshPreview(); }
+
   function getExportRecords() {
     const fromVal = document.getElementById('export-date-from').value;
     const toVal   = document.getElementById('export-date-to').value;
-    let records = sortByDateDesc([...ALL_RECORDS]);
-    if (fromVal) records = records.filter(r => r.dateOfFiling && r.dateOfFiling >= fromVal);
-    if (toVal)   records = records.filter(r => r.dateOfFiling && r.dateOfFiling <= toVal);
-    return records;
-  }
-
-  function openExportModal() {
-    document.getElementById('pdf-preview-modal').style.display = 'flex';
-    refreshPreview();
-  }
-
-  function closePdfModal() {
-    document.getElementById('pdf-preview-modal').style.display = 'none';
-  }
-
-  function handlePdfBackdrop(event) {
-    if (event.target.id === 'pdf-preview-modal') closePdfModal();
-  }
-
-  function clearDateRange() {
-    document.getElementById('export-date-from').value = '';
-    document.getElementById('export-date-to').value   = '';
-    refreshPreview();
+    const from    = fromVal ? new Date(fromVal + 'T00:00:00') : null;
+    const to      = toVal   ? new Date(toVal   + 'T23:59:59') : null;
+    return sortByDateDesc(ALL_RECORDS.filter(r => {
+      if (r.archived) return false;
+      if (!from && !to) return true;
+      if (!r.dateOfFiling) return false;
+      const d = new Date(r.dateOfFiling + 'T00:00:00');
+      return (!from || d >= from) && (!to || d <= to);
+    }));
   }
 
   function refreshPreview() {
     const records = getExportRecords();
-    const fromVal  = document.getElementById('export-date-from').value;
-    const toVal    = document.getElementById('export-date-to').value;
+    const fromVal = document.getElementById('export-date-from').value;
+    const toVal   = document.getElementById('export-date-to').value;
 
-    document.getElementById('preview-gen-date').textContent =
-      new Date().toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
-
-    let period = 'All Records';
-    if (fromVal || toVal) {
-      const parts = [];
-      if (fromVal) parts.push('From: ' + toShortDate(fromVal));
-      if (toVal)   parts.push('To: '   + toShortDate(toVal));
-      period = parts.join('  |  ');
-    }
-    document.getElementById('preview-period').textContent      = period;
+    document.getElementById('preview-count').textContent       = `${records.length} record${records.length !== 1 ? 's' : ''}`;
     document.getElementById('preview-total-count').textContent = records.length;
-    document.getElementById('preview-count').textContent       = `${records.length} record${records.length!==1?'s':''}`;
+
+    if (!fromVal && !toVal) { document.getElementById('preview-period').textContent = 'All Records'; }
+    else {
+      const p = []; if (fromVal) p.push(`From ${toShortDate(fromVal)}`); if (toVal) p.push(`to ${toShortDate(toVal)}`);
+      document.getElementById('preview-period').textContent = p.join(' ');
+    }
 
     const tbody = document.getElementById('preview-table-body');
     if (!records.length) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:24px;color:#727785;font-style:italic;">No records for selected range.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:24px;color:#727785;font-style:italic;">No records found for selected date range.</td></tr>`;
       return;
     }
 
-    const statusColor = (s) => {
-      if (s === 'Approved')        return 'background:#fef3c7;color:#92400e;';
-      if (s === 'Paid')             return 'background:#d1fae5;color:#065f46;';
-      if (s === 'Received E-SOA')  return 'background:#ede9fe;color:#4338ca;';
-      return 'background:#dbeafe;color:#1e40af;';
-    };
-
     tbody.innerHTML = records.map(r => {
-      const auArr = r.owner ? r.owner.split(',').map(a => a.trim()) : [];
-      const auTxt = auArr.length > 2 ? `${auArr.slice(0,2).join(', ')} +${auArr.length-2}` : (auArr.join(', ') || '—');
-      const dept  = r.dept ? (r.dept.includes(' — ') ? r.dept.split(' — ')[1] : r.dept) : '—';
+      const auText = r.owner || '—';
+      const dept   = r.dept ? (r.dept.includes(' — ') ? r.dept.split(' — ')[1] : r.dept) : '—';
       return `<tr>
-        <td style="font-weight:600;">${r.referenceNo || '—'}</td>
-        <td>${r.title || '—'}</td>
-        <td>${auTxt}</td>
-        <td>${dept}</td>
-        <td><span style="display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;${statusColor(r.status)}">${r.status || '—'}</span></td>
-        <td>${toShortDate(r.dateOfFiling)}</td>
+        <td style="padding:6px 10px;border:1px solid #bbb;font-size:11px;font-weight:700;white-space:nowrap;">${r.referenceNo || '—'}</td>
+        <td style="padding:6px 10px;border:1px solid #bbb;font-size:11px;max-width:180px;">${r.title || '—'}</td>
+        <td style="padding:6px 10px;border:1px solid #bbb;font-size:11px;">${auText}</td>
+        <td style="padding:6px 10px;border:1px solid #bbb;font-size:11px;">${dept}</td>
+        <td style="padding:6px 10px;border:1px solid #bbb;font-size:11px;white-space:nowrap;">${r.status || '—'}</td>
+        <td style="padding:6px 10px;border:1px solid #bbb;font-size:11px;white-space:nowrap;">${toShortDate(r.dateOfFiling)}</td>
       </tr>`;
     }).join('');
   }
 
- 
-  function drawQCUHeader(doc, pw) {
-    const mx = 14, cx = pw / 2;
-    const logoY = 5;
-    const sealW = 18, sealH = 18;
-    const circleW = 18, circleH = 18;
-    const textW = 72, textH = Math.round(72 * 722 / 960);
-    doc.addImage(_QCU_SEAL,   'PNG',  mx,                logoY,     sealW,   sealH);
-    doc.addImage(_QCU_TEXT,   'PNG',  cx - textW / 2,    logoY + 1, textW,   textH);
-    doc.addImage(_QCU_CIRCLE, 'JPEG', pw - mx - circleW, logoY,     circleW, circleH);
-    const opY = logoY + Math.max(sealH, textH) + 2;
-    doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(0,0,0);
-    doc.text('OFFICE OF THE PRESIDENT', cx, opY, {align:'center'});
-    const l1Y = opY + 3;
-    doc.setDrawColor(0,70,127); doc.setLineWidth(1.2); doc.line(mx, l1Y, pw-mx, l1Y);
-    doc.setDrawColor(192,160,32); doc.setLineWidth(0.5); doc.line(mx, l1Y+1.5, pw-mx, l1Y+1.5);
-    const replY = l1Y + 5.5;
-    doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(0,0,0);
-    doc.text('RESEARCH, EXTENSION, PLANNING, AND LINKAGES', cx, replY, {align:'center'});
-    doc.setFont('helvetica','italic'); doc.setFontSize(7.5); doc.setTextColor(60,60,60);
-    doc.text('Innovation and Technology Support Office', cx, replY + 4.5, {align:'center'});
-    return replY + 9;
-  }
-
-  function downloadPDF() {
+  /* ── DOWNLOAD PDF ── */
+  async function downloadPDF() {
     const records = getExportRecords();
     const fromVal = document.getElementById('export-date-from').value;
     const toVal   = document.getElementById('export-date-to').value;
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ orientation:'landscape', unit:'mm', format:'a4' });
-    const pw = 297;
+    const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+    const pw = 210;
+    const ph = 297;
+    const margin = 15;
+    const cx = pw / 2;
 
-    const headerEndY = drawQCUHeader(doc, pw);
+    // ── Header image: full-width banner corner to corner ──
+    let ty = 0;
+    let _headerB64 = null;
+    let _headerH = 0;
+    try {
+      const resp = await fetch('header.png');
+      const blob = await resp.blob();
+      _headerB64 = await new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.readAsDataURL(blob);
+      });
+      const img = new Image();
+      img.src = _headerB64;
+      await new Promise(r => { img.onload = r; img.onerror = r; });
+      const imgW = img.naturalWidth || 1400;
+      const imgH = img.naturalHeight || 180;
+      _headerH = (imgH / imgW) * 210;
+      doc.addImage(_headerB64, 'PNG', 0, 0, 210, _headerH);
+      ty = _headerH;
+    } catch (_) {
+      ty = 0;
+    }
 
-    const titleY = headerEndY + 4;
-    doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(20,20,20);
-    doc.text('TRADEMARK REGISTRY REPORT', pw/2, titleY, {align:'center'});
+    // ── Colored lines below header ──
+    const lineColors = [[0,56,168],[189,32,46],[240,180,0]];
+    lineColors.forEach((c, i) => {
+      doc.setDrawColor(...c);
+      doc.setLineWidth(0.3);
+      doc.line(0, ty + 2.5 + (i * 1.1), 210, ty + 2.5 + (i * 1.1));
+    });
+    ty += 10;
+
+    // ── REPL + ITSO text ──
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(20, 20, 20);
+    doc.text('RESEARCH, EXTENSION, PLANNING, AND LINKAGES', cx, ty, { align: 'center' });
+    ty += 5;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(50, 50, 50);
+    doc.text('Innovation and Technology Support Office', cx, ty, { align: 'center' });
+    ty += 8;
+
+    // ── Thin gray separator corner to corner ──
+    doc.setDrawColor(180, 180, 180);
+    doc.setLineWidth(0.3);
+    doc.line(0, ty, 210, ty);
+    ty += 8;
+
+    // ── Period / Generated / Total ──
     let period = 'All Records';
-    if (fromVal || toVal) { const p=[]; if(fromVal) p.push('From: '+toShortDate(fromVal)); if(toVal) p.push('To: '+toShortDate(toVal)); period=p.join('  |  '); }
-    doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(80,80,80);
-    doc.text('Period: '+period, 14, titleY+5);
-    doc.text('Total Records: '+records.length, pw-14, titleY, {align:'right'});
-    doc.text('Date Generated: '+new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}), pw-14, titleY+5, {align:'right'});
+    if (fromVal || toVal) {
+      const p = [];
+      if (fromVal) p.push(`From: ${toShortDate(fromVal)}`);
+      if (toVal)   p.push(`To: ${toShortDate(toVal)}`);
+      period = p.join('  |  ');
+    }
+    const genDate = new Date().toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
 
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(40, 40, 40);
+    doc.text(`Period: ${period}`, margin, ty);
+    doc.text(`Generated: ${genDate}`, pw - margin, ty, { align: 'right' });
+    ty += 6;
+    doc.text(`Total Records: ${records.length}`, margin, ty);
+
+    // ── Report title centered ──
+    ty += 14;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(13);
+    doc.setTextColor(20, 20, 20);
+    doc.text('TRADEMARK REGISTRY REPORT', cx, ty, { align: 'center' });
+
+    // ── Table ──
     const tableData = records.map(r => {
-      const auArr = r.owner ? r.owner.split(',').map(a=>a.trim()) : [];
-      const auTxt = auArr.length > 2 ? `${auArr.slice(0,2).join(', ')} +${auArr.length-2}` : auArr.join(', ') || '—';
-      const dept  = r.dept ? (r.dept.includes(' — ') ? r.dept.split(' — ')[1] : r.dept) : '—';
-      return [r.referenceNo||'—', r.title||'—', auTxt, dept, r.status||'—', toShortDate(r.dateOfFiling)];
-    });
-    doc.autoTable({
-      startY: titleY + 10,
-      head: [['Reference No.','Mark / Title','Owner(s)','Department','Status','Date Applied']],
-      body: tableData, theme:'grid',
-      headStyles: { fillColor:[0,88,190], textColor:[255,255,255], fontStyle:'bold', fontSize:8, cellPadding:4 },
-      bodyStyles: { fontSize:7.5, cellPadding:3.5 },
-      columnStyles: { 0:{cellWidth:30,fontStyle:'bold'}, 1:{cellWidth:60}, 2:{cellWidth:50}, 3:{cellWidth:42}, 4:{cellWidth:32}, 5:{cellWidth:26} },
-      alternateRowStyles: { fillColor:[248,250,252] },
-      didParseCell(data) {
-        if (data.section !== 'body' || data.column.index !== 4) return;
-        const s = data.cell.raw;
-        if      (s==='Approved')       { data.cell.styles.textColor=[146,64,14];  data.cell.styles.fillColor=[254,243,199]; }
-        else if (s==='Paid')           { data.cell.styles.textColor=[6,95,70];    data.cell.styles.fillColor=[209,250,229]; }
-        else if (s==='Received E-SOA') { data.cell.styles.textColor=[67,56,202];  data.cell.styles.fillColor=[237,233,254]; }
-        else                           { data.cell.styles.textColor=[30,64,175];  data.cell.styles.fillColor=[219,234,254]; }
-      },
-      margin: { left:14, right:14 },
+      const dept = r.dept ? (r.dept.includes(' — ') ? r.dept.split(' — ')[1] : r.dept) : '';
+      const ownerLines = (r.owner || '').split(/[,;]\s*/).filter(Boolean).map((a, i, arr) => i < arr.length - 1 ? a.trim() + ',' : a.trim()).join('\n');
+      return [r.referenceNo||'', r.title||'', ownerLines, dept, r.status||'', toShortDate(r.dateOfFiling)];
     });
 
+    doc.autoTable({
+      startY: ty + 7,
+      head: [['Reference No.', 'Title', 'Owner(s)', 'Department', 'Status', 'Date Applied']],
+      body: tableData,
+      theme: 'grid',
+      headStyles: {
+        fillColor: [255, 255, 255],
+        textColor: [20, 20, 20],
+        fontStyle: 'bold',
+        fontSize: 7.5,
+        cellPadding: { top: 3, bottom: 3, left: 2, right: 2 },
+        lineColor: [80, 80, 80],
+        lineWidth: 0.25,
+        halign: 'left',
+        valign: 'middle',
+      },
+      bodyStyles: {
+        fontSize: 7,
+        cellPadding: { top: 2.5, bottom: 2.5, left: 2, right: 2 },
+        textColor: [30, 30, 30],
+        fillColor: [255, 255, 255],
+        lineColor: [160, 160, 160],
+        lineWidth: 0.25,
+        valign: 'middle',
+        overflow: 'linebreak',
+      },
+      columnStyles: {
+        0: { cellWidth: 24, fontStyle: 'bold' },
+        1: { cellWidth: 40 },
+        2: { cellWidth: 45 },
+        3: { cellWidth: 20 },
+        4: { cellWidth: 15 },
+        5: { cellWidth: 16 },
+      },
+      alternateRowStyles: { fillColor: [255, 255, 255] },
+      margin: { left: 25, right: 25, top: _headerH + 35 },
+      tableWidth: 160,
+      didDrawPage: function(data) {
+        if (data.pageNumber > 1) {
+          if (_headerB64) doc.addImage(_headerB64, 'PNG', 0, 0, 210, _headerH);
+          const lc = [[0,56,168],[189,32,46],[240,180,0]];
+          lc.forEach((c, i) => {
+            doc.setDrawColor(...c); doc.setLineWidth(0.3);
+            doc.line(0, _headerH + 2.5 + (i * 1.1), 210, _headerH + 2.5 + (i * 1.1));
+          });
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(20, 20, 20);
+          doc.text('RESEARCH, EXTENSION, PLANNING, AND LINKAGES', 105, _headerH + 12, { align: 'center' });
+          doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(50, 50, 50);
+          doc.text('Innovation and Technology Support Office', 105, _headerH + 17, { align: 'center' });
+        }
+      },
+    });
+
+    // ── Footer on every page ──
     const pages = doc.internal.getNumberOfPages();
-    for (let i=1;i<=pages;i++) { doc.setPage(i); doc.setFontSize(7); doc.setTextColor(160,160,160); doc.text('TRADEMARK Registry — IP Management System', 14, doc.internal.pageSize.height-6); doc.text('Page '+i+' of '+pages, pw-14, doc.internal.pageSize.height-6, {align:'right'}); }
-    const fname = `TRADEMARK_Registry_${fromVal||toVal?(fromVal||'start')+'_to_'+(toVal||'end')+'_':'All_'}${new Date().toISOString().split('T')[0]}.pdf`;
+    for (let i = 1; i <= pages; i++) {
+      doc.setPage(i);
+      if (i > 1 && _headerB64) doc.addImage(_headerB64, 'PNG', 0, 0, 210, _headerH);
+      doc.setFontSize(7);
+      doc.setTextColor(160, 160, 160);
+      doc.text('Trademark Registry — IP Management System | Quezon City University', margin, ph - 8);
+      doc.text(`Page ${i} of ${pages}`, pw - margin, ph - 8, { align: 'right' });
+    }
+
+    const fname = `Trademark_Registry_${fromVal||toVal?(fromVal||'start')+'_to_'+(toVal||'end')+'_':'All_'}${new Date().toISOString().split('T')[0]}.pdf`;
     doc.save(fname);
     showToastMsg('PDF Downloaded', `${records.length} record${records.length!==1?'s':''} exported.`);
   }
