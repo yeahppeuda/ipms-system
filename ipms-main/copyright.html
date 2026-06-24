@@ -149,8 +149,8 @@
         .preview-table td { padding: 6px 10px; border: 1px solid #bbb; color: #191b23; vertical-align: middle; background: #fff; }
 
         /* ── Status column ── */
-        td.status-col, th.status-col { min-width: 148px; white-space: nowrap; }
-        td.action-col, th.action-col { min-width: 88px; white-space: nowrap; }
+        td.status-col, th.status-col { white-space: nowrap; }
+        td.action-col, th.action-col { white-space: nowrap; }
 
         /* ── Highlight animation ── */
         @keyframes highlightGlow {
@@ -167,7 +167,7 @@
     }
       </style>
       </head>
-      <body class="bg-surface text-on-surface font-sans antialiased flex min-h-screen">
+      <body class="bg-surface text-on-surface font-sans antialiased flex min-h-screen" style="overflow-x:hidden;">
 
       <aside id="sidebar" class="w-[260px] h-screen fixed left-0 top-0 border-r border-[#e2e8f0] bg-white flex flex-col z-50">
 <div class="flex items-center gap-3 px-6 py-6 border-b border-[#f0f2f7]">
@@ -292,16 +292,16 @@
               </button>
             </div>
 
-            <div class="overflow-x-auto" style="overflow-y:visible;">
-              <table class="w-full text-left border-collapse" style="min-width:960px;">
+            <div style="overflow-y:visible;">
+              <table class="w-full text-left border-collapse">
                 <thead>
                   <tr class="bg-slate-50">
-                    <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant whitespace-nowrap">Reference No.</th>
+                    <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant">Reference No.</th>
                     <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant">Title</th>
-                    <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant whitespace-nowrap">Author(s)</th>
-                    <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant whitespace-nowrap">College / Department</th>
+                    <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant">Author(s)</th>
+                    <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant">College / Department</th>
                     <th class="status-col px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant">Status</th>
-                    <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant whitespace-nowrap">Date Applied</th>
+                    <th class="px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant">Date Applied</th>
                     <th class="action-col px-5 py-3 text-[11px] font-bold text-outline uppercase tracking-widest border-b border-outline-variant text-center">Action</th>
                   </tr>
                 </thead>
@@ -485,6 +485,7 @@
                       <option value="College of Accounting">College of Accounting</option>
                       <option value="College of Business">College of Business</option>
                       <option value="College of Education">College of Education</option>
+                      <option value="Faculty">Faculty</option>
                     </select>
                   </div>
                 </div>
@@ -503,11 +504,14 @@
                 </div>
                 <div>
                   <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Author(s)</label>
+                  <!-- View mode: pill display -->
+                  <div id="field-author-pills" style="display:flex;flex-wrap:wrap;gap:6px;min-height:38px;align-items:flex-start;"></div>
+                  <!-- Edit mode: textarea -->
                   <textarea id="field-author" disabled oninput="autoExpand(this); validateAuthorChars(this); markDirty()"
                     class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all resize-none overflow-hidden"
-                    rows="1" style="min-height:44px;"
-                    placeholder="Comma-separated names"></textarea>
-                  <p class="text-[10px] text-outline mt-1">Separate multiple authors with commas</p>
+                    rows="1" style="min-height:44px; display:none;"
+                    placeholder="Separate authors with semicolons ( ; )"></textarea>
+                  <p id="author-hint" class="text-[10px] text-outline mt-1" style="display:none;">Separate multiple authors with semicolons ( ; )</p>
                   <p id="author-validation-msg" class="hidden text-[10px] text-red-500 font-semibold mt-1 flex items-center gap-1"><i class="ti ti-alert-circle" style="font-size:11px;"></i> <span>Only letters, spaces, hyphens (-), apostrophes ('), and periods (.) are allowed.</span></p>
                 </div>
                 <div>
@@ -824,18 +828,28 @@
         if (wrap) { wrap.classList.add('hidden'); wrap.classList.remove('inline-flex'); }
       }
 
-      /* ── AUTHOR FORMAT: max 2 displayed, "+N more" badge ── */
+      /* ── AUTHOR FORMAT: split by semicolon, max 2 pills + "+N more" badge ── */
+      function authorParts(str) {
+        if (!str) return [];
+        return str.split(';').map(a => a.trim()).filter(Boolean);
+      }
+      function makePill(name) {
+        return `<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;color:#4338ca;background:#f5f3ff;border:1px solid #c4b5fd;padding:3px 9px;border-radius:20px;white-space:nowrap;"><i class='ti ti-user' style='font-size:11px;color:#7c3aed;'></i>${name}</span>`;
+      }
       function formatAuthors(authorString) {
-        if (!authorString || authorString === 'Unknown') return { html: authorString || '—', full: authorString || '—', hasMore: false };
-        const parts = authorString.split(',').map(a => a.trim()).filter(Boolean);
-        if (parts.length <= 2) return { html: parts.join(', '), full: parts.join(', '), hasMore: false };
-        const shown     = parts.slice(0, 2).join(', ');
-        const remaining = parts.length - 2;
+        if (!authorString || authorString === 'Unknown') return { html: '—', full: '—', hasMore: false, parts: [] };
+        const parts = authorParts(authorString);
+        if (parts.length === 0) return { html: '—', full: '—', hasMore: false, parts: [] };
+        const shownText = parts[0];
+        const remaining  = parts.length - 1;
+        const moreBadge  = remaining > 0
+          ? ` <span style="display:inline-flex;align-items:center;font-size:10px;font-weight:600;color:#9ca3af;background:#f3f4f6;border:1px solid #e5e7eb;padding:2px 7px;border-radius:20px;margin-left:2px;">+${remaining}</span>`
+          : '';
         return {
-          html: `${shown} <span style="display:inline-flex;align-items:center;font-size:10px;font-weight:600;color:#9ca3af;background:#f3f4f6;border:1px solid #e5e7eb;padding:1px 6px;border-radius:20px;margin-left:2px;">+${remaining}</span>`,
-          full: parts.join(', '),
-          hasMore: true,
-          count: remaining,
+          html: shownText + moreBadge,
+          full: parts.join(' · '),
+          hasMore: remaining > 0,
+          parts,
         };
       }
 
@@ -857,6 +871,7 @@
         'College of Accounting':       ['Accounting','Management Accounting'],
         'College of Business':         ['Entrepreneurship'],
         'College of Education':        ['Early Childhood Education'],
+        'Faculty':                     ['Faculty'],
       };
 
       function updateModalDeptOptions() {
@@ -887,11 +902,11 @@
       /* ── AUTHOR VALIDATION ── */
       function validateAuthorChars(el) {
         // Allow: letters (any), spaces, hyphens, apostrophes, periods, commas (separator)
-        const invalid = /[^a-zA-ZÀ-ÿ\u00C0-\u024F\s,\-'.]/;
+        const invalid = /[^a-zA-ZÀ-ÿ\u00C0-\u024F\s,;\-'.]/;
         const msg = document.getElementById('author-validation-msg');
         if (invalid.test(el.value)) {
           // Remove the invalid character(s)
-          el.value = el.value.replace(/[^a-zA-ZÀ-ÿ\u00C0-\u024F\s,\-'.]/g, '');
+          el.value = el.value.replace(/[^a-zA-ZÀ-ÿ\u00C0-\u024F\s,;\-'.]/g, '');
           el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px';
           msg.classList.remove('hidden');
         } else {
@@ -1026,11 +1041,11 @@
             const au = formatAuthors(r.author);
             return `
               <tr data-id="${r.referenceNo}" class="hover:bg-slate-50/70 transition-colors">
-                <td class="px-5 py-4 text-[12px] font-bold text-on-surface tracking-wide whitespace-nowrap">${r.referenceNo || '—'}</td>
+                <td class="px-5 py-4 text-[12px] font-bold text-on-surface tracking-wide">${r.referenceNo || '—'}</td>
                 <td class="px-5 py-4 text-[13px] text-on-surface font-medium" style="max-width:210px;"><div class="truncate" title="${(r.title||'').replace(/"/g,'"')}">${r.title || ''}</div></td>
                 <td class="px-5 py-4 text-[12px] text-on-surface-variant">
                   <div class="author-cell">
-                    <div>${au.html}</div>
+                    <span class="text-[12px] text-on-surface-variant">${au.html}</span>
                     ${au.hasMore ? `<div class="author-tooltip">${au.full}</div>` : ''}
                   </div>
                 </td>
@@ -1039,7 +1054,7 @@
                   ${collegeText ? `<div class="text-[11px] text-outline mt-0.5">${collegeText}</div>` : ''}
                 </td>
                 <td class="status-col px-5 py-4">${statusBadgeHTML(r.status)}</td>
-                <td class="px-5 py-4 text-[12px] text-on-surface-variant tabular-nums whitespace-nowrap">${toReadableDate(r.dateOfFiling)}</td>
+                <td class="px-5 py-4 text-[12px] text-on-surface-variant tabular-nums">${toReadableDate(r.dateOfFiling)}</td>
                 <td class="action-col px-5 py-4 text-center">
                   <button onclick="openResearchModal('${r._id}')" class="btn-view">
                     <i class="ti ti-eye" style="font-size:13px;"></i><span>View</span>
@@ -1111,7 +1126,7 @@
         dateOfFiling = dateOfFiling.split('T')[0];
       }
       const title = item.researchTitle || item.title || '—';
-      const author = Array.isArray(item.authors) ? item.authors.join(', ') : (item.author || '—');
+      const author = Array.isArray(item.authors) ? item.authors.join('; ') : (item.author || '—');
       const dept = item.department || item.dept || '—';
 
       // ── Auto-record ang "Submitted to IPOPHL" gamit ang date of filing ──
@@ -1167,6 +1182,12 @@
         document.getElementById('field-ref').value               = rec.referenceNo || '';
         document.getElementById('field-title').value             = rec.title || '';
         document.getElementById('field-author').value            = rec.author || '';
+        // populate pill display
+        const _pillContainer = document.getElementById('field-author-pills');
+        const _pillParts = authorParts(rec.author || '');
+        _pillContainer.innerHTML = _pillParts.length
+          ? _pillParts.map(makePill).join('')
+          : '<span style="color:#9ca3af;font-size:13px;">—</span>';
         document.getElementById('field-gdrive').value            = rec.googleDriveLink || '';
         toggleGDriveBtn();
         document.getElementById('field-date-filing').value       = rec.dateOfFiling || '';
@@ -1232,6 +1253,10 @@
         // ── Hide char counter and validation msg in view mode ──
         document.getElementById('title-char-count').classList.add('hidden');
         document.getElementById('author-validation-msg').classList.add('hidden');
+        // author: show pills, hide textarea
+        document.getElementById('field-author-pills').style.display = 'flex';
+        document.getElementById('field-author').style.display = 'none';
+        document.getElementById('author-hint').style.display = 'none';
       }
       function enterEditMode() {
         isEditModeActive = true;
@@ -1255,6 +1280,14 @@
           document.getElementById('title-char-count').classList.remove('hidden');
         }
         document.getElementById('author-validation-msg').classList.add('hidden');
+        // author: hide pills, show textarea
+        document.getElementById('field-author-pills').style.display = 'none';
+        document.getElementById('field-author').style.display = '';
+        document.getElementById('author-hint').style.display = '';
+        requestAnimationFrame(() => {
+          const el = document.getElementById('field-author');
+          if (el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
+        });
       }
       function exitEditMode() {
         if (activeSnapshot) {
@@ -1314,7 +1347,7 @@
           status:            newStatus,
           date:              document.getElementById('field-date-filing').value,
           referenceId:       document.getElementById('field-ref').value.trim(),
-          authors:           document.getElementById('field-author').value.split(',').map(a => a.trim()).filter(Boolean),
+          authors:           document.getElementById('field-author').value.split(';').map(a => a.trim()).filter(Boolean),
           googleDriveLink:   document.getElementById('field-gdrive').value.trim(),
           actor_email:       getCurrentUser()?.email || '',
           statusChangedAt:   nowISO,
@@ -1333,7 +1366,12 @@
           // ── Refresh history display ──
           _statusHistory = merged.statusHistory ? JSON.parse(JSON.stringify(merged.statusHistory)) : [];
           renderStatusHistory();
-          updateStats(); filterAndRender(); clearDirty(); setViewMode();
+          const _savedPage = currentPage; updateStats(); filterAndRender(); currentPage = _savedPage; render(); clearDirty();
+          // refresh author pills with saved value
+          const _pc = document.getElementById('field-author-pills');
+          const _pp = authorParts(merged.author || '');
+          _pc.innerHTML = _pp.length ? _pp.map(makePill).join('') : '<span style="color:#9ca3af;font-size:13px;">—</span>';
+          setViewMode();
           closeConfirmation(); closeModal();
           showToastMsg('Record saved successfully', 'All changes have been applied.');
         } catch (err) {

@@ -185,7 +185,7 @@
   /* ── Filter dropdown ── */
   .filter-dropdown { position:absolute; z-index:100; background:#fff; border:1px solid #e1e2ec; border-radius:14px; padding:6px; box-shadow:0 10px 36px rgba(0,0,0,0.13); animation:filterDropIn 0.15s ease; }
   @keyframes filterDropIn { from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none} }
-  .filter-opt { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:9px; cursor:pointer; font-size:13px; color:#424754; font-family:'Inter',sans-serif; transition:background 0.12s; border:none; background:none; width:100%; text-align:left; font-weight:500; }
+  .filter-opt { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:9px; cursor:pointer; font-size:13px; color:#424754; font-family:'Inter',sans-serif; transition:background 0.12s; border:none; background:none; width:100%; text-align:left; font-weight:500; white-space:nowrap; }
   .filter-opt:hover { background:#f2f3fd; color:#191b23; }
   .filter-opt.active { background:#e8f0fd; color:#0058be; font-weight:700; }
   .filter-opt .fo-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
@@ -282,7 +282,7 @@
           <i class="ti ti-chevron-down text-[12px] transition-transform duration-200" id="filterChevron"></i>
         </button>
 
-        <div class="filter-dropdown" id="filterDropdown" style="display:none; right:0; top:calc(100% + 6px); min-width:200px; position:absolute; z-index:100; background:#fff; border:1px solid #e1e2ec; border-radius:14px; padding:6px; box-shadow:0 10px 36px rgba(0,0,0,0.13); animation:filterDropIn 0.15s ease;">
+        <div class="filter-dropdown" id="filterDropdown" style="display:none; right:0; top:calc(100% + 6px); min-width:240px; position:absolute; z-index:100; background:#fff; border:1px solid #e1e2ec; border-radius:14px; padding:6px; box-shadow:0 10px 36px rgba(0,0,0,0.13); animation:filterDropIn 0.15s ease;">
           <div style="padding:6px 10px 4px; font-size:10px; font-weight:700; color:#727785; text-transform:uppercase; letter-spacing:0.08em;">Filter by Category</div>
           <button class="filter-opt active" data-cat="" onclick="setFilter('',this)">
             <span class="fo-dot" style="background:#e1e2ec;"></span>All Categories<span class="material-symbols-outlined fo-check">check</span>
@@ -1076,7 +1076,7 @@ function runSearch() {
         <span class="text-[13px] font-semibold text-on-surface leading-snug" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${title}</span>
         <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-surface-container-highest text-primary whitespace-nowrap flex-shrink-0">${catLabel}</span>
       </div>
-      <span class="text-[11px] text-on-surface-variant truncate">${r.referenceId || 'No ID'} • ${r.college||(r.department?r.department.split('—')[0].split('--')[0].trim():'')||'—'}</span>
+      <span class="text-[11px] text-on-surface-variant">${r.referenceId || 'No ID'} • ${r.college||(r.department?r.department.split('—')[0].split('--')[0].trim():'')||'—'}</span>
     `;
     
     item.addEventListener('click', () => {
@@ -1863,6 +1863,33 @@ function updateTitleCount(){
   counter.className=len>=180?'text-[10px] font-semibold text-red-500 bg-red-50 border border-red-200 rounded-full px-2 py-0.5':'text-[10px] font-semibold text-on-surface-variant bg-surface-container-highest rounded-full px-2 py-0.5';
 }
 
+function toTitleCase(str){
+  if(!str)return str;
+  const minorWords = new Set(['a','an','the','and','but','or','nor','for','so','yet','at','by','in','of','on','to','up','as','is','it']);
+  return str.trim().toLowerCase().split(/\s+/).map((word, i) => {
+    const clean = word.replace(/[^a-z]/gi,'');
+    if(i !== 0 && minorWords.has(clean)) return word;
+    return word.charAt(0).toUpperCase() + word.slice(1);
+  }).join(' ');
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const titleTa = document.getElementById('rm-title');
+  if(titleTa){
+    titleTa.addEventListener('paste', e => {
+      e.preventDefault();
+      const pasted = (e.clipboardData || window.clipboardData).getData('text');
+      const converted = toTitleCase(pasted);
+      const start = titleTa.selectionStart;
+      const end = titleTa.selectionEnd;
+      const current = titleTa.value;
+      titleTa.value = current.slice(0,start) + converted + current.slice(end);
+      titleTa.selectionStart = titleTa.selectionEnd = start + converted.length;
+      updateTitleCount();
+    });
+  }
+});
+
 function hideResearchModal(){
   const m=document.getElementById('research-modal');
   m.classList.add('hidden'); m.classList.remove('flex');
@@ -1936,14 +1963,41 @@ function updateAuthorUI(){
 }
 function showAuthorError(msg){const errEl=document.getElementById('rm-author-error'),errTxt=document.getElementById('rm-author-error-text'),hint=document.getElementById('rm-author-hint');if(errEl&&errTxt){errTxt.textContent=msg;errEl.classList.remove('hidden');errEl.style.display='flex';if(hint)hint.classList.add('hidden');clearTimeout(errEl._timer);errEl._timer=setTimeout(()=>{errEl.classList.add('hidden');errEl.style.display='';if(hint)hint.classList.remove('hidden');},4000);}}
 function clearAuthorError(){const errEl=document.getElementById('rm-author-error'),hint=document.getElementById('rm-author-hint');if(errEl){errEl.classList.add('hidden');errEl.style.display='';clearTimeout(errEl._timer);}if(hint)hint.classList.remove('hidden');}
+function toNameCase(str){
+  if(!str)return str;
+  const allowed = str.replace(/[^a-zA-Z\s\.\-,\xc0-\xff]/g,'');
+  return allowed.split(/([ ,]+)/).map(part=>{
+    if(/^[ ,]+$/.test(part)||part==='')return part;
+    return part.charAt(0).toUpperCase()+part.slice(1).toLowerCase();
+  }).join('');
+}
+
 function addAuthorField(value='',skipFocus=false){
   if(currentAuthorCount()>=MAX_AUTHORS){showAuthorError(`Maximum ${MAX_AUTHORS} authors allowed.`);return false;}
   const container=document.getElementById('rm-authors'),row=document.createElement('div');row.className='author-row';
-  const input=document.createElement('input');input.type='text';input.value=value;input.placeholder='Author name';
+  const input=document.createElement('input');input.type='text';input.value=value?toNameCase(value):'';input.placeholder='e.g. Dela Cruz, Juan A.';
   input.className='flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-[13px] text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/10 focus:bg-white outline-none transition-all placeholder:text-outline';
-  input.addEventListener('keypress',e=>{if(!/[a-zA-Z\s\.\-,ñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ]/.test(e.key)){e.preventDefault();showAuthorError('Numbers and special characters are not allowed in author names.');}});
-  input.addEventListener('input',()=>{const cleaned=input.value.replace(/[^a-zA-Z\s\.\-,ñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ]/g,'');if(cleaned!==input.value){input.value=cleaned;showAuthorError('Numbers and special characters are not allowed in author names.');}});
-  input.addEventListener('paste',e=>{const text=(e.clipboardData||window.clipboardData).getData('text');const lines=text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);if(lines.length<=1)return;e.preventDefault();clearAuthorError();const slotsLeft=MAX_AUTHORS-currentAuthorCount();if(slotsLeft<=0){showAuthorError(`Maximum ${MAX_AUTHORS} authors already reached.`);return;}const accepted=lines.slice(0,slotsLeft);const rejected=lines.length-accepted.length;input.value=accepted[0];accepted.slice(1).forEach(name=>addAuthorField(name,true));updateAuthorUI();if(rejected>0)showAuthorError(`Only ${accepted.length} of ${lines.length} names were added — max is ${MAX_AUTHORS}.`);});
+  input.addEventListener('keypress',e=>{if(!/[a-zA-Z\s\.\-,\xc0-\xff]/.test(e.key)){e.preventDefault();showAuthorError('Numbers and special characters are not allowed in author names.');}});
+  input.addEventListener('input',()=>{const cleaned=input.value.replace(/[^a-zA-Z\s\.\-,\xc0-\xff]/g,'');if(cleaned!==input.value){input.value=cleaned;showAuthorError('Numbers and special characters are not allowed in author names.');}});
+  input.addEventListener('blur',()=>{const nc=toNameCase(input.value);if(nc!==input.value)input.value=nc;});
+  input.addEventListener('paste',e=>{
+    e.preventDefault();
+    const text=(e.clipboardData||window.clipboardData).getData('text');
+    const lines=text.split(/\r?\n/).map(l=>toNameCase(l.trim())).filter(Boolean);
+    clearAuthorError();
+    if(lines.length<=1){
+      const pasted=lines[0]||toNameCase(text.trim());
+      const s=input.selectionStart,en=input.selectionEnd,cur=input.value;
+      input.value=cur.slice(0,s)+pasted+cur.slice(en);
+      input.selectionStart=input.selectionEnd=s+pasted.length;
+      return;
+    }
+    const slotsLeft=MAX_AUTHORS-currentAuthorCount();
+    if(slotsLeft<=0){showAuthorError(`Maximum ${MAX_AUTHORS} authors already reached.`);return;}
+    const accepted=lines.slice(0,slotsLeft);const rejected=lines.length-accepted.length;
+    input.value=accepted[0];accepted.slice(1).forEach(name=>addAuthorField(name,true));
+    updateAuthorUI();if(rejected>0)showAuthorError(`Only ${accepted.length} of ${lines.length} names were added — max is ${MAX_AUTHORS}.`);
+  });
   const removeBtn=document.createElement('button');removeBtn.type='button';removeBtn.className='remove-author';removeBtn.innerHTML='<i class="ti ti-x"></i>';removeBtn.title='Remove';removeBtn.onclick=()=>{if(currentAuthorCount()>1){row.remove();clearAuthorError();updateAuthorUI();}};
   row.appendChild(input);row.appendChild(removeBtn);container.appendChild(row);updateAuthorUI();if(!skipFocus)input.focus();return true;
 }
