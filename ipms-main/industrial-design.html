@@ -137,6 +137,21 @@
     0%,100% { opacity: 1; transform: scale(1); }
     50%     { opacity: 0.5; transform: scale(0.8); }
   }
+
+        /* ── Author tooltip ── */
+        .author-cell { position: relative; cursor: default; }
+        .author-tooltip {
+          position: absolute; bottom: calc(100% + 6px); left: 0; z-index: 100;
+          background: #1e293b; color: #fff; font-size: 11px; font-weight: 500;
+          padding: 6px 10px; border-radius: 8px; white-space: nowrap;
+          pointer-events: none; opacity: 0; transform: translateY(4px);
+          transition: opacity 0.15s, transform 0.15s; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .author-tooltip::after {
+          content: ''; position: absolute; top: 100%; left: 14px;
+          border: 5px solid transparent; border-top-color: #1e293b;
+        }
+        .author-cell:hover .author-tooltip { opacity: 1; transform: translateY(0); }
 </style>
 </head>
 <body class="bg-surface text-on-surface font-sans antialiased flex min-h-screen">
@@ -267,7 +282,7 @@
         </button>
       </div>
 
-      <div class="overflow-x-auto">
+      <div>
         <table class="w-full text-left border-collapse">
           <thead>
             <tr class="bg-slate-50">
@@ -375,7 +390,7 @@
         </div>
       </div>
 
-      <div id="preview-table-container" class="overflow-x-auto">
+      <div id="preview-table-container">
         <table class="preview-table">
           <thead>
             <tr>
@@ -442,13 +457,22 @@
         </div>
       </div>
 
-      <!-- Ref No + College -->
+      <!-- Row 1: Reference No. | Date Applied -->
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Reference No.</label>
           <input id="field-ref" type="text" disabled
             class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all"/>
         </div>
+        <div>
+          <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Date Applied</label>
+          <input id="field-date" type="date" disabled oninput="markDirty()"
+            class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all"/>
+        </div>
+      </div>
+
+      <!-- Row 2: College | Department -->
+      <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">College</label>
           <select id="field-college" disabled onchange="updateModalDeptOptions(); markDirty()"
@@ -458,32 +482,29 @@
             <option value="College of Engineering">College of Engineering</option>
             <option value="College of Accounting">College of Accounting</option>
             <option value="College of Business">College of Business</option>
+            <option value="Faculty">Faculty</option>
+          </select>
+        </div>
+        <div id="modal-dept-wrap">
+          <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Department</label>
+          <select id="field-dept" disabled onchange="markDirty()"
+            class="modal-field modal-field-select w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all appearance-none cursor-default">
           </select>
         </div>
       </div>
 
-      <!-- Department (cascades from College) -->
-      <div id="modal-dept-wrap">
-        <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Department</label>
-        <select id="field-dept" disabled onchange="markDirty()"
-          class="modal-field modal-field-select w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all appearance-none cursor-default">
-        </select>
-      </div>
-
-      <!-- Designer + Date -->
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Designer</label>
-          <textarea id="field-designer" disabled oninput="markDirty();autoExpand(this);validateAuthorField(this)"
-            class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all resize-none overflow-hidden"
-            placeholder="Comma-separated names" rows="1"></textarea>
-          <p id="author-validation-msg" class="hidden text-[10px] text-red-500 font-semibold mt-1">Only letters, spaces, hyphens (-), apostrophes ('), and periods (.) are allowed.</p>
-        </div>
-        <div>
-          <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Date Applied</label>
-          <input id="field-date" type="date" disabled oninput="markDirty()"
-            class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all"/>
-        </div>
+      <!-- Designer / Author(s) — full width -->
+      <div>
+        <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Author(s)</label>
+        <!-- View mode: pill display -->
+        <div id="field-designer-pills" style="display:flex;flex-wrap:wrap;gap:6px;min-height:38px;align-items:flex-start;"></div>
+        <!-- Edit mode: textarea -->
+        <textarea id="field-designer" disabled oninput="autoExpand(this); validateAuthorField(this); markDirty()"
+          class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all resize-none overflow-hidden"
+          rows="1" style="min-height:44px; display:none;"
+          placeholder="Separate authors with semicolons ( ; )"></textarea>
+        <p id="author-hint" class="text-[10px] text-outline mt-1" style="display:none;">Separate multiple authors with semicolons ( ; )</p>
+        <p id="author-validation-msg" class="hidden text-[10px] text-red-500 font-semibold mt-1 flex items-center gap-1"><i class="ti ti-alert-circle" style="font-size:11px;"></i> <span>Only letters, spaces, hyphens (-), apostrophes ('), and periods (.) are allowed.</span></p>
       </div>
 
       <!-- Google Drive Link -->
@@ -673,6 +694,7 @@ let activeSnapshot  = null;
 
 /* COLLEGE → DEPARTMENT MAP */
 const MODAL_COLLEGE_DEPTS = {
+  'Faculty': ['Faculty'],
   'College of Computer Studies': ['Information Technology', 'Information System', 'Computer Science'],
   'College of Education':        ['Early Childhood Education'],
   'College of Engineering':      ['Industrial Engineering', 'Electronic Engineering', 'Computer Engineering'],
@@ -817,7 +839,12 @@ function render() {
       <tr data-id="${r.referenceNo}" class="hover:bg-slate-50/70 transition-colors">
         <td class="px-5 py-4 text-[12px] font-bold text-on-surface tracking-wide">${r.referenceNo || '—'}</td>
         <td class="px-5 py-4 text-[13px] text-on-surface font-medium max-w-[200px] truncate">${r.title || ''}</td>
-        <td class="px-5 py-4 text-[12px] text-on-surface-variant">${r.designer || ''}</td>
+        <td class="px-5 py-4 text-[12px] text-on-surface-variant">
+          ${(() => {
+            const au = formatAuthors(r.designer);
+            return `<div class="author-cell"><span class="text-[12px] text-on-surface-variant">${au.html}</span>${au.hasMore ? `<div class="author-tooltip">${au.full}</div>` : ''}</div>`;
+          })()}
+        </td>
         <td class="px-5 py-4">
           <div class="text-[13px] font-semibold text-on-surface leading-tight">${r.dept ? r.dept.split(' — ')[1] || r.dept : '—'}</div>
           <div class="text-[11px] text-on-surface-variant mt-0.5">${r.dept ? r.dept.split(' — ')[0] : ''}</div>
@@ -854,6 +881,31 @@ function renderPagination(totalPages) {
   makeBtn('chevron_right', currentPage + 1, currentPage === totalPages, false, true);
 }
 
+/* ── AUTHOR FORMAT: split by semicolon, first + "+N more" badge ── */
+function authorParts(str) {
+  if (!str) return [];
+  return str.split(';').map(a => a.trim()).filter(Boolean);
+}
+function makePill(name) {
+  return `<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;color:#424754;background:#f8fafc;border:1px solid #e2e5ef;padding:3px 9px;border-radius:20px;white-space:nowrap;"><i class='ti ti-user' style='font-size:11px;color:#727785;'></i>${name}</span>`;
+}
+function formatAuthors(authorString) {
+  if (!authorString || authorString === 'Unknown') return { html: '—', full: '—', hasMore: false, parts: [] };
+  const parts = authorParts(authorString);
+  if (parts.length === 0) return { html: '—', full: '—', hasMore: false, parts: [] };
+  const shownText = parts[0];
+  const remaining  = parts.length - 1;
+  const moreBadge  = remaining > 0
+    ? ` <span style="display:inline-flex;align-items:center;font-size:10px;font-weight:600;color:#9ca3af;background:#f3f4f6;border:1px solid #e5e7eb;padding:2px 7px;border-radius:20px;margin-left:2px;">+${remaining}</span>`
+    : '';
+  return {
+    html: shownText + moreBadge,
+    full: parts.join(' · '),
+    hasMore: remaining > 0,
+    parts,
+  };
+}
+
 /* MAP RAW API ITEM */
 function mapRecord(item) {
   const title =
@@ -861,7 +913,7 @@ function mapRecord(item) {
     (item.title         && item.title.trim())         || 'No Title';
 
   let designer = 'Unknown';
-  if (Array.isArray(item.authors) && item.authors.length > 0) designer = item.authors.join(', ');
+  if (Array.isArray(item.authors) && item.authors.length > 0) designer = item.authors.join('; ');
   else if (typeof item.author === 'string' && item.author.trim()) designer = item.author.trim();
 
   const dept = item.department || item.dept || 'N/A';
@@ -921,6 +973,12 @@ function openResearchModal(mongoId) {
   document.getElementById('field-ref').value      = rec.referenceNo || '';
   document.getElementById('field-title').value    = rec.title || '';
   document.getElementById('field-designer').value = rec.designer || '';
+  // populate pill display
+  const _pillContainer = document.getElementById('field-designer-pills');
+  const _pillParts = authorParts(rec.designer || '');
+  _pillContainer.innerHTML = _pillParts.length
+    ? _pillParts.map(makePill).join('')
+    : '<span style="color:#9ca3af;font-size:13px;">—</span>';
   document.getElementById('field-date').value     = rec.dateApplied || '';
   document.getElementById('field-gdrive').value   = rec.googleDriveLink || '';
   toggleGDriveBtn();
@@ -1001,6 +1059,10 @@ function setViewMode() {
   document.getElementById('btn-open-gdrive').classList.remove('hidden');
   document.getElementById('title-char-count').classList.add('hidden');
   document.getElementById('author-validation-msg').classList.add('hidden');
+  // author: show pills, hide textarea
+  document.getElementById('field-designer-pills').style.display = 'flex';
+  document.getElementById('field-designer').style.display = 'none';
+  document.getElementById('author-hint').style.display = 'none';
   isEditModeActive = false;
   renderStatusHistory();
 }
@@ -1034,6 +1096,14 @@ function enterEditMode() {
     document.getElementById('title-char-count').classList.remove('hidden');
   }
   document.getElementById('author-validation-msg').classList.add('hidden');
+  // author: hide pills, show textarea
+  document.getElementById('field-designer-pills').style.display = 'none';
+  document.getElementById('field-designer').style.display = '';
+  document.getElementById('author-hint').style.display = '';
+  requestAnimationFrame(() => {
+    const el = document.getElementById('field-designer');
+    if (el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
+  });
   renderStatusHistory();
 }
 
@@ -1041,6 +1111,9 @@ function exitEditMode() {
   if (activeSnapshot) {
     document.getElementById('field-title').value    = activeSnapshot.title || '';
     document.getElementById('field-designer').value = activeSnapshot.designer || '';
+    const _epc = document.getElementById('field-designer-pills');
+    const _epp = authorParts(activeSnapshot.designer || '');
+    _epc.innerHTML = _epp.length ? _epp.map(makePill).join('') : '<span style="color:#9ca3af;font-size:13px;">—</span>';
     document.getElementById('field-date').value     = activeSnapshot.dateApplied || '';
     document.getElementById('field-gdrive').value   = activeSnapshot.googleDriveLink || '';
     toggleGDriveBtn();
@@ -1108,7 +1181,7 @@ async function confirmSave() {
     date:          document.getElementById('field-date').value,
     referenceId:   document.getElementById('field-ref').value.trim(),
     authors: document.getElementById('field-designer').value
-               .split(',').map(a => a.trim()).filter(Boolean),
+               .split(';').map(a => a.trim()).filter(Boolean),
     googleDriveLink: document.getElementById('field-gdrive').value.trim(),
     actor_email: getCurrentUser()?.email || '',
     statusChangedAt: new Date().toISOString(),
@@ -1146,7 +1219,11 @@ async function confirmSave() {
     activeSnapshot = { ...mapped };
 
     updateStats();
-    filterAndRender();
+    const _savedPage = currentPage; filterAndRender(); currentPage = _savedPage; render();
+    // refresh designer pills
+    const _pc = document.getElementById('field-designer-pills');
+    const _pp = authorParts(mapped.designer || '');
+    _pc.innerHTML = _pp.length ? _pp.map(makePill).join('') : '<span style="color:#9ca3af;font-size:13px;">—</span>';
     setViewMode();
     closeModal();
     showToast();
@@ -1406,10 +1483,10 @@ function updateTitleCharCount(el) {
 
 /* ── AUTHOR/DESIGNER VALIDATION ── */
 function validateAuthorField(el) {
-  const invalid = /[^a-zA-ZÀ-ÿ\s,\-'.]/;
+  const invalid = /[^a-zA-ZÀ-ÿ\s;,\-'.]/;
   const msg = document.getElementById('author-validation-msg');
   if (invalid.test(el.value)) {
-    el.value = el.value.replace(/[^a-zA-ZÀ-ÿ\s,\-'.]/g, '');
+    el.value = el.value.replace(/[^a-zA-ZÀ-ÿ\s;,\-'.]/g, '');
     msg.classList.remove('hidden');
     setTimeout(() => msg.classList.add('hidden'), 3000);
   }
