@@ -188,7 +188,6 @@
     <a class="nav-item" href="industrial-design.html" onclick="handleNavAway('industrial-design.html'); return false;"><i class="ti ti-vector-bezier-2"></i><span>Industrial Design</span></a>
     <div class="border-t border-slate-100 my-5"></div>
     <div class="nav-section-label">General</div>
-    <a class="nav-item" href="inventory-of-technology.html"><i class="ti ti-device-desktop-analytics"></i><span>Inventory of Technology</span></a>
     <a class="nav-item" href="event.html"><i class="ti ti-calendar-event"></i><span>Event</span></a>
   </nav>
 </aside>
@@ -474,6 +473,13 @@
               class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all"/>
           </div>
           <div>
+            <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Date Applied</label>
+            <input id="field-date" type="date" disabled onchange="markDirty()"
+              class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all"/>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
             <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">College</label>
             <select id="field-college" disabled onchange="updateModalDeptOptions();markDirty();"
               class="modal-field modal-field-select w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all appearance-none cursor-default">
@@ -482,30 +488,24 @@
               <option value="College of Engineering">College of Engineering</option>
               <option value="College of Accounting">College of Accounting</option>
               <option value="College of Business">College of Business</option>
+              <option value="Faculty">Faculty</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Department</label>
+            <select id="field-dept" disabled onchange="markDirty()"
+              class="modal-field modal-field-select w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all appearance-none cursor-default">
             </select>
           </div>
         </div>
         <div>
-          <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Department</label>
-          <select id="field-dept" disabled onchange="markDirty()"
-            class="modal-field modal-field-select w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all appearance-none cursor-default">
-          </select>
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Owner(s)</label>
-            <div id="field-owner-pills" style="display:flex;flex-wrap:wrap;gap:6px;min-height:38px;align-items:flex-start;"></div>
-            <textarea id="field-owner" disabled oninput="markDirty();autoExpand(this);validateAuthorField(this)"
-              class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all resize-none overflow-hidden"
-              placeholder="Separate owners with semicolons ( ; )" rows="1" style="display:none;"></textarea>
-            <p id="author-validation-msg" class="hidden text-[10px] text-red-500 font-semibold mt-1">Only letters, spaces, hyphens (-), apostrophes ('), and periods (.) are allowed.</p>
-            <p id="owner-hint" class="text-[10px] text-outline mt-1" style="display:none;">Separate multiple owners with semicolons ( ; )</p>
-          </div>
-          <div>
-            <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Date Applied</label>
-            <input id="field-date" type="date" disabled onchange="markDirty()"
-              class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all"/>
-          </div>
+          <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Owner(s)</label>
+          <div id="field-owner-pills" style="display:flex;flex-wrap:wrap;gap:6px;min-height:38px;align-items:flex-start;"></div>
+          <textarea id="field-owner" disabled oninput="markDirty();autoExpand(this);validateAuthorField(this)"
+            class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all resize-none overflow-hidden"
+            placeholder="Separate owners with semicolons ( ; )" rows="1" style="display:none;"></textarea>
+          <p id="author-validation-msg" class="hidden text-[10px] text-red-500 font-semibold mt-1">Only letters, spaces, hyphens (-), apostrophes ('), and periods (.) are allowed.</p>
+          <p id="owner-hint" class="text-[10px] text-outline mt-1" style="display:none;">Separate multiple owners with semicolons ( ; )</p>
         </div>
 
         <!-- ── GOOGLE DRIVE LINK ── -->

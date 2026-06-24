@@ -175,7 +175,6 @@
     <a class="nav-item active" href="industrial-design.html" onclick="handleNavAway('industrial-design.html'); return false;"><i class="ti ti-vector-bezier-2"></i><span>Industrial Design</span></a>
     <div class="border-t border-slate-100 my-5"></div>
     <div class="nav-section-label">General</div>
-    <a class="nav-item" href="inventory-of-technology.html"><i class="ti ti-device-desktop-analytics"></i><span>Inventory of Technology</span></a>
     <a class="nav-item" href="event.html"><i class="ti ti-calendar-event"></i><span>Event</span></a>
   </nav>
 </aside>
@@ -628,7 +627,7 @@ function toShortDate(ds) {
   if (!ds) return '—';
   const d = new Date(ds + 'T00:00:00');
   if (isNaN(d)) return '—';
-  return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+  return d.toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
 }
 const CATEGORY = "industrial-design";
 
@@ -850,7 +849,7 @@ function render() {
           <div class="text-[11px] text-on-surface-variant mt-0.5">${r.dept ? r.dept.split(' — ')[0] : ''}</div>
         </td>
         <td class="px-5 py-4">${statusBadgeHTML(r.status)}</td>
-        <td class="px-5 py-4 text-[12px] text-on-surface-variant tabular-nums">${r.dateApplied || ''}</td>
+        <td class="px-5 py-4 text-[12px] text-on-surface-variant tabular-nums">${toShortDate(r.dateApplied)}</td>
         <td class="px-5 py-4 text-center">
           <button onclick="openResearchModal('${r._id}')" class="btn-view">
             <i class="ti ti-eye" style="font-size:13px;"></i><span>View</span>
@@ -907,6 +906,14 @@ function formatAuthors(authorString) {
 }
 
 /* MAP RAW API ITEM */
+function authorParts(str) {
+  if (!str) return [];
+  return str.split(';').map(a => a.trim()).filter(Boolean);
+}
+function makePill(name) {
+  return `<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;color:#424754;background:#f8fafc;border:1px solid #e2e5ef;padding:3px 9px;border-radius:20px;white-space:nowrap;"><i class='ti ti-user' style='font-size:11px;color:#727785;'></i>${name}</span>`;
+}
+
 function mapRecord(item) {
   const title =
     (item.researchTitle && item.researchTitle.trim()) ||
@@ -973,6 +980,9 @@ function openResearchModal(mongoId) {
   document.getElementById('field-ref').value      = rec.referenceNo || '';
   document.getElementById('field-title').value    = rec.title || '';
   document.getElementById('field-designer').value = rec.designer || '';
+  const _pc = document.getElementById('field-designer-pills');
+  const _pp = authorParts(rec.designer || '');
+  _pc.innerHTML = _pp.length ? _pp.map(makePill).join('') : '<span style="color:#9ca3af;font-size:13px;">—</span>';
   // populate pill display
   const _pillContainer = document.getElementById('field-designer-pills');
   const _pillParts = authorParts(rec.designer || '');
@@ -1386,7 +1396,7 @@ async function downloadPDF() {
     return [
       r.referenceNo || '',
       r.title || '',
-      (r.designer || '').split(/;\s*/).filter(Boolean).map((a, i, arr) => i < arr.length - 1 ? a.trim() + ',' : a.trim()).join('\n'),
+      (r.designer || '').split(/[,;]\s*/).filter(Boolean).map((a, i, arr) => i < arr.length - 1 ? a.trim() + ',' : a.trim()).join('\n'),
       dept,
       r.status || '',
       toShortDate(r.dateApplied)

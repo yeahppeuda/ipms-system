@@ -1,21 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const mongoose = require("mongoose");
 const User = require("../models/User"); 
 const bcrypt = require("bcryptjs"); 
 const { createLog } = require("../utils/logger"); 
 
-const MONGO_URI = "mongodb+srv://ipms2026:2026ipms@ipms-cluster.zwbn5c9.mongodb.net/ipmsdb?retryWrites=true&w=majority&appName=ipms-cluster";
-
 router.post("/login", async (req, res) => {
-  try {if (mongoose.connection.readyState !== 1) {
-      console.log("⏳ Kumokonekta sa MongoDB Atlas bago mag-login...");
-      await mongoose.connect(MONGO_URI, {
-        serverSelectionTimeoutMS: 5000 // Mag-fail agad sa loob ng 5s imbes na mag-hang nang matagal
-      });
-      console.log("✅ Database Connected inside authRoutes!");
-    }
-    
+  try {
     const { email, password } = req.body;
 
     // 1. Siguraduhing may laman ang email at password

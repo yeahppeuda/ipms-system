@@ -252,7 +252,6 @@
     <a class="nav-item" href="industrial-design.html" onclick="handleNavAway('industrial-design.html'); return false;"><i class="ti ti-vector-bezier-2"></i><span>Industrial Design</span></a>
     <div class="border-t border-slate-100 my-5"></div>
     <div class="nav-section-label">General</div>
-    <a class="nav-item" href="inventory-of-technology.html"><i class="ti ti-device-desktop-analytics"></i><span>Inventory of Technology</span></a>
     <a class="nav-item" href="event.html"><i class="ti ti-calendar-event"></i><span>Event</span></a>
   </nav>
 </aside>
@@ -383,7 +382,7 @@
         </button>
       </div>
 
-      <div class="overflow-x-auto">
+      <div>
         <table class="w-full text-left border-collapse min-w-[900px]">
           <thead>
             <tr class="bg-slate-50">
@@ -569,10 +568,9 @@
                 class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all"/>
             </div>
             <div>
-              <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-1.5">Date of Filing</label>
-              <div id="display-date-filing" class="text-[14px] font-medium text-on-surface py-1.5">—</div>
+              <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Date of Filing</label>
               <input id="field-date-filing" type="date" disabled onchange="recalcSubstantive(); markDirty();"
-                class="modal-field w-full text-[13px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all hidden"/>
+                class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all"/>
             </div>
           </div>
           <div class="grid grid-cols-2 gap-4">
@@ -585,6 +583,7 @@
                 <option value="College of Engineering">College of Engineering</option>
                 <option value="College of Accounting">College of Accounting</option>
                 <option value="College of Business">College of Business</option>
+              <option value="Faculty">Faculty</option>
               </select>
             </div>
             <div>
@@ -596,11 +595,12 @@
           </div>
           <div>
             <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Author(s)</label>
+            <div id="field-author-pills" style="display:flex;flex-wrap:wrap;gap:6px;min-height:38px;align-items:flex-start;"></div>
             <textarea id="field-author" disabled oninput="markDirty();autoExpand(this);validateAuthorField(this)"
               class="modal-field w-full text-[14px] font-medium text-on-surface rounded-lg py-2.5 px-3 border border-slate-200 bg-slate-50 outline-none transition-all resize-none overflow-hidden"
-              placeholder="Comma-separated names" rows="1"></textarea>
+              placeholder="Separate authors with semicolons ( ; )" rows="1" style="display:none;"></textarea>
             <p id="author-validation-msg" class="hidden text-[10px] text-red-500 font-semibold mt-1">Only letters, spaces, hyphens (-), apostrophes ('), and periods (.) are allowed.</p>
-            <p class="text-[10px] text-outline mt-1">Separate multiple authors with commas</p>
+            <p id="author-hint" class="text-[10px] text-outline mt-1" style="display:none;">Separate multiple authors with semicolons ( ; )</p>
           </div>
           <div class="pt-4">
             <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">
@@ -873,21 +873,31 @@ function toShortDate(ds) {
   if (!ds) return '—';
   const d = new Date(ds + 'T00:00:00');
   if (isNaN(d)) return '—';
-  return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+  return d.toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
 }
 
 /* ── AUTHOR FORMAT: max 2 displayed, "+N more" badge ── */
+function authorParts(str) {
+  if (!str) return [];
+  return str.split(';').map(a => a.trim()).filter(Boolean);
+}
+function makePill(name) {
+  return `<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;color:#424754;background:#f8fafc;border:1px solid #e2e5ef;padding:3px 9px;border-radius:20px;white-space:nowrap;"><i class='ti ti-user' style='font-size:11px;color:#727785;'></i>${name}</span>`;
+}
 function formatAuthors(authorString) {
-  if (!authorString || authorString === 'Unknown') return { html: authorString || '—', full: authorString || '—', hasMore: false };
-  const parts = authorString.split(',').map(a => a.trim()).filter(Boolean);
-  if (parts.length <= 2) return { html: parts.join(', '), full: parts.join(', '), hasMore: false };
-  const shown     = parts.slice(0, 2).join(', ');
-  const remaining = parts.length - 2;
+  if (!authorString || authorString === 'Unknown') return { html: '—', full: '—', hasMore: false, parts: [] };
+  const parts = authorParts(authorString);
+  if (parts.length === 0) return { html: '—', full: '—', hasMore: false, parts: [] };
+  const shownText = parts[0];
+  const remaining = parts.length - 1;
+  const moreBadge = remaining > 0
+    ? ` <span style="display:inline-flex;align-items:center;font-size:10px;font-weight:600;color:#9ca3af;background:#f3f4f6;border:1px solid #e5e7eb;padding:2px 7px;border-radius:20px;margin-left:2px;">+${remaining}</span>`
+    : '';
   return {
-    html: `${shown} <span style="display:inline-flex;align-items:center;font-size:10px;font-weight:600;color:#9ca3af;background:#f3f4f6;border:1px solid #e5e7eb;padding:1px 6px;border-radius:20px;margin-left:2px;">+${remaining}</span>`,
-    full: parts.join(', '),
-    hasMore: true,
-    count: remaining,
+    html: shownText + moreBadge,
+    full: parts.join(' · '),
+    hasMore: remaining > 0,
+    parts,
   };
 }
 
@@ -911,6 +921,7 @@ const MODAL_COLLEGE_DEPTS = {
   'College of Engineering':      ['Industrial Engineering','Electronic Engineering','Computer Engineering'],
   'College of Accounting':       ['Accounting','Management Accounting'],
   'College of Business':         ['Entrepreneurship'],
+  'Faculty':                     ['Faculty'],
 };
 
 function updateModalDeptOptions() {
@@ -988,7 +999,6 @@ function computeRecordFlags(r) {
 function recalcSubstantive() {
   const filing = document.getElementById('field-date-filing').value;
   document.getElementById('display-substantive-deadline').textContent = toReadableDate(addMonths(filing, 18));
-  document.getElementById('display-date-filing').textContent          = toReadableDate(filing);
 }
 
 /* ── DEFECT RENDERING ── */
@@ -1458,7 +1468,7 @@ function cancelHistoryEdit(idx) {
 function mapRecord(item) {
   const title = (item.researchTitle?.trim()) || (item.title?.trim()) || 'No Title';
   let author = 'Unknown';
-  if (Array.isArray(item.authors) && item.authors.length)            author = item.authors.join(', ');
+  if (Array.isArray(item.authors) && item.authors.length)            author = item.authors.join('; ');
   else if (typeof item.author   === 'string' && item.author.trim())   author = item.author.trim();
   else if (typeof item.inventor === 'string' && item.inventor.trim()) author = item.inventor.trim();
   const dept = item.department || item.dept || 'N/A';
@@ -1535,6 +1545,9 @@ function openResearchModal(mongoId) {
   document.getElementById('field-ref').value               = rec.referenceNo || '';
   document.getElementById('field-title').value             = rec.title || '';
   document.getElementById('field-author').value            = rec.author || '';
+  const _pc = document.getElementById('field-author-pills');
+  const _pp = authorParts(rec.author || '');
+  _pc.innerHTML = _pp.length ? _pp.map(makePill).join('') : '<span style="color:#9ca3af;font-size:13px;">—</span>';
   document.getElementById('field-date-filing').value       = rec.dateOfFiling || '';
   document.getElementById('field-gdrive').value            = rec.googleDriveLink || '';
   toggleGDriveBtn();
@@ -1586,7 +1599,7 @@ function openResearchModal(mongoId) {
 function closeModal() { document.getElementById('research-modal').style.display = 'none'; activeMongoId = null; activeSnapshot = null; clearDirty(); }
 
 /* ── VIEW / EDIT MODE ── */
-const EDITABLE_FIELDS  = ['field-title','field-author','field-gdrive','field-ref'];
+const EDITABLE_FIELDS  = ['field-title','field-author','field-gdrive','field-ref','field-date-filing'];
 const EDITABLE_SELECTS = ['field-dept','field-status','field-college'];
 
 function setViewMode() {
@@ -1597,8 +1610,6 @@ function setViewMode() {
     if (id === 'field-status') { updateStatusStyle(el); el.style.backgroundImage = 'none'; el.style.cursor = 'default'; }
     else el.style.backgroundImage = 'none';
   });
-  document.getElementById('field-date-filing').classList.add('hidden');
-  document.getElementById('display-date-filing').classList.remove('hidden');
   document.getElementById('btn-add-defect').classList.add('hidden');
   renderDefects();
   document.getElementById('btn-edit').classList.remove('hidden');
@@ -1607,12 +1618,14 @@ function setViewMode() {
   document.getElementById('btn-open-gdrive').classList.remove('hidden');
   document.getElementById('title-char-count').classList.add('hidden');
   document.getElementById('author-validation-msg').classList.add('hidden');
+  document.getElementById('field-author-pills').style.display = 'flex';
+  document.getElementById('field-author').style.display = 'none';
+  document.getElementById('author-hint').style.display = 'none';
   renderStatusHistory();
 }
 function enterEditMode() {
   isEditModeActive = true;
   EDITABLE_FIELDS.forEach(id => document.getElementById(id).disabled = false);
-  document.getElementById('field-date-filing').disabled = false;
   EDITABLE_SELECTS.forEach(id => {
     const el = document.getElementById(id); el.disabled = false;
     if (id === 'field-status') {
@@ -1620,8 +1633,6 @@ function enterEditMode() {
       el.style.cssText += ';background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 fill=%27none%27 viewBox=%270 0 20 20%27%3E%3Cpath stroke=%27%23374151%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272%27 d=%27M6 8l4 4 4-4%27/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.9rem center;background-size:1.15em;padding-right:2.5rem;cursor:pointer;';
     } else { el.style.removeProperty('background-image'); el.style.removeProperty('padding-right'); }
   });
-  document.getElementById('field-date-filing').classList.remove('hidden');
-  document.getElementById('display-date-filing').classList.add('hidden');
   document.getElementById('btn-add-defect').classList.remove('hidden');
   renderDefects();
   document.getElementById('btn-edit').classList.add('hidden');
@@ -1634,6 +1645,13 @@ function enterEditMode() {
     document.getElementById('title-char-count').classList.remove('hidden');
   }
   document.getElementById('author-validation-msg').classList.add('hidden');
+  document.getElementById('field-author-pills').style.display = 'none';
+  document.getElementById('field-author').style.display = '';
+  document.getElementById('author-hint').style.display = '';
+  requestAnimationFrame(() => {
+    const el = document.getElementById('field-author');
+    if (el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
+  });
   renderStatusHistory();
 }
 function exitEditMode() {
@@ -1690,7 +1708,7 @@ async function confirmSave() {
     status:            document.getElementById('field-status').value,
     date:              document.getElementById('field-date-filing').value,
     referenceId:       document.getElementById('field-ref').value.trim(),
-    authors:           document.getElementById('field-author').value.split(',').map(a => a.trim()).filter(Boolean),
+    authors:           document.getElementById('field-author').value.split(';').map(a => a.trim()).filter(Boolean),
     googleDriveLink:   document.getElementById('field-gdrive').value.trim(),
 
     // ── Status history ──
@@ -1733,7 +1751,11 @@ async function confirmSave() {
     if (idx !== -1) ALL_RECORDS[idx] = merged;
     activeSnapshot = { ...merged };
     _statusHistory = merged.statusHistory ? JSON.parse(JSON.stringify(merged.statusHistory)) : [];
-    updateStats(); filterAndRender(); clearDirty(); setViewMode();
+    const _savedPage = currentPage; updateStats(); filterAndRender(); currentPage = _savedPage; render();
+    const _pc2 = document.getElementById('field-author-pills');
+    const _pp2 = authorParts(merged.author || '');
+    _pc2.innerHTML = _pp2.length ? _pp2.map(makePill).join('') : '<span style="color:#9ca3af;font-size:13px;">—</span>';
+    clearDirty(); setViewMode();
     closeConfirmation(); closeModal();
     showToastMsg('Record saved successfully', 'All changes have been applied.');
   } catch (err) {
@@ -1899,7 +1921,7 @@ async function downloadPDF() {
     return [
       r.referenceNo || '',
       r.title || '',
-      (r.author || '').split(/;\s*/).filter(Boolean).map((a, i, arr) => i < arr.length - 1 ? a.trim() + ',' : a.trim()).join('\n'),
+      (r.author || '').split(/[,;]\s*/).filter(Boolean).map((a, i, arr) => i < arr.length - 1 ? a.trim() + ',' : a.trim()).join('\n'),
       dept === '—' ? '' : dept,
       r.status || '',
       toShortDate(r.dateOfFiling)
@@ -2049,10 +2071,10 @@ function updateTitleCharCount(el) {
 
 /* ── AUTHOR VALIDATION ── */
 function validateAuthorField(el) {
-  const invalid = /[^a-zA-ZÀ-ÿ\s,\-'.]/;
+  const invalid = /[^a-zA-ZÀ-ÿ\s,;\-'.]/;
   const msg = document.getElementById('author-validation-msg');
   if (invalid.test(el.value)) {
-    el.value = el.value.replace(/[^a-zA-ZÀ-ÿ\s,\-'.]/g, '');
+    el.value = el.value.replace(/[^a-zA-ZÀ-ÿ\s,;\-'.]/g, '');
     msg.classList.remove('hidden');
     setTimeout(() => msg.classList.add('hidden'), 3000);
   }
