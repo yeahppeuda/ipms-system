@@ -662,6 +662,7 @@
             <option value="College of Accounting">College of Accounting</option>
             <option value="College of Business">College of Business</option>
             <option value="College of Education">College of Education</option>
+            <option value="Faculty">Faculty</option>
           </select>
         </div>
       </div>
@@ -2117,13 +2118,15 @@ const COLLEGE_DEPTS={
   'College of Accounting':['Accounting','Management Accounting'],
   'College of Business':['Entrepreneurship'],
   'College of Education':['Early Childhood Education'],
+  'Faculty': null,
 };
 function updateDeptOptions(){
   const college=document.getElementById('rm-college').value;
   const deptWrap=document.getElementById('rm-dept-wrap'),deptSel=document.getElementById('rm-dept');
   deptSel.innerHTML='';
-  if(college&&COLLEGE_DEPTS[college]){
-    COLLEGE_DEPTS[college].forEach(d=>{const opt=document.createElement('option');opt.value=d;opt.textContent=d;deptSel.appendChild(opt);});
+  const depts=college&&COLLEGE_DEPTS[college];
+  if(depts&&depts.length){
+    depts.forEach(d=>{const opt=document.createElement('option');opt.value=d;opt.textContent=d;deptSel.appendChild(opt);});
     deptWrap.classList.remove('hidden');deptWrap.style.cssText='animation:fadeSlideIn 0.18s ease;';
   }else{deptWrap.classList.add('hidden');deptWrap.style.cssText='';}
 }
