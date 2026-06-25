@@ -150,19 +150,19 @@
   .cat-badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:600; }
 
   /* ── Confirm dialog (compact corner popover, not a full-screen blocker) ── */
-  .confirm-overlay { position:fixed; inset:0; background:transparent; display:none; align-items:flex-end; justify-content:flex-end; z-index:10010; pointer-events:none; }
-  .confirm-modal { background:#fff; border-radius:14px; border:1px solid #e2e8f0; padding:16px; width:280px; box-shadow:0 12px 32px rgba(0,0,0,0.16); animation:confirmPopIn 0.16s ease; text-align:left; margin:0 24px 24px 0; pointer-events:auto; }
-  @keyframes confirmPopIn { from{opacity:0;transform:translateY(8px) scale(0.98)} to{opacity:1;transform:none} }
-  .confirm-modal-row { display:flex; align-items:flex-start; gap:10px; margin-bottom:12px; }
-  .confirm-icon { width:32px; height:32px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .confirm-overlay { position:fixed; inset:0; background:rgba(15,20,40,0.4); backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center; z-index:10010; pointer-events:none; }
+  .confirm-modal { background:#fff; border-radius:20px; border:1px solid #e2e8f0; padding:32px 28px 28px; width:360px; box-shadow:0 20px 60px rgba(0,0,0,0.15); animation:confirmPopIn 0.2s ease; text-align:center; margin:0; pointer-events:auto; }
+  @keyframes confirmPopIn { from{opacity:0;transform:translateY(8px) scale(0.97)} to{opacity:1;transform:none} }
+  .confirm-icon { width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin:0 auto 20px; }
   .confirm-icon.danger { background:#fee2e2; color:#ef4444; }
   .confirm-icon.warn { background:#fef3c7; color:#b45309; }
-  .confirm-title { font-size:13.5px; font-weight:700; color:#191b23; margin-bottom:2px; }
-  .confirm-msg { font-size:12px; color:#727785; line-height:1.45; }
-  .confirm-btns { display:flex; gap:6px; justify-content:flex-end; }
-  .confirm-btns button { padding:7px 13px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif; transition:background 0.12s,opacity 0.12s; border:none; }
-  .btn-confirm-cancel { background:#f1f5f9; color:#424754; }
-  .btn-confirm-cancel:hover { background:#e6e7f2; }
+  .confirm-icon.primary { background:#e8f0fd; color:#0058be; }
+  .confirm-title { font-size:17px; font-weight:700; color:#191b23; margin-bottom:8px; }
+  .confirm-msg { font-size:13px; color:#727785; line-height:1.55; margin-bottom:24px; }
+  .confirm-btns { display:flex; gap:10px; }
+  .confirm-btns button { flex:1; padding:11px; border-radius:12px; font-size:13px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif; transition:background 0.12s,opacity 0.12s; border:none; }
+  .btn-confirm-cancel { background:#fff; color:#424754; border:1px solid #e2e8f0 !important; }
+  .btn-confirm-cancel:hover { background:#f1f5f9; }
   .btn-confirm-danger { background:#ef4444; color:#fff; }
   .btn-confirm-danger:hover { background:#dc2626; }
   .btn-confirm-primary { background:#0058be; color:#fff; }
@@ -587,13 +587,9 @@
 
 <div class="confirm-overlay" id="confirmOverlay" role="dialog" aria-modal="true">
   <div class="confirm-modal">
-    <div class="confirm-modal-row">
-      <div class="confirm-icon" id="confirmIcon"><span class="material-symbols-outlined" style="font-size:18px;">help</span></div>
-      <div>
-        <div class="confirm-title" id="confirmTitle">Are you sure?</div>
-        <div class="confirm-msg" id="confirmMsg"></div>
-      </div>
-    </div>
+    <div class="confirm-icon" id="confirmIcon"><span class="material-symbols-outlined" style="font-size:26px;">help</span></div>
+    <div class="confirm-title" id="confirmTitle">Are you sure?</div>
+    <div class="confirm-msg" id="confirmMsg"></div>
     <div class="confirm-btns">
       <button class="btn-confirm-cancel" id="confirmCancelBtn">Cancel</button>
       <button id="confirmOkBtn">Confirm</button>
@@ -1234,7 +1230,7 @@ function showConfirmDialog({ title = 'Are you sure?', message = '', confirmLabel
     const cancelBtn = document.getElementById('confirmCancelBtn');
 
     iconEl.className = `confirm-icon ${tone === 'danger' ? 'danger' : 'warn'}`;
-    iconEl.innerHTML  = `<span class="material-symbols-outlined" style="font-size:18px;">${icon}</span>`;
+    iconEl.innerHTML  = `<span class="material-symbols-outlined" style="font-size:26px;font-variation-settings:'FILL' 1;">${icon}</span>`;
     titleEl.textContent = title;
     msgEl.textContent   = message;
     okBtn.textContent    = confirmLabel;
@@ -2045,6 +2041,32 @@ function reviewResearchEntry(){
   if(authors.length>MAX_AUTHORS){errorEl.textContent='Too many authors.';errorEl.classList.remove('hidden');return;}
   const invalidAuthor=authors.find(a=>/[^a-zA-Z\s\.\-,ñÑáéíóúÁÉÍÓÚäëïöüÄËÏÖÜ]/.test(a));
   if(invalidAuthor){errorEl.textContent=`Invalid author name "${invalidAuthor}" — only letters, spaces, and basic punctuation (., -) are allowed. No numbers or special characters.`;errorEl.classList.remove('hidden');return;}
+
+  // Duplicate title check
+  const normalize = s => s.toLowerCase().replace(/\s+/g,' ').trim();
+  const dupRecord = _allRecords.find(r => normalize(r.researchTitle||r.title||'') === normalize(title));
+  if(dupRecord){
+    const dupCat = dupRecord.category ? dupRecord.category.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase()) : 'another registry';
+    errorEl.classList.add('hidden');
+    showConfirmDialog({
+      title: 'Duplicate Title Detected',
+      message: `A research entry with this title already exists under ${dupCat}. Are you sure you want to submit another entry with the same title?`,
+      confirmLabel: 'Proceed Anyway',
+      cancelLabel: 'Go Back',
+      tone: 'warn',
+      icon: 'warning'
+    }).then(confirmed => {
+      if(confirmed) _submitResearchEntry(title,id,dept,deptSel,college,date,authors,googleDriveLink);
+    });
+    return;
+  }
+
+  errorEl.classList.add('hidden');
+  _submitResearchEntry(title,id,dept,deptSel,college,date,authors,googleDriveLink);
+}
+
+function _submitResearchEntry(title,id,dept,deptSel,college,date,authors,googleDriveLink){
+  const errorEl=document.getElementById('rm-error');
   errorEl.classList.add('hidden');
   pendingSubmission={title,id,department:dept,college,date,authors,googleDriveLink,category:selectedCategory,status:'Submitted to IPOPHL'};
   const cat=CATEGORIES.find(c=>c.id===selectedCategory);
