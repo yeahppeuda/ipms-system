@@ -773,9 +773,8 @@
                     <span id="${inputId}-wrap" class="hidden items-center gap-1">
                       <input id="${inputId}" type="date" value="${entry.date}"
                         class="text-[11px] rounded px-1.5 py-0.5 border border-[#93c5fd] bg-white outline-none"
-                        style="color-scheme:light;"/>
-                      <button onclick="confirmHistoryEdit(${i},'${step}')"
-                        class="text-[10px] font-bold text-white bg-primary rounded px-1.5 py-0.5">OK</button>
+                        style="color-scheme:light;"
+                        onkeydown="if(event.key==='Enter'){event.preventDefault();confirmHistoryEdit(${i},'${step}');}else if(event.key==='Escape'){cancelHistoryEdit(${i});}"/>
                       <button onclick="cancelHistoryEdit(${i})"
                         class="text-[10px] font-bold text-on-surface-variant bg-slate-100 rounded px-1.5 py-0.5">✕</button>
                     </span>
@@ -791,9 +790,8 @@
                     <span id="${inputId}-wrap" class="hidden items-center gap-1">
                       <input id="${inputId}" type="date"
                         class="text-[11px] rounded px-1.5 py-0.5 border border-[#93c5fd] bg-white outline-none"
-                        style="color-scheme:light;"/>
-                      <button onclick="confirmHistoryEdit(${i},'${step}')"
-                        class="text-[10px] font-bold text-white bg-primary rounded px-1.5 py-0.5">OK</button>
+                        style="color-scheme:light;"
+                        onkeydown="if(event.key==='Enter'){event.preventDefault();confirmHistoryEdit(${i},'${step}');}else if(event.key==='Escape'){cancelHistoryEdit(${i});}"/>
                       <button onclick="cancelHistoryEdit(${i})"
                         class="text-[10px] font-bold text-on-surface-variant bg-slate-100 rounded px-1.5 py-0.5">✕</button>
                     </span>

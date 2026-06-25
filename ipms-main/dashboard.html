@@ -645,7 +645,7 @@
     <div class="p-7 overflow-y-auto space-y-5 flex-1">
       <div>
         <label class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-2">Research Title</label>
-        <textarea id="rm-title" rows="1" maxlength="300" oninput="updateTitleCount()" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-[13px] text-on-surface resize-none overflow-hidden focus:border-primary focus:ring-2 focus:ring-primary/10 focus:bg-white outline-none transition-all placeholder:text-outline" placeholder="Enter the full research title…"></textarea>
+        <textarea id="rm-title" rows="3" maxlength="300" oninput="updateTitleCount()" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-[13px] text-on-surface resize-none overflow-hidden focus:border-primary focus:ring-2 focus:ring-primary/10 focus:bg-white outline-none transition-all placeholder:text-outline" placeholder="Enter the full research title…" style="min-height:72px;"></textarea>
       </div>
       <div class="grid grid-cols-2 gap-4">
         <div>
@@ -1865,8 +1865,13 @@ function updateTitleCount(){
   ta.style.height=ta.scrollHeight+'px';
 }
 
+function isAllCaps(str){
+  const letters = str.replace(/[^a-zA-Z]/g,'');
+  return letters.length > 0 && letters === letters.toUpperCase();
+}
+
 function toTitleCase(str){
-  if(!str)return str;
+  if(!str) return str;
   const minorWords = new Set(['a','an','the','and','but','or','nor','for','so','yet','at','by','in','of','on','to','up','as','is','it']);
   return str.trim().toLowerCase().split(/\s+/).map((word, i) => {
     const clean = word.replace(/[^a-z]/gi,'');
@@ -1880,8 +1885,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(titleTa){
     titleTa.addEventListener('paste', e => {
       e.preventDefault();
-      const pasted = (e.clipboardData || window.clipboardData).getData('text');
-      const converted = toTitleCase(pasted);
+      const pasted = (e.clipboardData || window.clipboardData).getData('text').trim();
+      const converted = isAllCaps(pasted) ? toTitleCase(pasted) : pasted;
       const start = titleTa.selectionStart;
       const end = titleTa.selectionEnd;
       const current = titleTa.value;
