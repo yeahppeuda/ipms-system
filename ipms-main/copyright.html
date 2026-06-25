@@ -1042,7 +1042,7 @@
 
             const au = formatAuthors(r.author);
             return `
-              <tr data-id="${r.referenceNo}" class="hover:bg-slate-50/70 transition-colors">
+              <tr data-id="${r._id}" class="hover:bg-slate-50/70 transition-colors">
                 <td class="px-5 py-4 text-[12px] font-bold text-on-surface tracking-wide">${r.referenceNo || '—'}</td>
                 <td class="px-5 py-4 text-[13px] text-on-surface font-medium" style="max-width:210px;"><div class="truncate" title="${(r.title||'').replace(/"/g,'"')}">${r.title || ''}</div></td>
                 <td class="px-5 py-4 text-[12px] text-on-surface-variant">
@@ -1075,22 +1075,38 @@
       /* ── HIGHLIGHT LOGIC ── */
       function checkAndHighlightResearch() {
         const highlightId = sessionStorage.getItem('highlightResearchId');
-        if (!highlightId) return;
-
-        const targetElement = document.querySelector(`[data-id="${highlightId}"]`);
-        
-        if (targetElement) {
-          setTimeout(() => {
-            targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            targetElement.classList.add('highlight-row');
-            
-            setTimeout(() => {
-              targetElement.classList.remove('highlight-row');
-            }, 2500);
-          }, 100);
-          
+        if (!highlightId || highlightId === 'undefined') {
           sessionStorage.removeItem('highlightResearchId');
+          return;
         }
+
+        // Match against referenceNo OR _id
+        const idx = filteredRecords.findIndex(r => r._id === highlightId);
+        if (idx === -1) {
+          console.warn('[Highlight] Record not found in filteredRecords for id:', highlightId, '| Total records:', filteredRecords.length, '| Sample:', filteredRecords[0]?.referenceNo);
+          return;
+        }
+
+        // Jump to correct page first
+        if (ROWS_PER_PAGE > 0) {
+          currentPage = Math.floor(idx / ROWS_PER_PAGE) + 1;
+          render();
+        }
+
+        sessionStorage.removeItem('highlightResearchId');
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            const el = document.querySelector(`[data-id="${highlightId}"]`);
+            if (!el) {
+              console.warn('[Highlight] Element not found in DOM for data-id:', highlightId);
+              return;
+            }
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            el.classList.add('highlight-row');
+            setTimeout(() => el.classList.remove('highlight-row'), 2500);
+          });
+        });
       }
 
       /* ── PAGINATION with ellipsis ── */

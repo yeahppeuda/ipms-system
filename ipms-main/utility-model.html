@@ -818,16 +818,30 @@ function filterAndRender() {
 /* ── HIGHLIGHT LOGIC ── */
 function checkAndHighlightResearch() {
   const highlightId = sessionStorage.getItem('highlightResearchId');
-  if (!highlightId) return;
-  const targetElement = document.querySelector(`[data-id="${highlightId}"]`);
-  if (targetElement) {
-    setTimeout(() => {
-      targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      targetElement.classList.add('highlight-row');
-      setTimeout(() => { targetElement.classList.remove('highlight-row'); }, 2500);
-    }, 100);
+  if (!highlightId || highlightId === 'undefined') {
     sessionStorage.removeItem('highlightResearchId');
+    return;
   }
+
+  const idx = filteredRecords.findIndex(r => r._id === highlightId);
+  if (idx === -1) return;
+
+  if (ROWS_PER_PAGE > 0) {
+    currentPage = Math.floor(idx / ROWS_PER_PAGE) + 1;
+    render();
+  }
+
+  sessionStorage.removeItem('highlightResearchId');
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      const el = document.querySelector(`[data-id="${highlightId}"]`);
+      if (!el) return;
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.add('highlight-row');
+      setTimeout(() => el.classList.remove('highlight-row'), 2500);
+    });
+  });
 }
 
 function render() {
@@ -845,7 +859,7 @@ function render() {
   } else {
     emptyEl.classList.add('hidden');
     tbody.innerHTML = page.map(r => `
-      <tr data-id="${r.referenceNo}" class="hover:bg-slate-50/70 transition-colors">
+      <tr data-id="${r._id}" class="hover:bg-slate-50/70 transition-colors">
         <td class="px-5 py-4 text-[12px] font-bold text-on-surface tracking-wide">${r.referenceNo || '—'}</td>
         <td class="px-5 py-4 text-[13px] text-on-surface font-medium max-w-[200px] truncate">${r.title || ''}</td>
         <td class="px-5 py-4 text-[12px] text-on-surface-variant">

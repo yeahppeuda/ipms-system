@@ -1077,7 +1077,7 @@ function runSearch() {
     
     item.addEventListener('click', () => {
       dropdownMenu.classList.add('hidden');
-      sessionStorage.setItem('highlightResearchId', r.referenceId);
+      sessionStorage.setItem('highlightResearchId', r._id || '');
       window.location.href = CATEGORY_ROUTES[catFormatted] || 'copyright.html';
     });
 
@@ -1638,7 +1638,7 @@ function renderRecentList(records) {
       <span class="text-[10px] font-bold px-2 py-1 rounded-full flex-shrink-0 whitespace-nowrap" style="background:${bg};color:${color};">${catLabel}</span>`;
     
     item.addEventListener('click', () => {
-      sessionStorage.setItem('highlightResearchId', r.referenceId);
+      sessionStorage.setItem('highlightResearchId', r._id || '');
       window.location.href = CATEGORY_ROUTES[cat] || 'copyright.html';
     });
       
