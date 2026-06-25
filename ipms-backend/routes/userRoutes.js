@@ -38,9 +38,9 @@ router.get("/", async (req, res) => {
 // ==========================================
 router.post("/", async (req, res) => {
   try {
-    const { email, actor_email, ...userData } = req.body;
+    const { actor_email, ...userData } = req.body;
 
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    const existingUser = await User.findOne({ email: userData.email.toLowerCase() });
     if (existingUser) {
       return res.status(400).json({ message: "Email already registered." });
     }
