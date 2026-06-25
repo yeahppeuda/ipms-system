@@ -81,10 +81,12 @@
     border-radius: 20px; font-size: 11px; font-weight: 600; letter-spacing: 0.01em;
     border-width: 1px; border-style: solid; white-space: nowrap;
   }
-  .badge-submitted { background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); color: #1e40af; border-color: #bfdbfe; }
-  .badge-esoa      { background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); color: #4338ca; border-color: #c4b5fd; }
-  .badge-paid      { background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); color: #065f46; border-color: #6ee7b7; }
-  .badge-approved  { background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); color: #92400e; border-color: #fcd34d; }
+  .badge-submitted   { background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); color: #1e40af; border-color: #bfdbfe; }
+  .badge-esoa        { background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); color: #4338ca; border-color: #c4b5fd; }
+  .badge-paid        { background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); color: #065f46; border-color: #6ee7b7; }
+  .badge-approved    { background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); color: #92400e; border-color: #fcd34d; }
+  .badge-withdrawn   { background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); color: #475569; border-color: #cbd5e1; }
+  .badge-disapproved { background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); color: #991b1b; border-color: #fca5a5; }
   .badge-urgent-pink { background: #fff1f2; color: #be185d; border-color: #ffe4e6; }
   .badge-urgent-red  { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
   .badge-default   { background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); color: #475569; border-color: #cbd5e1; }
@@ -371,6 +373,8 @@
             <button onclick="applyStatusFilter('Received E-SOA')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Received E-SOA">Received E-SOA<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
             <button onclick="applyStatusFilter('Paid')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Paid">Paid<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
             <button onclick="applyStatusFilter('Approved with Certificate')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Approved with Certificate">Approved with Certificate<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
+            <button onclick="applyStatusFilter('Withdrawn')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Withdrawn">Withdrawn<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
+            <button onclick="applyStatusFilter('Disapproved')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-red-700 hover:bg-red-50 flex items-center justify-between transition-colors" data-val="Disapproved">Disapproved<i class="ti ti-check text-red-700 hidden" style="font-size:13px;"></i></button>
             <div class="px-3 py-1.5 mt-1 border-t border-slate-100 text-[10px] font-bold text-outline uppercase tracking-widest">Action Alerts</div>
             <button onclick="applyStatusFilter('Urgent Substantive')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-pink-600 font-semibold hover:bg-pink-50 flex items-center justify-between transition-colors" data-val="Urgent Substantive">Urgent Substantive<i class="ti ti-check text-pink-600 hidden" style="font-size:13px;"></i></button>
             <button onclick="applyStatusFilter('Defect Compliance')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-red-600 font-semibold hover:bg-red-50 flex items-center justify-between transition-colors" data-val="Defect Compliance">Defect Compliance<i class="ti ti-check text-red-600 hidden" style="font-size:13px;"></i></button>
@@ -547,6 +551,8 @@
             <option value="Received E-SOA">Received E-SOA</option>
             <option value="Paid">Paid</option>
             <option value="Approved with Certificate">Approved with Certificate</option>
+            <option value="Withdrawn">Withdrawn</option>
+            <option value="Disapproved">Disapproved</option>
           </select>
         </div>
 
@@ -1136,7 +1142,9 @@ const statusMeta = {
   'Submitted to IPOPHL': { cls:'badge-submitted' },
   'Received E-SOA':   { cls:'badge-esoa'      },
   'Paid':             { cls:'badge-paid'       },
-  'Approved with Certificate':         { cls:'badge-approved'   },
+  'Approved with Certificate': { cls:'badge-approved' },
+  'Withdrawn':        { cls:'badge-withdrawn'  },
+  'Disapproved':      { cls:'badge-disapproved'},
 };
 function statusBadgeHTML(s) { const m = statusMeta[s] || { cls:'badge-default' }; return `<span class="status-badge ${m.cls}">${s || '—'}</span>`; }
 function flagBadgeHTML(f) {
@@ -1147,10 +1155,12 @@ function flagBadgeHTML(f) {
   return b || '<span class="text-[11px] text-outline">—</span>';
 }
 const statusHero = {
-  'Submitted to IPOPHL': { border:'#93c5fd', bg:'#eff6ff', color:'#1d4ed8' },
-  'Received E-SOA':   { border:'#a5b4fc', bg:'#eef2ff', color:'#4338ca' },
-  'Paid':             { border:'#6ee7b7', bg:'#ecfdf5', color:'#065f46' },
-  'Approved with Certificate':         { border:'#fcd34d', bg:'#fffbeb', color:'#92400e' },
+  'Submitted to IPOPHL':       { border:'#93c5fd', bg:'#eff6ff', color:'#1d4ed8' },
+  'Received E-SOA':            { border:'#a5b4fc', bg:'#eef2ff', color:'#4338ca' },
+  'Paid':                      { border:'#6ee7b7', bg:'#ecfdf5', color:'#065f46' },
+  'Approved with Certificate': { border:'#fcd34d', bg:'#fffbeb', color:'#92400e' },
+  'Withdrawn':                 { border:'#cbd5e1', bg:'#f8fafc', color:'#475569' },
+  'Disapproved':               { border:'#fca5a5', bg:'#fef2f2', color:'#991b1b' },
 };
 function updateStatusStyle(sel) {
   const s = statusHero[sel.value] || { border:'#e2e8f0', bg:'#f8fafc', color:'#334155' };
@@ -1162,7 +1172,8 @@ function updateStats() {
   const active = ALL_RECORDS.filter(r => !r.archived);
   document.getElementById('stat-total').textContent    = active.length;
   document.getElementById('stat-approved').textContent = active.filter(r => r.status === 'Approved with Certificate').length;
-  document.getElementById('stat-pending').textContent  = active.filter(r => r.status !== 'Approved with Certificate').length;
+  const closedStatuses = ['Approved with Certificate', 'Withdrawn', 'Disapproved'];
+  document.getElementById('stat-pending').textContent  = active.filter(r => !closedStatuses.includes(r.status)).length;
   let ser = 0, fd = 0;
   active.forEach(r => { const f = computeRecordFlags(r); if (f.isUrgentSubstantive) ser++; if (f.isUrgentCompliance) fd++; });
 
@@ -1343,6 +1354,8 @@ const STATUS_STEPS = [
   'Received E-SOA',
   'Paid',
   'Approved with Certificate',
+  'Withdrawn',
+  'Disapproved',
 ];
 
 let _statusHistory = [];
