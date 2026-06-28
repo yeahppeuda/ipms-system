@@ -10,19 +10,21 @@ const { createLog } = require('../utils/logger');
 // 2) Permanently deletes archived records past their scheduledDeletionDate (6 months).
 async function runArchiveLifecycle() {
   try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayStr = today.toISOString().split('T')[0];
+    // ── Use Philippine time (UTC+8) for all date comparisons ──────────────────
+    // Vercel runs on UTC, so without this fix, dates can be off by 1 day
+    // for users in the Philippines (e.g. June 29 PH = still June 28 UTC).
+    const todayStr       = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+    const todayPH        = new Date(todayStr + 'T00:00:00+08:00');
 
     // ── STEP 1: Auto-archive records >= 5 years old ──────────────────────────
-    const fiveYearsAgo = new Date(today);
-    fiveYearsAgo.setFullYear(fiveYearsAgo.getFullYear() - 5);
-    const fiveYearsAgoStr = fiveYearsAgo.toISOString().split('T')[0];
+    const fiveYearsAgoPH = new Date(todayStr + 'T00:00:00+08:00');
+    fiveYearsAgoPH.setFullYear(fiveYearsAgoPH.getFullYear() - 5);
+    const fiveYearsAgoStr = fiveYearsAgoPH.toISOString().split('T')[0];
 
     // scheduledDeletionDate = archivedAt + 6 months
-    const sixMonthsLater = new Date(today);
-    sixMonthsLater.setMonth(sixMonthsLater.getMonth() + 6);
-    const deletionStr = sixMonthsLater.toISOString().split('T')[0];
+    const sixMonthsLaterPH = new Date(todayStr + 'T00:00:00+08:00');
+    sixMonthsLaterPH.setMonth(sixMonthsLaterPH.getMonth() + 6);
+    const deletionStr = sixMonthsLaterPH.toISOString().split('T')[0];
 
     const autoArchiveResult = await Research.updateMany(
       {
@@ -53,9 +55,9 @@ async function runArchiveLifecycle() {
     // ── STEP 2: Permanently delete records past scheduledDeletionDate ─────────
     // Primary: use scheduledDeletionDate field
     // Fallback: archiveDate + 180 days for legacy records without the field
-    const legacyCutoff = new Date(today);
-    legacyCutoff.setDate(legacyCutoff.getDate() - 180);
-    const legacyCutoffStr = legacyCutoff.toISOString().split('T')[0];
+    const legacyCutoffPH = new Date(todayStr + 'T00:00:00+08:00');
+    legacyCutoffPH.setDate(legacyCutoffPH.getDate() - 180);
+    const legacyCutoffStr = legacyCutoffPH.toISOString().split('T')[0];
 
     const toDelete = await Research.find({
       archived: true,
