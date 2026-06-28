@@ -14,8 +14,10 @@ const ResearchSchema = new mongoose.Schema({
   statusHistory:     { type: [{ status: String, date: String }], default: [] },
 
   // Archive Retention System Fields
-  archived:          { type: Boolean, default: false },
-  archiveDate:       { type: String, default: "" },
+  archived:              { type: Boolean, default: false },
+  archiveDate:           { type: String, default: "" },
+  archivedAt:            { type: String, default: "" },   // ISO date when archived (auto or manual)
+  scheduledDeletionDate: { type: String, default: "" },   // archivedAt + 6 months — permanent delete date
 
   // Formality Defect tracking (for patent) — full array with remarks
   defects: {

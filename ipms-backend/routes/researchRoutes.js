@@ -3,6 +3,85 @@ const router   = express.Router();
 const Research = require("../models/Research");
 const { createLog } = require('../utils/logger');
 
+// ── ARCHIVE LIFECYCLE HELPER ─────────────────────────────────────────────────
+// Called automatically on every GET /research so no cron job is needed.
+// 1) Auto-archives records whose Date Applied (date) is >= 5 years old.
+// 2) Permanently deletes archived records past their scheduledDeletionDate (6 months).
+async function runArchiveLifecycle() {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayStr = today.toISOString().split('T')[0];
+
+    // ── STEP 1: Auto-archive records >= 5 years old ──────────────────────────
+    const fiveYearsAgo = new Date(today);
+    fiveYearsAgo.setFullYear(fiveYearsAgo.getFullYear() - 5);
+    const fiveYearsAgoStr = fiveYearsAgo.toISOString().split('T')[0];
+
+    // scheduledDeletionDate = archivedAt + 6 months
+    const sixMonthsLater = new Date(today);
+    sixMonthsLater.setMonth(sixMonthsLater.getMonth() + 6);
+    const deletionStr = sixMonthsLater.toISOString().split('T')[0];
+
+    const autoArchiveResult = await Research.updateMany(
+      {
+        archived: { $ne: true },
+        date: { $exists: true, $ne: "", $lte: fiveYearsAgoStr }
+      },
+      {
+        $set: {
+          archived:              true,
+          archiveDate:           todayStr,
+          archivedAt:            todayStr,
+          scheduledDeletionDate: deletionStr
+        }
+      }
+    );
+
+    if (autoArchiveResult.modifiedCount > 0) {
+      await createLog({
+        user: "System/Auto-Archive",
+        action: "Archive",
+        module: "Reports",
+        desc: `Auto-archived ${autoArchiveResult.modifiedCount} IP record(s) that reached 5-year retention.`,
+        severity: "warning"
+      });
+    }
+
+    // ── STEP 2: Permanently delete records past scheduledDeletionDate ─────────
+    // Primary: use scheduledDeletionDate field
+    // Fallback: archiveDate + 180 days for legacy records without the field
+    const legacyCutoff = new Date(today);
+    legacyCutoff.setDate(legacyCutoff.getDate() - 180);
+    const legacyCutoffStr = legacyCutoff.toISOString().split('T')[0];
+
+    const toDelete = await Research.find({
+      archived: true,
+      $or: [
+        { scheduledDeletionDate: { $exists: true, $ne: "", $lte: todayStr } },
+        {
+          scheduledDeletionDate: { $in: [null, ""] },
+          archiveDate: { $exists: true, $ne: "", $lte: legacyCutoffStr }
+        }
+      ]
+    });
+
+    for (const r of toDelete) {
+      await Research.findByIdAndDelete(r._id);
+      await createLog({
+        user: "System/Auto-Delete",
+        action: "Delete",
+        module: r.category || "Reports",
+        desc: `Permanently deleted archived IP record: "${r.researchTitle}" (Ref ID: ${r.referenceId || 'N/A'}) — retention period expired.`,
+        severity: "critical"
+      });
+    }
+  } catch (err) {
+    console.error("❌ runArchiveLifecycle error:", err.message);
+  }
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 // ── CREATE (Mag-add ng bagong IP Asset) ─────────────────────────
 router.post("/", async (req, res) => {
   try {
@@ -28,6 +107,7 @@ router.post("/", async (req, res) => {
 // ── GET ALL ─────────────────────────────────────────
 router.get("/", async (req, res) => {
   try {
+    await runArchiveLifecycle();
     const data = await Research.find().sort({ createdAt: -1 });
     res.json(data);
   } catch (err) {
@@ -66,8 +146,10 @@ router.put("/:id", async (req, res) => {
     if (b.defects          !== undefined) updateData.defects           = b.defects;
 
     // Archive Flow variables mapping
-    if (b.archived        !== undefined) updateData.archived       = b.archived;
-    if (b.archiveDate     !== undefined) updateData.archiveDate    = b.archiveDate;
+    if (b.archived        !== undefined) updateData.archived              = b.archived;
+    if (b.archiveDate     !== undefined) updateData.archiveDate           = b.archiveDate;
+    if (b.archivedAt      !== undefined) updateData.archivedAt            = b.archivedAt;
+    if (b.scheduledDeletionDate !== undefined) updateData.scheduledDeletionDate = b.scheduledDeletionDate;
 
     // Always write defect fields explicitly
     updateData.defectNoticeDate  = strOrNull(b.defectNoticeDate);

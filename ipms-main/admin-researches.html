@@ -11,6 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
 <script>
   tailwind.config = {
     theme: {
@@ -141,6 +142,30 @@
   /* Archived row tint */
   .archived-row { background: #fffbeb !important; }
   .archived-row:hover { background: #fef3c7 !important; }
+
+  /* Export Excel button */
+  .btn-export-excel {
+    display: inline-flex; align-items: center; gap: 5px; padding: 7px 14px;
+    border-radius: 8px; font-size: 12.5px; font-weight: 600; color: #166534;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border: 1px solid #86efac; cursor: pointer;
+    transition: all 0.18s; position: relative; overflow: hidden; white-space: nowrap;
+  }
+  .btn-export-excel::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,#16a34a,#15803d); opacity:0; transition:opacity 0.18s; border-radius:inherit; }
+  .btn-export-excel:hover::before { opacity:1; }
+  .btn-export-excel:hover { color:#fff; border-color:#16a34a; transform:translateY(-1px); box-shadow:0 3px 10px rgba(22,163,74,0.22); }
+  .btn-export-excel i, .btn-export-excel span { position:relative; z-index:1; }
+
+  /* Export preview modal table */
+  #export-preview-table th { background:#f8fafc; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#727785; padding:7px 10px; border-bottom:1px solid #e2e5ef; white-space:nowrap; }
+  #export-preview-table td { font-size:11.5px; padding:7px 10px; border-bottom:1px solid #f1f5f9; color:#424754; }
+  #export-preview-table tr:last-child td { border-bottom:none; }
+  #export-preview-table tr:hover td { background:#f8fafc; }
+
+  #export-all-preview-table th { background:#f8fafc; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#727785; padding:7px 10px; border-bottom:1px solid #e2e5ef; white-space:nowrap; }
+  #export-all-preview-table td { font-size:11.5px; padding:7px 10px; border-bottom:1px solid #f1f5f9; color:#424754; }
+  #export-all-preview-table tr:last-child td { border-bottom:none; }
+  #export-all-preview-table tr:hover td { background:#f8fafc; }
 </style>
 </head>
 <body>
@@ -280,6 +305,17 @@
               <button onclick="applyCategoryFilter('Industrial Design')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Industrial Design">Industrial Design<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
             </div>
           </div>
+
+          <!-- Export All (Active) icon button: only visible in Active tab -->
+          <button id="export-all-btn" onclick="openAllExportModal()" title="Export All Researches to Excel"
+            class="w-9 h-9 flex items-center justify-center rounded-lg border border-[#86efac] bg-gradient-to-br from-[#f0fdf4] to-[#dcfce7] text-[#166534] hover:from-[#16a34a] hover:to-[#15803d] hover:text-white hover:border-[#16a34a] hover:shadow-[0_3px_10px_rgba(22,163,74,0.22)] transition-all duration-[180ms]">
+            <i class="ti ti-file-spreadsheet" style="font-size:16px;"></i>
+          </button>
+
+          <!-- Export Excel button: only visible in Archived tab -->
+          <button id="export-excel-btn" class="w-9 h-9 flex items-center justify-center rounded-lg border border-[#86efac] bg-gradient-to-br from-[#f0fdf4] to-[#dcfce7] text-[#166534] hover:from-[#16a34a] hover:to-[#15803d] hover:text-white hover:border-[#16a34a] hover:shadow-[0_3px_10px_rgba(22,163,74,0.22)] transition-all duration-[180ms] hidden" onclick="openExportModal()" title="Export Archived Records to Excel">
+            <i class="ti ti-file-spreadsheet" style="font-size:16px;"></i>
+          </button>
         </div>
       </div>
 
@@ -309,7 +345,7 @@
 
       <div id="archived-notice" class="hidden mx-5 mb-3 mt-1 flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
         <i class="ti ti-info-circle text-amber-600 flex-shrink-0" style="font-size:18px;"></i>
-        <p class="text-[12px] text-amber-800 font-medium">Archived records are retained for <strong>1 year</strong> from archival date, after which they are <strong>automatically and permanently deleted</strong>.</p>
+        <p class="text-[12px] text-amber-800 font-medium">Archived records are retained for <strong>6 months</strong> from archival date, after which they are <strong>automatically and permanently deleted</strong>.</p>
       </div>
 
       <div class="px-6 py-4 border-t border-outline-variant flex flex-col sm:flex-row items-center justify-between gap-3">
@@ -451,7 +487,7 @@
         </div>
         <div class="flex items-center gap-2 text-[12px] text-on-surface-variant">
           <i class="ti ti-clock text-outline" style="font-size:14px;"></i>
-          <span>Retention: <strong class="text-on-surface">1 year (365 days)</strong></span>
+          <span>Retention: <strong class="text-on-surface">6 months (180 days)</strong></span>
         </div>
       </div>
     </div>
@@ -483,6 +519,174 @@
   </div>
 </div>
 
+
+<!-- ═══════════════════════════════════════════
+     EXPORT TO EXCEL PREVIEW MODAL
+═══════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════
+     EXPORT ALL RESEARCHES MODAL (active only)
+═══════════════════════════════════════════ -->
+<div id="export-all-modal" class="fixed inset-0 z-[80] items-center justify-center p-4 bg-on-surface/50 backdrop-blur-sm" style="display:none;">
+  <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden flex flex-col" style="max-height:92vh;">
+
+    <div class="bg-green-50 border-b border-green-200 px-7 py-5 flex items-center justify-between shrink-0">
+      <div class="flex items-center gap-4">
+        <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+          <i class="ti ti-file-spreadsheet text-green-700" style="font-size:20px;"></i>
+        </div>
+        <div>
+          <h3 class="text-[16px] font-bold text-green-900">Export All Active Researches</h3>
+          <p class="text-[12px] text-green-700 font-medium mt-0.5">Archived records are excluded from this export</p>
+        </div>
+      </div>
+      <button onclick="closeAllExportModal()" class="p-2 hover:bg-green-100 rounded-full transition-colors text-green-700 ml-4 flex-shrink-0">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+
+    <!-- Date Range Filter -->
+    <div class="px-7 py-4 border-b border-outline-variant bg-slate-50 shrink-0">
+      <p class="text-[11px] font-bold text-outline uppercase tracking-widest mb-3">Filter by Date Applied Range</p>
+      <div class="flex items-center gap-4 flex-wrap">
+        <div class="flex items-center gap-2">
+          <label class="text-[12px] font-semibold text-on-surface-variant whitespace-nowrap">From:</label>
+          <input id="export-all-date-from" type="date"
+            class="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-[13px] focus:ring-1 focus:ring-primary focus:border-primary outline-none"
+            onchange="refreshAllExportPreview()" />
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="text-[12px] font-semibold text-on-surface-variant whitespace-nowrap">To:</label>
+          <input id="export-all-date-to" type="date"
+            class="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-[13px] focus:ring-1 focus:ring-primary focus:border-primary outline-none"
+            onchange="refreshAllExportPreview()" />
+        </div>
+        <p id="export-all-preview-count" class="text-[12px] font-semibold text-primary ml-auto"></p>
+      </div>
+    </div>
+
+    <!-- Preview Table (active) -->
+    <div class="flex-1 overflow-y-auto px-7 py-4">
+      <p class="text-[11px] font-bold text-outline uppercase tracking-widest mb-2">Preview (first 50 records shown)</p>
+      <div class="rounded-xl border border-slate-200 overflow-hidden">
+        <table id="export-all-preview-table" class="w-full text-left border-collapse" style="table-layout:fixed;">
+          <thead>
+            <tr>
+              <th style="width:12%;">Ref No.</th>
+              <th style="width:26%;">Title</th>
+              <th style="width:18%;">Author(s)</th>
+              <th style="width:14%;">Category</th>
+              <th style="width:16%;">Status</th>
+              <th style="width:14%;">Date Applied</th>
+            </tr>
+          </thead>
+          <tbody id="export-all-preview-tbody">
+            <tr><td colspan="6" class="text-center py-6 text-[13px] text-outline">Loading preview…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-start gap-2">
+        <i class="ti ti-info-circle text-amber-600 flex-shrink-0 mt-0.5" style="font-size:15px;"></i>
+        <p class="text-[11.5px] text-amber-800">
+          The exported file will include <strong>all relevant fields</strong>: Reference No., Title, Authors, Department/College, Category, Status, Date Applied, and Google Drive Link.
+          File format: <strong>CSV (opens in Excel / Google Sheets)</strong>.
+        </p>
+      </div>
+    </div>
+
+    <div class="px-7 py-4 bg-slate-50 border-t border-outline-variant flex items-center justify-between gap-3 shrink-0">
+      <button onclick="closeAllExportModal()" class="px-5 py-2.5 text-[13px] font-semibold text-on-surface-variant bg-white border border-slate-200 hover:border-slate-300 rounded-xl transition-all">Cancel</button>
+      <button onclick="doExportAllExcel()" class="btn-export-excel" style="padding:10px 20px; border-radius:12px; font-size:13px;">
+        <i class="ti ti-download" style="font-size:15px;"></i>
+        <span>Download Excel File</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     EXPORT TO EXCEL PREVIEW MODAL (archived)
+═══════════════════════════════════════════ -->
+<div id="export-modal" class="fixed inset-0 z-[80] items-center justify-center p-4 bg-on-surface/50 backdrop-blur-sm" style="display:none;">
+  <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden flex flex-col" style="max-height:92vh;">
+
+    <!-- Header -->
+    <div class="bg-green-50 border-b border-green-200 px-7 py-5 flex items-center justify-between shrink-0">
+      <div class="flex items-center gap-4">
+        <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+          <i class="ti ti-file-spreadsheet text-green-700" style="font-size:20px;"></i>
+        </div>
+        <div>
+          <h3 class="text-[16px] font-bold text-green-900">Export Archived Records to Excel</h3>
+          <p class="text-[12px] text-green-700 font-medium mt-0.5">Select a date range then preview before exporting</p>
+        </div>
+      </div>
+      <button onclick="closeExportModal()" class="p-2 hover:bg-green-100 rounded-full transition-colors text-green-700 ml-4 flex-shrink-0">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+
+    <!-- Date Range Filter -->
+    <div class="px-7 py-4 border-b border-outline-variant bg-slate-50 shrink-0">
+      <p class="text-[11px] font-bold text-outline uppercase tracking-widest mb-3">Filter by Archive Date Range</p>
+      <div class="flex items-center gap-4 flex-wrap">
+        <div class="flex items-center gap-2">
+          <label class="text-[12px] font-semibold text-on-surface-variant whitespace-nowrap">From:</label>
+          <input id="export-date-from" type="date"
+            class="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-[13px] focus:ring-1 focus:ring-primary focus:border-primary outline-none"
+            onchange="refreshExportPreview()" />
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="text-[12px] font-semibold text-on-surface-variant whitespace-nowrap">To:</label>
+          <input id="export-date-to" type="date"
+            class="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-[13px] focus:ring-1 focus:ring-primary focus:border-primary outline-none"
+            onchange="refreshExportPreview()" />
+        </div>
+        <p id="export-preview-count" class="text-[12px] font-semibold text-primary ml-auto"></p>
+      </div>
+    </div>
+
+    <!-- Preview Table -->
+    <div class="flex-1 overflow-y-auto px-7 py-4">
+      <p class="text-[11px] font-bold text-outline uppercase tracking-widest mb-2">Preview (first 50 records shown)</p>
+      <div class="rounded-xl border border-slate-200 overflow-hidden">
+        <table id="export-preview-table" class="w-full text-left border-collapse" style="table-layout:fixed;">
+          <thead>
+            <tr>
+              <th style="width:12%;">Ref No.</th>
+              <th style="width:24%;">Title</th>
+              <th style="width:14%;">Category</th>
+              <th style="width:14%;">Date Applied</th>
+              <th style="width:14%;">Archive Date</th>
+              <th style="width:14%;">Deletion Date</th>
+            </tr>
+          </thead>
+          <tbody id="export-preview-tbody">
+            <tr><td colspan="6" class="text-center py-6 text-[13px] text-outline">Loading preview…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-start gap-2">
+        <i class="ti ti-info-circle text-amber-600 flex-shrink-0 mt-0.5" style="font-size:15px;"></i>
+        <p class="text-[11.5px] text-amber-800">
+          The exported file will include <strong>all relevant fields</strong>: Reference No., Title, Authors, Department/College, Category, Status, Date Applied, Archive Date, Scheduled Deletion Date, and Google Drive Link.
+          File format: <strong>CSV (opens in Excel / Google Sheets)</strong>.
+        </p>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="px-7 py-4 bg-slate-50 border-t border-outline-variant flex items-center justify-between gap-3 shrink-0">
+      <button onclick="closeExportModal()" class="px-5 py-2.5 text-[13px] font-semibold text-on-surface-variant bg-white border border-slate-200 hover:border-slate-300 rounded-xl transition-all">Cancel</button>
+      <button onclick="doExportExcel()" class="btn-export-excel" style="padding:10px 20px; font-size:13px; border-radius:12px;">
+        <i class="ti ti-download" style="font-size:15px;"></i>
+        <span>Download Excel File</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <div id="success-toast"
   class="fixed bottom-8 right-8 z-[90] flex items-center gap-3 bg-white border border-emerald-200 shadow-xl rounded-2xl px-5 py-4 pointer-events-none"
   style="opacity:0; transform:translateY(12px); transition:opacity 0.25s ease, transform 0.25s ease; min-width:260px;">
@@ -503,7 +707,7 @@
 /* ════════════════════════════════
    CONFIGURATION (API BASE URL)
 ════════════════════════════════ */
-const API_BASE_URL = "https://ipms-system.vercel.app/api"; 
+const API_BASE_URL = "https://ipms-system.vercel.app/api";
 
 /* ════════════════════════════════
    HELPERS
@@ -592,7 +796,7 @@ function daysRemaining(deleteDate) {
 
 function retentionPct(archiveDate) {
   const start = new Date(archiveDate.split('T')[0] + 'T00:00:00');
-  const end   = new Date(archiveDate.split('T')[0] + 'T00:00:00'); end.setFullYear(end.getFullYear() + 1);
+  const end   = new Date(archiveDate.split('T')[0] + 'T00:00:00'); end.setDate(end.getDate() + 180);
   const now   = new Date(); now.setHours(0,0,0,0);
   const total = end - start;
   const elapsed = now - start;
@@ -671,11 +875,14 @@ async function loadDataFromDatabase() {
         referenceNo: record.referenceId || '—',
         title: record.researchTitle || '—',
         dateApplied: record.date || '',
-        archived: normalizeArchived(record.archived)
+        archived: normalizeArchived(record.archived),
+        archivedAt: record.archivedAt || record.archiveDate || null,
+        scheduledDeletionDate: record.scheduledDeletionDate || null
       };
     });
 
     updateStats();
+    autoArchiveByDate();   // auto-archive records >= 5 years old
     filterAndRender();
 
   } catch (error) {
@@ -699,7 +906,7 @@ function updateStats() {
   const approved = active.filter(r => r.status === 'Approved with Certificate');
   const expiring = archived.filter(r => {
     if (!r.archiveDate) return false;
-    return daysRemaining(addDays(r.archiveDate, 365)) <= 90;
+    return daysRemaining(addDays(r.archiveDate, 180)) <= 90;
   });
   document.getElementById('stat-total').textContent    = ALL_RECORDS.length;
   document.getElementById('stat-approved').textContent = approved.length;
@@ -721,6 +928,14 @@ function switchTab(tab) {
   th.textContent = tab === 'archived' ? 'Archive / Delete Date' : 'Date Applied';
 
   document.getElementById('archived-notice').classList.toggle('hidden', tab === 'active');
+
+  // Show/hide Export Excel button in Archived tab
+  const exportBtn = document.getElementById('export-excel-btn');
+  if (exportBtn) exportBtn.classList.toggle('hidden', tab === 'active');
+
+  // Show/hide Export All button in Active tab
+  const exportAllBtn = document.getElementById('export-all-btn');
+  if (exportAllBtn) exportAllBtn.classList.toggle('hidden', tab === 'archived');
 
   currentPage = 1;
   filterAndRender();
@@ -793,7 +1008,7 @@ function render() {
 
       let dynamicCell;
       if (activeTab === 'archived' && r.archiveDate) {
-        const delDate   = addDays(r.archiveDate, 365);
+        const delDate   = r.scheduledDeletionDate || addDays(r.archivedAt || r.archiveDate, 180);
         const remaining = daysRemaining(delDate);
         const pct       = retentionPct(r.archiveDate);
         const barCls    = pct > 50 ? 'retention-high' : pct > 20 ? 'retention-medium' : 'retention-low';
@@ -950,11 +1165,12 @@ function openDetailModal(id) {
   const archiveSec = document.getElementById('dm-archive-section');
   if (r.archived && r.archiveDate) {
     archiveSec.classList.remove('hidden');
-    const delDate   = addDays(r.archiveDate, 365);
+    const archDateStr = r.archivedAt || r.archiveDate;
+    const delDate   = r.scheduledDeletionDate || addDays(archDateStr, 180);
     const remaining = daysRemaining(delDate);
-    const pct       = retentionPct(r.archiveDate);
+    const pct       = retentionPct(archDateStr);
     const barCls    = pct > 50 ? 'retention-high' : pct > 20 ? 'retention-medium' : 'retention-low';
-    document.getElementById('dm-archive-date').textContent     = fmt(r.archiveDate);
+    document.getElementById('dm-archive-date').textContent     = fmt(archDateStr);
     document.getElementById('dm-delete-date').textContent      = fmt(delDate);
     document.getElementById('dm-retention-text').textContent   = `${remaining} day${remaining!==1?'s':''} remaining`;
     document.getElementById('dm-retention-pct').textContent    = `${pct}% remaining`;
@@ -986,7 +1202,7 @@ function openArchiveConfirm(id) {
   if (!r) return;
   pendingArchiveId = id;
   const archiveDate = new Date().toISOString().split('T')[0];
-  const deleteDate  = addDays(archiveDate, 365);
+  const deleteDate  = addDays(archiveDate, 180);
   document.getElementById('archive-confirm-title').textContent = `"${r.title.slice(0,50)}${r.title.length>50?'…':''}"`;
   document.getElementById('archive-confirm-date').textContent   = fmt(archiveDate);
   document.getElementById('archive-confirm-delete').textContent = fmt(deleteDate);
@@ -1001,18 +1217,27 @@ async function confirmArchive() {
   const todayDate = new Date().toISOString().split('T')[0];
 
   try {
+    const scheduledDel = addDays(todayDate, 180);
     const response = await fetch(`${API_BASE_URL}/research/${pendingArchiveId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ archived: true, archiveDate: todayDate, actor_email: getCurrentUser()?.email || '' })
+      body: JSON.stringify({
+        archived: true,
+        archiveDate: todayDate,
+        archivedAt: todayDate,
+        scheduledDeletionDate: scheduledDel,
+        actor_email: getCurrentUser()?.email || ''
+      })
     });
 
     if (!response.ok) throw new Error('Failed to update data on the database.');
 
     const idx = ALL_RECORDS.findIndex(r => r.id === pendingArchiveId);
     if (idx !== -1) {
-      ALL_RECORDS[idx].archived    = true;
-      ALL_RECORDS[idx].archiveDate = todayDate;
+      ALL_RECORDS[idx].archived              = true;
+      ALL_RECORDS[idx].archiveDate           = todayDate;
+      ALL_RECORDS[idx].archivedAt            = todayDate;
+      ALL_RECORDS[idx].scheduledDeletionDate = scheduledDel;
     }
     
     closeArchiveModal();
@@ -1048,15 +1273,17 @@ async function confirmRestore() {
     const response = await fetch(`${API_BASE_URL}/research/${pendingRestoreId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ archived: false, archiveDate: "", actor_email: getCurrentUser()?.email || '' })
+      body: JSON.stringify({ archived: false, archiveDate: "", archivedAt: null, scheduledDeletionDate: null, actor_email: getCurrentUser()?.email || '' })
     });
 
     if (!response.ok) throw new Error('Failed to restore data in database.');
 
     const idx = ALL_RECORDS.findIndex(r => r.id === pendingRestoreId);
     if (idx !== -1) {
-      ALL_RECORDS[idx].archived    = false;
-      ALL_RECORDS[idx].archiveDate = null;
+      ALL_RECORDS[idx].archived              = false;
+      ALL_RECORDS[idx].archiveDate           = null;
+      ALL_RECORDS[idx].archivedAt            = null;
+      ALL_RECORDS[idx].scheduledDeletionDate = null;
     }
 
     closeRestoreModal();
@@ -1085,6 +1312,376 @@ function showToast(title, body) {
     bar.style.transition = 'width 3.3s linear'; bar.style.width = '0%';
   }));
   setTimeout(() => { toast.style.opacity='0'; toast.style.transform='translateY(12px)'; }, 3500);
+}
+
+
+/* ════════════════════════════════
+   AUTO-ARCHIVE: Records >= 5 years from dateApplied
+════════════════════════════════ */
+async function autoArchiveByDate() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const FIVE_YEARS_MS = 5 * 365.25 * 24 * 60 * 60 * 1000;
+  const todayStr = today.toISOString().split('T')[0];
+
+  const toArchive = ALL_RECORDS.filter(r => {
+    if (r.archived) return false;
+    if (!r.dateApplied) return false;
+    const applied = new Date(r.dateApplied.split('T')[0] + 'T00:00:00');
+    if (isNaN(applied)) return false;
+    return (today - applied) >= FIVE_YEARS_MS;
+  });
+
+  if (toArchive.length === 0) return;
+
+  console.log(`[AutoArchive] ${toArchive.length} record(s) reached 5-year retention. Archiving…`);
+
+  for (const r of toArchive) {
+    try {
+      const scheduledDel = addDays(todayStr, 180);
+      const res = await fetch(`${API_BASE_URL}/research/${r.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          archived: true,
+          archiveDate: todayStr,
+          archivedAt: todayStr,
+          scheduledDeletionDate: scheduledDel,
+          actor_email: 'system-auto-archive'
+        })
+      });
+      if (res.ok) {
+        const idx = ALL_RECORDS.findIndex(x => x.id === r.id);
+        if (idx !== -1) {
+          ALL_RECORDS[idx].archived              = true;
+          ALL_RECORDS[idx].archiveDate           = todayStr;
+          ALL_RECORDS[idx].archivedAt            = todayStr;
+          ALL_RECORDS[idx].scheduledDeletionDate = scheduledDel;
+        }
+        console.log(`[AutoArchive] Archived: ${r.title || r.id}`);
+      }
+    } catch (err) {
+      console.warn('[AutoArchive] Error archiving record:', r.id, err);
+    }
+  }
+
+  if (toArchive.length > 0) {
+    updateStats();
+    filterAndRender();
+    showToast(
+      'Auto-Archive Complete',
+      `${toArchive.length} record${toArchive.length > 1 ? 's' : ''} reached 5-year retention and were automatically archived.`
+    );
+  }
+}
+
+/* ════════════════════════════════
+   EXPORT ALL ACTIVE RESEARCHES
+════════════════════════════════ */
+let exportAllRecords = [];
+
+function openAllExportModal() {
+  const active = ALL_RECORDS.filter(r => !r.archived);
+  const dates = active.map(r => r.dateApplied).filter(Boolean).sort();
+  document.getElementById('export-all-date-from').value = dates[0] || '';
+  document.getElementById('export-all-date-to').value   = dates[dates.length - 1] || '';
+
+  refreshAllExportPreview();
+  document.getElementById('export-all-modal').style.display = 'flex';
+}
+
+function refreshAllExportPreview() {
+  const from  = document.getElementById('export-all-date-from').value;
+  const to    = document.getElementById('export-all-date-to').value;
+  const fromD = from ? new Date(from + 'T00:00:00') : null;
+  const toD   = to   ? new Date(to   + 'T23:59:59') : null;
+
+  exportAllRecords = ALL_RECORDS.filter(r => {
+    if (r.archived) return false;
+    const d = r.dateApplied ? new Date(r.dateApplied.split('T')[0] + 'T00:00:00') : null;
+    if (fromD && (!d || d < fromD)) return false;
+    if (toD   && (!d || d > toD))   return false;
+    return true;
+  });
+
+  const countEl = document.getElementById('export-all-preview-count');
+  countEl.textContent = `${exportAllRecords.length} record${exportAllRecords.length !== 1 ? 's' : ''} will be included`;
+
+  const tbody = document.getElementById('export-all-preview-tbody');
+  if (exportAllRecords.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-[13px] text-outline">No active records found in the selected date range.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = exportAllRecords.slice(0, 50).map(r => `<tr>
+    <td class="truncate" style="max-width:70px;" title="${(r.referenceNo||'').replace(/"/g,'&quot;')}">${r.referenceNo||'—'}</td>
+    <td style="max-width:160px;"><div class="truncate" title="${(r.title||'').replace(/"/g,'&quot;')}">${r.title||'—'}</div></td>
+    <td style="max-width:120px;"><div class="truncate">${(r.authors||[]).join(', ')||'—'}</div></td>
+    <td>${r.category||'—'}</td>
+    <td>${r.status||'—'}</td>
+    <td>${fmtShort(r.dateApplied)}</td>
+  </tr>`).join('');
+
+  if (exportAllRecords.length > 50) {
+    tbody.innerHTML += `<tr><td colspan="6" class="text-center py-2 text-[11px] text-outline italic">… and ${exportAllRecords.length - 50} more records (all will be included in Excel)</td></tr>`;
+  }
+}
+
+function closeAllExportModal() {
+  document.getElementById('export-all-modal').style.display = 'none';
+}
+
+/* ════════════════════════════════
+   EXPORT TO EXCEL (PREVIEW MODAL)
+════════════════════════════════ */
+let exportPreviewRecords = [];
+
+function openExportModal() {
+  // Populate date range defaults: full range of archived records
+  const archived = ALL_RECORDS.filter(r => r.archived && r.archivedAt);
+  if (archived.length === 0) {
+    alert('No archived records available to export.');
+    return;
+  }
+
+  const dates = archived.map(r => r.archivedAt || r.archiveDate).filter(Boolean).sort();
+  document.getElementById('export-date-from').value = dates[0] || '';
+  document.getElementById('export-date-to').value   = dates[dates.length - 1] || '';
+
+  refreshExportPreview();
+  document.getElementById('export-modal').style.display = 'flex';
+}
+
+function closeExportModal() {
+  document.getElementById('export-modal').style.display = 'none';
+}
+
+function refreshExportPreview() {
+  const from = document.getElementById('export-date-from').value;
+  const to   = document.getElementById('export-date-to').value;
+  const fromD = from ? new Date(from + 'T00:00:00') : null;
+  const toD   = to   ? new Date(to   + 'T23:59:59') : null;
+
+  exportPreviewRecords = ALL_RECORDS.filter(r => {
+    if (!r.archived) return false;
+    const archD = r.archivedAt || r.archiveDate;
+    if (!archD) return false;
+    const d = new Date(archD.split('T')[0] + 'T00:00:00');
+    if (fromD && d < fromD) return false;
+    if (toD   && d > toD)   return false;
+    return true;
+  });
+
+  const tbody = document.getElementById('export-preview-tbody');
+  const countEl = document.getElementById('export-preview-count');
+
+  countEl.textContent = `${exportPreviewRecords.length} record${exportPreviewRecords.length !== 1 ? 's' : ''} will be included`;
+
+  if (exportPreviewRecords.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-[13px] text-outline">No archived records found in the selected date range.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = exportPreviewRecords.slice(0, 50).map(r => {
+    const archDate = r.archivedAt || r.archiveDate || '—';
+    const delDate  = r.scheduledDeletionDate || (archDate !== '—' ? addDays(archDate, 180) : '—');
+    return `<tr>
+      <td class="truncate" style="max-width:70px;" title="${(r.referenceNo||'').replace(/"/g,'&quot;')}">${r.referenceNo||'—'}</td>
+      <td style="max-width:140px;"><div class="truncate" title="${(r.title||'').replace(/"/g,'&quot;')}">${r.title||'—'}</div></td>
+      <td>${r.category||'—'}</td>
+      <td>${fmtShort(r.dateApplied)}</td>
+      <td>${fmtShort(archDate)}</td>
+      <td class="text-red-600 font-semibold">${fmtShort(delDate)}</td>
+    </tr>`;
+  }).join('');
+
+  if (exportPreviewRecords.length > 50) {
+    tbody.innerHTML += `<tr><td colspan="6" class="text-center py-2 text-[11px] text-outline italic">… and ${exportPreviewRecords.length - 50} more records (all will be included in Excel)</td></tr>`;
+  }
+}
+
+/* ════════════════════════════════
+   XLSX EXPORT HELPERS (ExcelJS)
+════════════════════════════════ */
+
+const XL_COLORS = {
+  'Approved with Certificate': { bg: 'D1FAE5', font: '065F46', border: '059669', label: 'Approved' },
+  'Pending':                   { bg: 'FEF9C3', font: '713F12', border: 'CA8A04', label: 'Pending' },
+  'Rejected':                  { bg: 'FEE2E2', font: '7F1D1D', border: 'EF4444', label: 'Rejected' },
+  'Under Review':              { bg: 'DBEAFE', font: '1E3A8A', border: '2563EB', label: 'Under Review' },
+  'default':                   { bg: 'F3F4F6', font: '374151', border: '6B7280', label: 'Other' },
+};
+
+function getStatusColor(status) {
+  if (!status) return XL_COLORS['default'];
+  const s = status.trim();
+  if (XL_COLORS[s]) return XL_COLORS[s];
+  const sl = s.toLowerCase();
+  if (sl.includes('approv')) return XL_COLORS['Approved with Certificate'];
+  if (sl.includes('pending')) return XL_COLORS['Pending'];
+  if (sl.includes('reject') || sl.includes('denied')) return XL_COLORS['Rejected'];
+  if (sl.includes('review') || sl.includes('process')) return XL_COLORS['Under Review'];
+  return XL_COLORS['default'];
+}
+
+function argb(hex) { return 'FF' + hex.replace('#',''); }
+
+async function buildFormattedXlsx({ records, sheetLabel, filename, extraCols, getExtraVals }) {
+  const wb = new ExcelJS.Workbook();
+  wb.creator = 'QCU IPMS';
+  wb.created = new Date();
+  const ws = wb.addWorksheet(sheetLabel);
+
+  // ── Legend (column I onward — right side) ──────────────────────────────
+  const LEGEND_COL = 10; // column J
+  const legendEntries = Object.values(XL_COLORS);
+
+  ws.getCell(1, LEGEND_COL).value = 'LEGEND';
+  ws.getCell(1, LEGEND_COL).font = { bold: true, size: 9, color: { argb: 'FF6B7280' }, name: 'Calibri' };
+
+  legendEntries.forEach((clr, i) => {
+    const lRow = 2 + i;
+    const c = ws.getCell(lRow, LEGEND_COL);
+    c.value = '  ' + clr.label;
+    c.font  = { bold: true, size: 9, color: { argb: argb(clr.font) }, name: 'Calibri' };
+    c.fill  = { type: 'pattern', pattern: 'solid', fgColor: { argb: argb(clr.bg) } };
+    c.border = {
+      top: { style:'thin', color:{ argb: argb(clr.border) } },
+      left: { style:'thin', color:{ argb: argb(clr.border) } },
+      bottom: { style:'thin', color:{ argb: argb(clr.border) } },
+      right: { style:'thin', color:{ argb: argb(clr.border) } },
+    };
+    c.alignment = { horizontal: 'left', vertical: 'middle' };
+    ws.getColumn(LEGEND_COL).width = 26;
+    ws.getRow(lRow).height = 18;
+  });
+
+  // ── Header row ───────────────────────────────────────────────────────────
+  const BASE_HEADERS = ['#', 'Reference No.', 'Research Title', 'Author(s)', 'College / Department', 'Category', 'Registration Status', 'Date Applied', ...(extraCols || [])];
+  const COL_WIDTHS   = [4,   14,              40,               28,           26,                    14,          22,                   13,             ...(extraCols||[]).map(()=>16)];
+
+  const HDR_ROW = 1;
+  const hdrRow  = ws.getRow(HDR_ROW);
+  hdrRow.height = 26;
+
+  BASE_HEADERS.forEach((h, i) => {
+    const c = hdrRow.getCell(i + 1);
+    c.value = h;
+    c.font  = { bold: true, size: 10, color: { argb: 'FFFFFFFF' }, name: 'Calibri' };
+    c.fill  = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E3A8A' } };
+    c.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+    c.border = { bottom: { style:'thin', color:{ argb:'FFE2E8F0' } } };
+    ws.getColumn(i + 1).width = COL_WIDTHS[i];
+  });
+
+  // ── Data rows ────────────────────────────────────────────────────────────
+  records.forEach((r, idx) => {
+    const rowNum = HDR_ROW + 1 + idx;
+    const isAlt  = idx % 2 === 1;
+    const altBg  = isAlt ? 'FFF8FAFC' : 'FFFFFFFF';
+    const clr    = getStatusColor(r.status);
+
+    const extraVals = getExtraVals ? getExtraVals(r) : [];
+    const vals = [
+      String(idx + 1),
+      r.referenceNo || '',
+      r.title || '',
+      (r.authors || []).join('\n'),
+      r.department || '',
+      r.category || '',
+      r.status || '',
+      r.dateApplied ? new Date(r.dateApplied).toLocaleDateString('en-PH', { year:'numeric', month:'short', day:'numeric' }) : '',
+      ...extraVals
+    ];
+
+    const row = ws.getRow(rowNum);
+    row.height = 42;
+
+    vals.forEach((val, ci) => {
+      const c = row.getCell(ci + 1);
+      c.value = val;
+
+      const isStatusCol = ci === 6; // Registration Status col
+      c.font  = { size: 9, name: 'Calibri',
+                  bold: isStatusCol,
+                  color: { argb: argb(clr.font) } };
+      c.fill  = { type: 'pattern', pattern: 'solid',
+                  fgColor: { argb: argb(clr.bg) } };
+      c.alignment = { horizontal: ci === 0 ? 'center' : 'left', vertical: 'top', wrapText: true, indent: ci > 0 ? 1 : 0 };
+      c.border = { bottom: { style:'thin', color:{ argb: argb(clr.border) } } };
+    });
+  });
+
+  // ── Summary row ──────────────────────────────────────────────────────────
+  const sumRow = HDR_ROW + records.length + 2;
+  ws.getRow(sumRow).height = 18;
+  const statusGroups = {};
+  records.forEach(r => {
+    const clr = getStatusColor(r.status);
+    const lbl = clr.label;
+    statusGroups[lbl] = (statusGroups[lbl] || 0) + 1;
+  });
+
+  let sc = 1;
+  Object.entries(statusGroups).forEach(([lbl, count]) => {
+    const clr = Object.values(XL_COLORS).find(c => c.label === lbl) || XL_COLORS['default'];
+    const c = ws.getCell(sumRow, sc);
+    c.value = `${lbl}: ${count}`;
+    c.font  = { bold: true, size: 9, name: 'Calibri', color: { argb: argb(clr.font) } };
+    c.fill  = { type: 'pattern', pattern: 'solid', fgColor: { argb: argb(clr.bg) } };
+    c.alignment = { horizontal: 'center', vertical: 'middle' };
+    c.border = { top:{ style:'thin', color:{ argb: argb(clr.border) } }, left:{ style:'thin', color:{ argb: argb(clr.border) } }, bottom:{ style:'thin', color:{ argb: argb(clr.border) } }, right:{ style:'thin', color:{ argb: argb(clr.border) } } };
+    sc++;
+  });
+  const tc = ws.getCell(sumRow, sc);
+  tc.value = `Total: ${records.length}`;
+  tc.font  = { bold: true, size: 9, name: 'Calibri', color: { argb: 'FFFFFFFF' } };
+  tc.fill  = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E3A8A' } };
+  tc.alignment = { horizontal: 'center', vertical: 'middle' };
+
+  // Freeze header
+  ws.views = [{ state: 'frozen', ySplit: HDR_ROW }];
+
+  // ── Download ─────────────────────────────────────────────────────────────
+  const buf  = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function doExportAllExcel() {
+  if (exportAllRecords.length === 0) { alert('No active records to export.'); return; }
+  const fromVal = document.getElementById('export-all-date-from').value;
+  const toVal   = document.getElementById('export-all-date-to').value;
+  await buildFormattedXlsx({
+    records: exportAllRecords,
+    sheetLabel: 'Active Researches',
+    filename: `IPMS_Active_Researches_${fromVal||'all'}_to_${toVal||'all'}.xlsx`,
+    extraCols: ['Google Drive Link'],
+    getExtraVals: r => [r.googleDriveLink || ''],
+  });
+  closeAllExportModal();
+  showToast('Export Complete', `${exportAllRecords.length} active records exported to Excel.`);
+}
+
+async function doExportExcel() {
+  if (exportPreviewRecords.length === 0) { alert('No records to export in the selected date range.'); return; }
+  const fromVal = document.getElementById('export-date-from').value;
+  const toVal   = document.getElementById('export-date-to').value;
+  await buildFormattedXlsx({
+    records: exportPreviewRecords,
+    sheetLabel: 'Archived Records',
+    filename: `IPMS_Archived_Records_${fromVal||'all'}_to_${toVal||'all'}.xlsx`,
+    extraCols: ['Archive Date', 'Scheduled Deletion Date', 'Google Drive Link'],
+    getExtraVals: r => {
+      const archDate = r.archivedAt || r.archiveDate || '';
+      const delDate  = r.scheduledDeletionDate || (archDate ? addDays(archDate, 180) : '');
+      return [archDate, delDate, r.googleDriveLink || ''];
+    },
+  });
+  closeExportModal();
+  showToast('Export Complete', `${exportPreviewRecords.length} archived records exported to Excel.`);
 }
 
 /* ════════════════════════════════
