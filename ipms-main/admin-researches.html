@@ -837,6 +837,9 @@ let activeCatFilter = 'All';
 let currentDetailId = null;
 let pendingArchiveId = null;
 let pendingRestoreId = null;
+// Cumulative count of auto-archived records permanently deleted from DB.
+// Fetched once on load and added to the total so the count never drops.
+let DELETED_COUNTS  = {};
 
 const normalizeArchived = value => value === true || value === 'true' || value === 1 || value === '1';
 
@@ -886,12 +889,20 @@ async function loadDataFromDatabase() {
         title: record.researchTitle || '—',
         dateApplied: record.date || '',
         archived: normalizeArchived(record.archived),
+        archiveType: record.archiveType || 'manual',
         archivedAt: record.archivedAt || record.archiveDate || null,
         scheduledDeletionDate: record.scheduledDeletionDate || null,
         statusHistory: Array.isArray(record.statusHistory) ? record.statusHistory : [],
         statusChangedAt: record.statusChangedAt || null,
       };
     });
+
+    // Fetch cumulative deleted-auto-archive counters so total count
+    // stays accurate even after records are permanently removed from DB.
+    try {
+      const cRes = await fetch(`${API_BASE_URL}/research/counters/deleted`);
+      if (cRes.ok) DELETED_COUNTS = await cRes.json();
+    } catch (_) { /* non-fatal — totals may be slightly off if this fails */ }
 
     updateStats();
     autoArchiveByDate();   // auto-archive records >= 5 years old
@@ -915,13 +926,24 @@ async function loadDataFromDatabase() {
 function updateStats() {
   const active   = ALL_RECORDS.filter(r => !r.archived);
   const archived = ALL_RECORDS.filter(r =>  r.archived);
-  const approved = active.filter(r => r.status === 'Approved with Certificate');
+
+  // In-DB counted = active + currently auto-archived (not yet deleted)
+  const counted  = ALL_RECORDS.filter(r => !r.archived || r.archiveType === 'auto');
+
+  // Add permanently deleted auto-archived records from the counter
+  // so the total never drops when records are purged from the DB.
+  const deletedTotal = Object.values(DELETED_COUNTS).reduce((a, b) => a + b, 0);
+  const grandTotal   = counted.length + deletedTotal;
+
+  // Approved count: from currently-in-DB records only
+  const approved = counted.filter(r => r.status === 'Approved with Certificate').length;
+
   const expiring = archived.filter(r => {
     if (!r.archiveDate) return false;
     return daysRemaining(addDays(r.archiveDate, 180)) <= 90;
   });
-  document.getElementById('stat-total').textContent    = ALL_RECORDS.length;
-  document.getElementById('stat-approved').textContent = approved.length;
+  document.getElementById('stat-total').textContent    = grandTotal;
+  document.getElementById('stat-approved').textContent = approved;
   document.getElementById('stat-archived').textContent = archived.length;
   document.getElementById('stat-expiring').textContent = expiring.length;
   document.getElementById('tab-count-active').textContent   = active.length;
@@ -1284,6 +1306,7 @@ async function confirmArchive() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         archived: true,
+        archiveType: 'manual',
         archiveDate: todayDate,
         archivedAt: todayDate,
         scheduledDeletionDate: scheduledDel,
@@ -1296,6 +1319,7 @@ async function confirmArchive() {
     const idx = ALL_RECORDS.findIndex(r => r.id === pendingArchiveId);
     if (idx !== -1) {
       ALL_RECORDS[idx].archived              = true;
+      ALL_RECORDS[idx].archiveType           = 'manual';
       ALL_RECORDS[idx].archiveDate           = todayDate;
       ALL_RECORDS[idx].archivedAt            = todayDate;
       ALL_RECORDS[idx].scheduledDeletionDate = scheduledDel;
@@ -1404,6 +1428,7 @@ async function autoArchiveByDate() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           archived: true,
+          archiveType: 'auto',
           archiveDate: todayStr,
           archivedAt: todayStr,
           scheduledDeletionDate: scheduledDel,
@@ -1414,6 +1439,7 @@ async function autoArchiveByDate() {
         const idx = ALL_RECORDS.findIndex(x => x.id === r.id);
         if (idx !== -1) {
           ALL_RECORDS[idx].archived              = true;
+          ALL_RECORDS[idx].archiveType           = 'auto';
           ALL_RECORDS[idx].archiveDate           = todayStr;
           ALL_RECORDS[idx].archivedAt            = todayStr;
           ALL_RECORDS[idx].scheduledDeletionDate = scheduledDel;

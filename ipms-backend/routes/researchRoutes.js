@@ -1,6 +1,7 @@
 const express  = require("express");
 const router   = express.Router();
 const Research = require("../models/Research");
+const Counter  = require("../models/Counter");
 const { createLog } = require('../utils/logger');
 
 // ── ARCHIVE LIFECYCLE HELPER ─────────────────────────────────────────────────
@@ -31,6 +32,7 @@ async function runArchiveLifecycle() {
       {
         $set: {
           archived:              true,
+          archiveType:           "auto",
           archiveDate:           todayStr,
           archivedAt:            todayStr,
           scheduledDeletionDate: deletionStr
@@ -67,6 +69,18 @@ async function runArchiveLifecycle() {
     });
 
     for (const r of toDelete) {
+      // ── If this was auto-archived (5-year rule), increment the persistent
+      //    counter BEFORE deleting so the total count stays accurate even
+      //    after the record is gone from the database.
+      if (r.archiveType === 'auto') {
+        const categoryKey = (r.category || 'unknown').toLowerCase();
+        await Counter.findOneAndUpdate(
+          { key: categoryKey },
+          { $inc: { count: 1 } },
+          { upsert: true, new: true }
+        );
+      }
+
       await Research.findByIdAndDelete(r._id);
       await createLog({
         user: "System/Auto-Delete",
@@ -147,6 +161,7 @@ router.put("/:id", async (req, res) => {
 
     // Archive Flow variables mapping
     if (b.archived        !== undefined) updateData.archived              = b.archived;
+    if (b.archiveType     !== undefined) updateData.archiveType           = b.archiveType;
     if (b.archiveDate     !== undefined) updateData.archiveDate           = b.archiveDate;
     if (b.archivedAt      !== undefined) updateData.archivedAt            = b.archivedAt;
     if (b.scheduledDeletionDate !== undefined) updateData.scheduledDeletionDate = b.scheduledDeletionDate;
@@ -252,6 +267,22 @@ router.put('/:id/status', async (req, res) => {
     res.json(updated);
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+});
+
+// ── GET DELETED AUTO-ARCHIVE COUNTERS ────────────────────────────────────────
+// Returns the cumulative count of auto-archived records that have been
+// permanently deleted, grouped by category.
+// Used by the frontend to keep total counts accurate after deletion.
+router.get("/counters/deleted", async (req, res) => {
+  try {
+    const counters = await Counter.find({});
+    // Return as a plain object: { copyright: 12, patent: 4, ... }
+    const result = {};
+    counters.forEach(c => { result[c.key] = c.count; });
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 

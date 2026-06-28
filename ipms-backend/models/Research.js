@@ -15,6 +15,7 @@ const ResearchSchema = new mongoose.Schema({
 
   // Archive Retention System Fields
   archived:              { type: Boolean, default: false },
+  archiveType:           { type: String, default: "manual" },  // 'manual' (admin) or 'auto' (system/5-year rule)
   archiveDate:           { type: String, default: "" },
   archivedAt:            { type: String, default: "" },   // ISO date when archived (auto or manual)
   scheduledDeletionDate: { type: String, default: "" },   // archivedAt + 6 months — permanent delete date

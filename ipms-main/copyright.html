@@ -985,6 +985,8 @@
       let isEditModeActive   = false;
       let isDirty            = false;
       let pendingAction      = null;
+      // Cumulative count of auto-archived copyright records permanently deleted from DB.
+      let DELETED_COUNT      = 0;
 
       const MODAL_COLLEGE_DEPTS = {
         'College of Computer Studies': ['Information Technology','Information System','Computer Science'],
@@ -1087,12 +1089,23 @@
 
       /* ── STAT CARDS ── */
       function updateStats() {
-      const active = ALL_RECORDS.filter(r => !r.archived);
-      document.getElementById('stat-total').textContent    = active.length;
-      document.getElementById('stat-approved').textContent = active.filter(r => r.status === 'Approved with Certificate').length;
-      const closedStatuses = ['Approved with Certificate', 'Withdrawn', 'Disapproved'];
-      document.getElementById('stat-pending').textContent  = active.filter(r => !closedStatuses.includes(r.status)).length;
-    }
+        // Active records = not archived (shown in table)
+        const active = ALL_RECORDS.filter(r => !r.archived);
+
+        // In-DB counted = active + currently auto-archived (not yet deleted)
+        const counted = ALL_RECORDS.filter(r => !r.archived || r.archiveType === 'auto');
+
+        // Add permanently deleted auto-archived records from the counter
+        // so the total never drops when records are purged from the DB.
+        const grandTotal = counted.length + DELETED_COUNT;
+
+        document.getElementById('stat-total').textContent    = grandTotal;
+        document.getElementById('stat-approved').textContent = counted.filter(r => r.status === 'Approved with Certificate').length;
+
+        // Pending = only from active (archived records have no ongoing process)
+        const closedStatuses = ['Approved with Certificate', 'Withdrawn', 'Disapproved'];
+        document.getElementById('stat-pending').textContent  = active.filter(r => !closedStatuses.includes(r.status)).length;
+      }
 
       /* ── FILTER DROPDOWN ── */
       function toggleFilterMenu() {
@@ -1577,8 +1590,10 @@
         statusChangedAt: item.statusChangedAt || '',
         statusHistory,
         
-        // ── ETO ANG DAPAT MONG IDAGDAG ──
-        archived: item.archived === true || item.archived === 'true'
+        archived: item.archived === true || item.archived === 'true',
+        // 'manual' = intentional archive by admin (exclude from count)
+        // 'auto'   = system-initiated (5-year rule) — still counted
+        archiveType: item.archiveType || 'manual',
       };
     }
 
@@ -1589,6 +1604,17 @@
           const data = await res.json();
           const raw  = Array.isArray(data) ? data : (data.data ?? []);
           ALL_RECORDS = raw.filter(i => (i.category || '').toLowerCase() === CATEGORY).map(mapRecord);
+
+          // Fetch cumulative deleted-auto-archive counter for this category
+          try {
+            const COUNTER_URL = API_URL.replace('/research', '/research/counters/deleted');
+            const cRes = await fetch(COUNTER_URL);
+            if (cRes.ok) {
+              const counts = await cRes.json();
+              DELETED_COUNT = counts[CATEGORY] || 0;
+            }
+          } catch (_) { /* non-fatal */ }
+
           updateStats();
           filterAndRender();   // ✅ dito na ma-apply yung archived filter pati search/status filter
           checkAndHighlightResearch();
