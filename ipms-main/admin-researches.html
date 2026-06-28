@@ -308,13 +308,13 @@
 
           <!-- Export All (Active) icon button: only visible in Active tab -->
           <button id="export-all-btn" onclick="openAllExportModal()" title="Export All Researches to Excel"
-            class="w-9 h-9 flex items-center justify-center rounded-lg border border-[#86efac] bg-gradient-to-br from-[#f0fdf4] to-[#dcfce7] text-[#166534] hover:from-[#16a34a] hover:to-[#15803d] hover:text-white hover:border-[#16a34a] hover:shadow-[0_3px_10px_rgba(22,163,74,0.22)] transition-all duration-[180ms]">
-            <i class="ti ti-file-spreadsheet" style="font-size:16px;"></i>
+            class="flex items-center justify-center w-9 h-9 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <i class="ti ti-download" style="font-size:16px;"></i>
           </button>
 
           <!-- Export Excel button: only visible in Archived tab -->
-          <button id="export-excel-btn" class="w-9 h-9 flex items-center justify-center rounded-lg border border-[#86efac] bg-gradient-to-br from-[#f0fdf4] to-[#dcfce7] text-[#166534] hover:from-[#16a34a] hover:to-[#15803d] hover:text-white hover:border-[#16a34a] hover:shadow-[0_3px_10px_rgba(22,163,74,0.22)] transition-all duration-[180ms] hidden" onclick="openExportModal()" title="Export Archived Records to Excel">
-            <i class="ti ti-file-spreadsheet" style="font-size:16px;"></i>
+          <button id="export-excel-btn" class="flex items-center justify-center w-9 h-9 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors hidden" onclick="openExportModal()" title="Export Archived Records to Excel">
+            <i class="ti ti-download" style="font-size:16px;"></i>
           </button>
         </div>
       </div>
@@ -398,6 +398,14 @@
         <div>
           <p class="detail-label text-[11px] font-bold text-outline uppercase tracking-wider">Registration Status</p>
           <p class="detail-value text-sm font-semibold text-on-surface mt-0.5" id="dm-status">—</p>
+        </div>
+      </div>
+
+      <!-- Status History Timeline -->
+      <div id="dm-status-history-section">
+        <p class="text-[11px] font-bold text-outline uppercase tracking-wider mb-2">Status History</p>
+        <div class="rounded-xl border border-slate-100 bg-slate-50 px-4 pt-3 pb-2">
+          <div id="dm-status-history-steps" class="space-y-0"></div>
         </div>
       </div>
 
@@ -571,25 +579,25 @@
         <table id="export-all-preview-table" class="w-full text-left border-collapse" style="table-layout:fixed;">
           <thead>
             <tr>
-              <th style="width:12%;">Ref No.</th>
-              <th style="width:26%;">Title</th>
-              <th style="width:18%;">Author(s)</th>
-              <th style="width:14%;">Category</th>
-              <th style="width:16%;">Status</th>
-              <th style="width:14%;">Date Applied</th>
+              <th style="width:11%;">Ref No.</th>
+              <th style="width:22%;">Title</th>
+              <th style="width:16%;">Author(s)</th>
+              <th style="width:16%;">College / Dept</th>
+              <th style="width:11%;">Category</th>
+              <th style="width:13%;">Status</th>
+              <th style="width:11%;">Date Applied</th>
             </tr>
           </thead>
           <tbody id="export-all-preview-tbody">
-            <tr><td colspan="6" class="text-center py-6 text-[13px] text-outline">Loading preview…</td></tr>
+            <tr><td colspan="7" class="text-center py-6 text-[13px] text-outline">Loading preview…</td></tr>
           </tbody>
         </table>
       </div>
 
-      <div class="mt-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-start gap-2">
-        <i class="ti ti-info-circle text-amber-600 flex-shrink-0 mt-0.5" style="font-size:15px;"></i>
-        <p class="text-[11.5px] text-amber-800">
-          The exported file will include <strong>all relevant fields</strong>: Reference No., Title, Authors, Department/College, Category, Status, Date Applied, and Google Drive Link.
-          File format: <strong>CSV (opens in Excel / Google Sheets)</strong>.
+      <div class="mt-4 bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 flex items-start gap-2">
+        <i class="ti ti-info-circle text-primary flex-shrink-0 mt-0.5" style="font-size:15px;"></i>
+        <p class="text-[11.5px] text-blue-800">
+          The exported file will include: <strong>Ref. No., Title, Author(s), College/Department, Category, Registration Status, Date Applied</strong> — grouped by year per sheet.
         </p>
       </div>
     </div>
@@ -653,25 +661,27 @@
         <table id="export-preview-table" class="w-full text-left border-collapse" style="table-layout:fixed;">
           <thead>
             <tr>
-              <th style="width:12%;">Ref No.</th>
-              <th style="width:24%;">Title</th>
-              <th style="width:14%;">Category</th>
-              <th style="width:14%;">Date Applied</th>
-              <th style="width:14%;">Archive Date</th>
-              <th style="width:14%;">Deletion Date</th>
+              <th style="width:10%;">Ref No.</th>
+              <th style="width:18%;">Title</th>
+              <th style="width:13%;">Author(s)</th>
+              <th style="width:13%;">College / Dept</th>
+              <th style="width:10%;">Category</th>
+              <th style="width:11%;">Status</th>
+              <th style="width:9%;">Date Applied</th>
+              <th style="width:8%;">Archive Date</th>
+              <th style="width:8%;">Deletion Date</th>
             </tr>
           </thead>
           <tbody id="export-preview-tbody">
-            <tr><td colspan="6" class="text-center py-6 text-[13px] text-outline">Loading preview…</td></tr>
+            <tr><td colspan="9" class="text-center py-6 text-[13px] text-outline">Loading preview…</td></tr>
           </tbody>
         </table>
       </div>
 
-      <div class="mt-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-start gap-2">
-        <i class="ti ti-info-circle text-amber-600 flex-shrink-0 mt-0.5" style="font-size:15px;"></i>
-        <p class="text-[11.5px] text-amber-800">
-          The exported file will include <strong>all relevant fields</strong>: Reference No., Title, Authors, Department/College, Category, Status, Date Applied, Archive Date, Scheduled Deletion Date, and Google Drive Link.
-          File format: <strong>CSV (opens in Excel / Google Sheets)</strong>.
+      <div class="mt-4 bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 flex items-start gap-2">
+        <i class="ti ti-info-circle text-primary flex-shrink-0 mt-0.5" style="font-size:15px;"></i>
+        <p class="text-[11.5px] text-blue-800">
+          The exported file will include: <strong>Ref. No., Title, Author(s), College/Department, Category, Registration Status, Date Applied, Archive Date, Scheduled Deletion Date</strong> — grouped by year per sheet.
         </p>
       </div>
     </div>
@@ -877,7 +887,9 @@ async function loadDataFromDatabase() {
         dateApplied: record.date || '',
         archived: normalizeArchived(record.archived),
         archivedAt: record.archivedAt || record.archiveDate || null,
-        scheduledDeletionDate: record.scheduledDeletionDate || null
+        scheduledDeletionDate: record.scheduledDeletionDate || null,
+        statusHistory: Array.isArray(record.statusHistory) ? record.statusHistory : [],
+        statusChangedAt: record.statusChangedAt || null,
       };
     });
 
@@ -1146,6 +1158,8 @@ function openDetailModal(id) {
   banner.className = `flex items-center gap-3 rounded-xl px-4 py-3 border ${sc}`;
   banner.innerHTML = `<i class="ti ${si}" style="font-size:18px;"></i><p class="text-[13px] font-semibold">${r.status}</p>`;
 
+  renderDetailStatusHistory(r);
+
   const auContainer = document.getElementById('dm-authors');
   auContainer.innerHTML = (r.authors||[]).map(a =>
     `<span class="inline-flex items-center gap-1.5 text-[12px] font-medium text-on-surface-variant bg-slate-100 border border-slate-200 rounded-lg px-3 py-1.5">
@@ -1189,6 +1203,53 @@ function openDetailModal(id) {
 function closeDetailModal() {
   document.getElementById('detail-modal').style.display = 'none';
   currentDetailId = null;
+}
+
+function renderDetailStatusHistory(r) {
+  const container = document.getElementById('dm-status-history-steps');
+  if (!container) return;
+  const hist = Array.isArray(r.statusHistory) ? r.statusHistory : [];
+
+  // Determine steps based on category
+  const STEPS_BY_CAT = {
+    'Copyright':        ['Submitted to IPOPHL', 'Received E-SOA', 'Paid', 'Approved with Certificate', 'Withdrawn', 'Disapproved'],
+    'Patent':           ['Submitted to IPOPHL', 'Received E-SOA', 'Paid', 'Approved with Certificate', 'Withdrawn', 'Disapproved'],
+    'Trademark':        ['Submitted to IPOPHL', 'Received E-SOA', 'Paid', 'Approved with Certificate', 'Withdrawn', 'Disapproved'],
+    'Utility Model':    ['Submitted to IPOPHL', 'Received E-SOA', 'Paid', 'Approved with Certificate', 'Withdrawn', 'Disapproved'],
+    'Industrial Design':['Submitted to IPOPHL', 'Received E-SOA', 'Paid', 'Approved with Certificate', 'Withdrawn', 'Disapproved'],
+  };
+  const steps = STEPS_BY_CAT[r.category] || ['Submitted to IPOPHL', 'Received E-SOA', 'Paid', 'Approved with Certificate', 'Withdrawn', 'Disapproved'];
+
+  // If no history at all, show plain status
+  if (hist.length === 0) {
+    container.innerHTML = `<p class="text-[12px] text-outline italic py-1">No status history recorded.</p>`;
+    return;
+  }
+
+  container.innerHTML = steps.map((step, i) => {
+    const entry   = hist.find(h => h.status === step);
+    const reached = entry && entry.date;
+    const isCurrent = step === r.status;
+    const isLast  = i === steps.length - 1;
+    const dotColor   = reached ? (isCurrent ? '#0058be' : '#22c55e') : '#d1d5db';
+    const lineColor  = (i < steps.length - 1) ? (hist.find(h => h.status === steps[i+1])?.date ? '#22c55e' : '#e5e7eb') : '';
+    const labelColor = reached ? (isCurrent ? '#0058be' : '#191b23') : '#9ca3af';
+
+    const dateStr = reached
+      ? (() => { const d = new Date(entry.date + 'T00:00:00'); return isNaN(d) ? entry.date : d.toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'}); })()
+      : 'Not yet reached';
+
+    return `<div class="flex gap-3">
+      <div class="flex flex-col items-center" style="width:20px;flex-shrink:0;">
+        <div style="width:14px;height:14px;border-radius:50%;background:${dotColor};border:2px solid ${reached ? dotColor : '#d1d5db'};flex-shrink:0;margin-top:2px;"></div>
+        ${!isLast ? `<div style="width:2px;flex:1;min-height:18px;background:${lineColor};margin:3px 0;"></div>` : ''}
+      </div>
+      <div class="pb-${isLast ? '1' : '3'} flex-1 min-w-0">
+        <div class="text-[12px] font-semibold" style="color:${labelColor};">${step}</div>
+        <div class="text-[11px] mt-0.5" style="color:${reached ? '#727785' : '#d1d5db'};">${dateStr}</div>
+      </div>
+    </div>`;
+  }).join('');
 }
 function handleDetailBackdrop(e) {
   if (e.target === document.getElementById('detail-modal')) closeDetailModal();
@@ -1414,15 +1475,16 @@ function refreshAllExportPreview() {
 
   tbody.innerHTML = exportAllRecords.slice(0, 50).map(r => `<tr>
     <td class="truncate" style="max-width:70px;" title="${(r.referenceNo||'').replace(/"/g,'&quot;')}">${r.referenceNo||'—'}</td>
-    <td style="max-width:160px;"><div class="truncate" title="${(r.title||'').replace(/"/g,'&quot;')}">${r.title||'—'}</div></td>
-    <td style="max-width:120px;"><div class="truncate">${(r.authors||[]).join(', ')||'—'}</div></td>
+    <td style="max-width:140px;"><div class="truncate" title="${(r.title||'').replace(/"/g,'&quot;')}">${r.title||'—'}</div></td>
+    <td style="max-width:100px;"><div class="truncate">${(r.authors||[]).join(', ')||'—'}</div></td>
+    <td style="max-width:100px;"><div class="truncate">${r.department||'—'}</div></td>
     <td>${r.category||'—'}</td>
     <td>${r.status||'—'}</td>
     <td>${fmtShort(r.dateApplied)}</td>
   </tr>`).join('');
 
   if (exportAllRecords.length > 50) {
-    tbody.innerHTML += `<tr><td colspan="6" class="text-center py-2 text-[11px] text-outline italic">… and ${exportAllRecords.length - 50} more records (all will be included in Excel)</td></tr>`;
+    tbody.innerHTML += `<tr><td colspan="7" class="text-center py-2 text-[11px] text-outline italic">… and ${exportAllRecords.length - 50} more records (all will be included in Excel)</td></tr>`;
   }
 }
 
@@ -1485,9 +1547,12 @@ function refreshExportPreview() {
     const archDate = r.archivedAt || r.archiveDate || '—';
     const delDate  = r.scheduledDeletionDate || (archDate !== '—' ? addDays(archDate, 180) : '—');
     return `<tr>
-      <td class="truncate" style="max-width:70px;" title="${(r.referenceNo||'').replace(/"/g,'&quot;')}">${r.referenceNo||'—'}</td>
-      <td style="max-width:140px;"><div class="truncate" title="${(r.title||'').replace(/"/g,'&quot;')}">${r.title||'—'}</div></td>
+      <td class="truncate" style="max-width:60px;" title="${(r.referenceNo||'').replace(/"/g,'&quot;')}">${r.referenceNo||'—'}</td>
+      <td style="max-width:110px;"><div class="truncate" title="${(r.title||'').replace(/"/g,'&quot;')}">${r.title||'—'}</div></td>
+      <td style="max-width:80px;"><div class="truncate">${(r.authors||[]).join(', ')||'—'}</div></td>
+      <td style="max-width:80px;"><div class="truncate">${r.department||'—'}</div></td>
       <td>${r.category||'—'}</td>
+      <td>${r.status||'—'}</td>
       <td>${fmtShort(r.dateApplied)}</td>
       <td>${fmtShort(archDate)}</td>
       <td class="text-red-600 font-semibold">${fmtShort(delDate)}</td>
@@ -1495,7 +1560,7 @@ function refreshExportPreview() {
   }).join('');
 
   if (exportPreviewRecords.length > 50) {
-    tbody.innerHTML += `<tr><td colspan="6" class="text-center py-2 text-[11px] text-outline italic">… and ${exportPreviewRecords.length - 50} more records (all will be included in Excel)</td></tr>`;
+    tbody.innerHTML += `<tr><td colspan="9" class="text-center py-2 text-[11px] text-outline italic">… and ${exportPreviewRecords.length - 50} more records (all will be included in Excel)</td></tr>`;
   }
 }
 
@@ -1504,11 +1569,13 @@ function refreshExportPreview() {
 ════════════════════════════════ */
 
 const XL_COLORS = {
-  'Approved with Certificate': { bg: 'D1FAE5', font: '065F46', border: '059669', label: 'Approved' },
-  'Pending':                   { bg: 'FEF9C3', font: '713F12', border: 'CA8A04', label: 'Pending' },
-  'Rejected':                  { bg: 'FEE2E2', font: '7F1D1D', border: 'EF4444', label: 'Rejected' },
-  'Under Review':              { bg: 'DBEAFE', font: '1E3A8A', border: '2563EB', label: 'Under Review' },
-  'default':                   { bg: 'F3F4F6', font: '374151', border: '6B7280', label: 'Other' },
+  'Submitted to IPOPHL':       { bg: 'DBEAFE', font: '1E40AF', border: '3B82F6', label: 'Submitted to IPOPHL' },
+  'Received E-SOA':            { bg: 'EDE9FE', font: '4338CA', border: '7C3AED', label: 'Received E-SOA' },
+  'Paid':                      { bg: 'D1FAE5', font: '065F46', border: '059669', label: 'Paid' },
+  'Approved with Certificate': { bg: 'FEF3C7', font: '92400E', border: 'D97706', label: 'Approved with Certificate' },
+  'Withdrawn':                 { bg: 'F1F5F9', font: '475569', border: '94A3B8', label: 'Withdrawn' },
+  'Disapproved':               { bg: 'FEE2E2', font: '991B1B', border: 'EF4444', label: 'Disapproved' },
+  'default':                   { bg: 'F8FAFC', font: '475569', border: 'CBD5E1', label: 'Other' },
 };
 
 function getStatusColor(status) {
@@ -1516,137 +1583,134 @@ function getStatusColor(status) {
   const s = status.trim();
   if (XL_COLORS[s]) return XL_COLORS[s];
   const sl = s.toLowerCase();
-  if (sl.includes('approv')) return XL_COLORS['Approved with Certificate'];
-  if (sl.includes('pending')) return XL_COLORS['Pending'];
-  if (sl.includes('reject') || sl.includes('denied')) return XL_COLORS['Rejected'];
-  if (sl.includes('review') || sl.includes('process')) return XL_COLORS['Under Review'];
+  if (sl.includes('submit'))   return XL_COLORS['Submitted to IPOPHL'];
+  if (sl.includes('soa'))      return XL_COLORS['Received E-SOA'];
+  if (sl.includes('paid'))     return XL_COLORS['Paid'];
+  if (sl.includes('approv'))   return XL_COLORS['Approved with Certificate'];
+  if (sl.includes('withdraw')) return XL_COLORS['Withdrawn'];
+  if (sl.includes('disappr') || sl.includes('reject')) return XL_COLORS['Disapproved'];
   return XL_COLORS['default'];
 }
 
 function argb(hex) { return 'FF' + hex.replace('#',''); }
 
+function buildXlsxStatusHistory(r) {
+  const STEPS_BY_CAT = {
+    'Copyright':        ['Submitted to IPOPHL', 'Received E-SOA', 'Paid', 'Approved with Certificate', 'Withdrawn', 'Disapproved'],
+    'Patent':           ['Submitted to IPOPHL', 'Received E-SOA', 'Paid', 'Approved with Certificate', 'Withdrawn', 'Disapproved'],
+    'Trademark':        ['Submitted to IPOPHL', 'Received E-SOA', 'Paid', 'Approved with Certificate', 'Withdrawn', 'Disapproved'],
+    'Utility Model':    ['Submitted to IPOPHL', 'Received E-SOA', 'Paid', 'Approved with Certificate', 'Withdrawn', 'Disapproved'],
+    'Industrial Design':['Submitted to IPOPHL', 'Received E-SOA', 'Paid', 'Approved with Certificate', 'Withdrawn', 'Disapproved'],
+  };
+  const steps = STEPS_BY_CAT[r.category] || STEPS_BY_CAT['Copyright'];
+  const hist  = Array.isArray(r.statusHistory) ? r.statusHistory : [];
+  if (hist.length === 0) return r.status || '';
+  return steps
+    .map(s => hist.find(h => h.status === s))
+    .filter(Boolean)
+    .map(h => {
+      let line = `• ${h.status}`;
+      if (h.date) {
+        const d = new Date(h.date + 'T00:00:00');
+        if (!isNaN(d)) line += `  —  ${d.toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' })}`;
+      }
+      return line;
+    }).join('\n');
+}
+
 async function buildFormattedXlsx({ records, sheetLabel, filename, extraCols, getExtraVals }) {
+  // ── Group by year (same as copyright) ──────────────────────────────────
+  const byYear = {};
+  records.forEach(r => {
+    const dateVal = r.dateApplied || r.dateOfFiling || '';
+    const y = dateVal ? new Date(dateVal).getFullYear().toString() : 'Unknown';
+    if (!byYear[y]) byYear[y] = [];
+    byYear[y].push(r);
+  });
+  const years = Object.keys(byYear).sort((a, b) => b - a);
+  if (years.length === 0) { showToast('No Records', 'Nothing to export.'); return; }
+
+  const BASE_HDRS = ['Ref. No.', 'Research Title', 'Author(s)', 'College / Department', 'Category', 'Status History', 'Date Applied', ...(extraCols || [])];
+  const COL_WIDTHS = [16, 40, 28, 26, 14, 42, 14, ...(extraCols||[]).map(()=>18)];
+
   const wb = new ExcelJS.Workbook();
   wb.creator = 'QCU IPMS';
   wb.created = new Date();
-  const ws = wb.addWorksheet(sheetLabel);
 
-  // ── Legend (column I onward — right side) ──────────────────────────────
-  const LEGEND_COL = 10; // column J
-  const legendEntries = Object.values(XL_COLORS);
-
-  ws.getCell(1, LEGEND_COL).value = 'LEGEND';
-  ws.getCell(1, LEGEND_COL).font = { bold: true, size: 9, color: { argb: 'FF6B7280' }, name: 'Calibri' };
-
-  legendEntries.forEach((clr, i) => {
-    const lRow = 2 + i;
-    const c = ws.getCell(lRow, LEGEND_COL);
-    c.value = '  ' + clr.label;
-    c.font  = { bold: true, size: 9, color: { argb: argb(clr.font) }, name: 'Calibri' };
-    c.fill  = { type: 'pattern', pattern: 'solid', fgColor: { argb: argb(clr.bg) } };
-    c.border = {
-      top: { style:'thin', color:{ argb: argb(clr.border) } },
-      left: { style:'thin', color:{ argb: argb(clr.border) } },
-      bottom: { style:'thin', color:{ argb: argb(clr.border) } },
-      right: { style:'thin', color:{ argb: argb(clr.border) } },
-    };
-    c.alignment = { horizontal: 'left', vertical: 'middle' };
-    ws.getColumn(LEGEND_COL).width = 26;
-    ws.getRow(lRow).height = 18;
-  });
-
-  // ── Header row ───────────────────────────────────────────────────────────
-  const BASE_HEADERS = ['#', 'Reference No.', 'Research Title', 'Author(s)', 'College / Department', 'Category', 'Registration Status', 'Date Applied', ...(extraCols || [])];
-  const COL_WIDTHS   = [4,   14,              40,               28,           26,                    14,          22,                   13,             ...(extraCols||[]).map(()=>16)];
-
-  const HDR_ROW = 1;
-  const hdrRow  = ws.getRow(HDR_ROW);
-  hdrRow.height = 26;
-
-  BASE_HEADERS.forEach((h, i) => {
-    const c = hdrRow.getCell(i + 1);
-    c.value = h;
-    c.font  = { bold: true, size: 10, color: { argb: 'FFFFFFFF' }, name: 'Calibri' };
-    c.fill  = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E3A8A' } };
-    c.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
-    c.border = { bottom: { style:'thin', color:{ argb:'FFE2E8F0' } } };
-    ws.getColumn(i + 1).width = COL_WIDTHS[i];
-  });
-
-  // ── Data rows ────────────────────────────────────────────────────────────
-  records.forEach((r, idx) => {
-    const rowNum = HDR_ROW + 1 + idx;
-    const isAlt  = idx % 2 === 1;
-    const altBg  = isAlt ? 'FFF8FAFC' : 'FFFFFFFF';
-    const clr    = getStatusColor(r.status);
-
-    const extraVals = getExtraVals ? getExtraVals(r) : [];
-    const vals = [
-      String(idx + 1),
-      r.referenceNo || '',
-      r.title || '',
-      (r.authors || []).join('\n'),
-      r.department || '',
-      r.category || '',
-      r.status || '',
-      r.dateApplied ? new Date(r.dateApplied).toLocaleDateString('en-PH', { year:'numeric', month:'short', day:'numeric' }) : '',
-      ...extraVals
-    ];
-
-    const row = ws.getRow(rowNum);
-    row.height = 42;
-
-    vals.forEach((val, ci) => {
-      const c = row.getCell(ci + 1);
-      c.value = val;
-
-      const isStatusCol = ci === 6; // Registration Status col
-      c.font  = { size: 9, name: 'Calibri',
-                  bold: isStatusCol,
-                  color: { argb: argb(clr.font) } };
-      c.fill  = { type: 'pattern', pattern: 'solid',
-                  fgColor: { argb: argb(clr.bg) } };
-      c.alignment = { horizontal: ci === 0 ? 'center' : 'left', vertical: 'top', wrapText: true, indent: ci > 0 ? 1 : 0 };
-      c.border = { bottom: { style:'thin', color:{ argb: argb(clr.border) } } };
+  for (const yr of years) {
+    const recs = byYear[yr].sort((a, b) => {
+      const da = a.dateApplied || a.dateOfFiling || '';
+      const db = b.dateApplied || b.dateOfFiling || '';
+      return new Date(db) - new Date(da);
     });
-  });
 
-  // ── Summary row ──────────────────────────────────────────────────────────
-  const sumRow = HDR_ROW + records.length + 2;
-  ws.getRow(sumRow).height = 18;
-  const statusGroups = {};
-  records.forEach(r => {
-    const clr = getStatusColor(r.status);
-    const lbl = clr.label;
-    statusGroups[lbl] = (statusGroups[lbl] || 0) + 1;
-  });
+    const ws = wb.addWorksheet(yr === 'Unknown' ? sheetLabel : yr);
+    BASE_HDRS.forEach((_, i) => { ws.getColumn(i + 1).width = COL_WIDTHS[i]; });
 
-  let sc = 1;
-  Object.entries(statusGroups).forEach(([lbl, count]) => {
-    const clr = Object.values(XL_COLORS).find(c => c.label === lbl) || XL_COLORS['default'];
-    const c = ws.getCell(sumRow, sc);
-    c.value = `${lbl}: ${count}`;
-    c.font  = { bold: true, size: 9, name: 'Calibri', color: { argb: argb(clr.font) } };
-    c.fill  = { type: 'pattern', pattern: 'solid', fgColor: { argb: argb(clr.bg) } };
-    c.alignment = { horizontal: 'center', vertical: 'middle' };
-    c.border = { top:{ style:'thin', color:{ argb: argb(clr.border) } }, left:{ style:'thin', color:{ argb: argb(clr.border) } }, bottom:{ style:'thin', color:{ argb: argb(clr.border) } }, right:{ style:'thin', color:{ argb: argb(clr.border) } } };
-    sc++;
-  });
-  const tc = ws.getCell(sumRow, sc);
-  tc.value = `Total: ${records.length}`;
-  tc.font  = { bold: true, size: 9, name: 'Calibri', color: { argb: 'FFFFFFFF' } };
-  tc.fill  = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E3A8A' } };
-  tc.alignment = { horizontal: 'center', vertical: 'middle' };
+    // ── Legend (right of data cols) ──
+    const LEGEND_ENTRIES = Object.values(XL_COLORS).filter(l => l.label !== 'Other');
+    const LEGEND_COL = BASE_HDRS.length + 2;
+    ws.getColumn(LEGEND_COL).width = 30;
+    const legendHdr = ws.getCell(1, LEGEND_COL);
+    legendHdr.value = 'LEGEND';
+    legendHdr.font  = { bold: true, size: 10, color: { argb: 'FFFFFFFF' }, name: 'Calibri' };
+    legendHdr.fill  = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E40AF' } };
+    legendHdr.alignment = { horizontal: 'center', vertical: 'middle' };
+    LEGEND_ENTRIES.forEach((leg, i) => {
+      const lRow = ws.getRow(2 + i);
+      if (!lRow.height || lRow.height < 16) lRow.height = 16;
+      const c = lRow.getCell(LEGEND_COL);
+      c.value = '  ' + leg.label;
+      c.font  = { bold: true, size: 9, color: { argb: argb(leg.font) }, name: 'Calibri' };
+      c.fill  = { type: 'pattern', pattern: 'solid', fgColor: { argb: argb(leg.bg) } };
+      c.border = { top:{style:'thin',color:{argb:argb(leg.border)}}, left:{style:'thin',color:{argb:argb(leg.border)}}, bottom:{style:'thin',color:{argb:argb(leg.border)}}, right:{style:'thin',color:{argb:argb(leg.border)}} };
+      c.alignment = { horizontal: 'left', vertical: 'middle' };
+    });
 
-  // Freeze header
-  ws.views = [{ state: 'frozen', ySplit: HDR_ROW }];
+    // ── Header row ──
+    const hdrRow = ws.getRow(1);
+    hdrRow.height = 22;
+    BASE_HDRS.forEach((label, i) => {
+      const c = hdrRow.getCell(i + 1);
+      c.value = label;
+      c.font  = { bold: true, size: 10, color: { argb: 'FFFFFFFF' }, name: 'Calibri' };
+      c.fill  = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E40AF' } };
+      c.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+      c.border = { top:{style:'thin',color:{argb:'FF93C5FD'}}, bottom:{style:'medium',color:{argb:'FF93C5FD'}}, left:{style:'thin',color:{argb:'FF93C5FD'}}, right:{style:'thin',color:{argb:'FF93C5FD'}} };
+    });
 
-  // ── Download ─────────────────────────────────────────────────────────────
+    // ── Data rows ──
+    recs.forEach((r, idx) => {
+      const rowNum = idx + 2;
+      const clr    = getStatusColor(r.status);
+      const extraVals = getExtraVals ? getExtraVals(r) : [];
+      const dateStr = (r.dateApplied || r.dateOfFiling)
+        ? new Date(r.dateApplied || r.dateOfFiling).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' })
+        : '';
+      const authorsStr = Array.isArray(r.authors) ? r.authors.join('\n') : (r.authors || '');
+      const statusText = buildXlsxStatusHistory(r);
+      const statusLines = statusText.split('\n').length;
+      const vals = [r.referenceNo||'', r.title||'', authorsStr, r.department||'', r.category||'', statusText, dateStr, ...extraVals];
+      const dataRow = ws.getRow(rowNum);
+      dataRow.height = Math.max(Math.ceil((r.title||'').length/45)*12, authorsStr.split('\n').length*12, statusLines*12, 16) + 4;
+      vals.forEach((val, ci) => {
+        const c = dataRow.getCell(ci + 1);
+        c.value = val;
+        c.font  = { size:9, name:'Calibri', bold: ci===5, color:{argb:argb(clr.font)} };
+        c.fill  = { type:'pattern', pattern:'solid', fgColor:{argb:argb(clr.bg)} };
+        c.alignment = { horizontal: ci===0?'center':'left', vertical:'top', wrapText:true };
+        c.border = { top:{style:'thin',color:{argb:argb(clr.border)}}, bottom:{style:'thin',color:{argb:argb(clr.border)}}, left:{style:'thin',color:{argb:argb(clr.border)}}, right:{style:'thin',color:{argb:argb(clr.border)}} };
+      });
+    });
+
+    ws.views = [{ state: 'frozen', ySplit: 1, topLeftCell: 'A2' }];
+  }
+
+  // ── Download ──
   const buf  = await wb.xlsx.writeBuffer();
   const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
   const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url; a.download = filename; a.click();
+  const a    = document.createElement('a'); a.href=url; a.download=filename; a.click();
   URL.revokeObjectURL(url);
 }
 
@@ -1658,8 +1722,6 @@ async function doExportAllExcel() {
     records: exportAllRecords,
     sheetLabel: 'Active Researches',
     filename: `IPMS_Active_Researches_${fromVal||'all'}_to_${toVal||'all'}.xlsx`,
-    extraCols: ['Google Drive Link'],
-    getExtraVals: r => [r.googleDriveLink || ''],
   });
   closeAllExportModal();
   showToast('Export Complete', `${exportAllRecords.length} active records exported to Excel.`);
@@ -1673,11 +1735,11 @@ async function doExportExcel() {
     records: exportPreviewRecords,
     sheetLabel: 'Archived Records',
     filename: `IPMS_Archived_Records_${fromVal||'all'}_to_${toVal||'all'}.xlsx`,
-    extraCols: ['Archive Date', 'Scheduled Deletion Date', 'Google Drive Link'],
+    extraCols: ['Archive Date', 'Scheduled Deletion Date'],
     getExtraVals: r => {
       const archDate = r.archivedAt || r.archiveDate || '';
       const delDate  = r.scheduledDeletionDate || (archDate ? addDays(archDate, 180) : '');
-      return [archDate, delDate, r.googleDriveLink || ''];
+      return [archDate, delDate];
     },
   });
   closeExportModal();
