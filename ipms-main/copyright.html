@@ -281,36 +281,69 @@
                 <button id="filter-btn" onclick="toggleFilterMenu()"
                   class="flex items-center gap-1.5 px-3 py-2 bg-slate-50 border border-slate-200 text-on-surface-variant rounded-lg text-[13px] font-medium hover:bg-slate-100 transition-colors whitespace-nowrap">
                   <i class="ti ti-filter" style="font-size:14px;"></i>
-                  <span id="filter-label">All Status</span>
+                  <span id="filter-label">Filters</span>
+                  <span id="filter-count-badge" class="hidden items-center justify-center min-w-[16px] h-[16px] px-1 rounded-full bg-primary text-white text-[10px] font-bold">0</span>
                   <i class="ti ti-chevron-down text-outline" id="filter-chevron" style="font-size:12px; transition:transform 0.15s;"></i>
                 </button>
-                <div id="filter-menu" class="hidden absolute right-0 mt-1 w-56 bg-white rounded-xl border border-slate-200 shadow-lg z-[200] py-1.5">
-                  <div class="px-3 py-1.5 text-[10px] font-bold text-outline uppercase tracking-widest">Filter by Status</div>
-                  <button onclick="applyStatusFilter('All')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="All">All<i class="ti ti-check text-primary" style="font-size:13px;"></i></button>
-                  <button onclick="applyStatusFilter('Submitted to IPOPHL')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Submitted to IPOPHL">Submitted to IPOPHL<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
-                  <button onclick="applyStatusFilter('Received E-SOA')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Received E-SOA">Received E-SOA<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
-                  <button onclick="applyStatusFilter('Paid')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Paid">Paid<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
-                  <button onclick="applyStatusFilter('Approved with Certificate')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Approved with Certificate">Approved with Certificate<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
-                  <button onclick="applyStatusFilter('Withdrawn')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Withdrawn">Withdrawn<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
-                  <button onclick="applyStatusFilter('Disapproved')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-red-700 hover:bg-red-50 flex items-center justify-between transition-colors" data-val="Disapproved">Disapproved<i class="ti ti-check text-red-700 hidden" style="font-size:13px;"></i></button>
-                </div>
-              </div>
-              <div class="relative shrink-0" id="college-filter-wrapper">
-                <button id="college-filter-btn" onclick="toggleCollegeFilterMenu()"
-                  class="flex items-center gap-1.5 px-3 py-2 bg-slate-50 border border-slate-200 text-on-surface-variant rounded-lg text-[13px] font-medium hover:bg-slate-100 transition-colors whitespace-nowrap">
-                  <i class="ti ti-building" style="font-size:14px;"></i>
-                  <span id="college-filter-label">All Colleges</span>
-                  <i class="ti ti-chevron-down text-outline" id="college-filter-chevron" style="font-size:12px; transition:transform 0.15s;"></i>
-                </button>
-                <div id="college-filter-menu" class="hidden absolute right-0 mt-1 w-64 bg-white rounded-xl border border-slate-200 shadow-lg z-[200] py-1.5">
-                  <div class="px-3 py-1.5 text-[10px] font-bold text-outline uppercase tracking-widest">Filter by College</div>
-                  <button onclick="applyCollegeFilter('All')" class="college-filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="All">All Colleges<i class="ti ti-check text-primary" style="font-size:13px;"></i></button>
-                  <button onclick="applyCollegeFilter('College of Computer Studies')" class="college-filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="College of Computer Studies">College of Computer Studies<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
-                  <button onclick="applyCollegeFilter('College of Engineering')" class="college-filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="College of Engineering">College of Engineering<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
-                  <button onclick="applyCollegeFilter('College of Accounting')" class="college-filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="College of Accounting">College of Accounting<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
-                  <button onclick="applyCollegeFilter('College of Business')" class="college-filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="College of Business">College of Business<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
-                  <button onclick="applyCollegeFilter('College of Education')" class="college-filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="College of Education">College of Education<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
-                  <button onclick="applyCollegeFilter('Faculty')" class="college-filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Faculty">Faculty<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
+                <div id="filter-menu" class="hidden absolute right-0 mt-1.5 w-[min(17rem,calc(100vw-2.5rem))] max-h-[80vh] overflow-y-auto bg-white rounded-xl border border-slate-200 shadow-xl z-[200] py-3">
+
+                  <!-- Status -->
+                  <div class="px-4 pb-1 text-[10px] font-bold text-outline uppercase tracking-widest">Status</div>
+                  <div class="px-4 pb-3">
+                    <select id="status-filter-select" onchange="applyStatusFilter(this.value)"
+                      class="w-full bg-slate-50 border border-slate-200 rounded-lg py-1.5 px-2 text-[12.5px] focus:ring-1 focus:ring-primary focus:bg-white focus:border-primary transition-all outline-none">
+                      <option value="All">All</option>
+                      <option value="Submitted to IPOPHL">Submitted to IPOPHL</option>
+                      <option value="Received E-SOA">Received E-SOA</option>
+                      <option value="Paid">Paid</option>
+                      <option value="Approved with Certificate">Approved with Certificate</option>
+                      <option value="Withdrawn">Withdrawn</option>
+                      <option value="Disapproved">Disapproved</option>
+                    </select>
+                  </div>
+
+                  <div class="border-t border-slate-100"></div>
+
+                  <!-- College -->
+                  <div class="px-4 pt-3 pb-1 text-[10px] font-bold text-outline uppercase tracking-widest">College</div>
+                  <div class="px-4 pb-3">
+                    <select id="college-filter-select" onchange="applyCollegeFilter(this.value)"
+                      class="w-full bg-slate-50 border border-slate-200 rounded-lg py-1.5 px-2 text-[12.5px] focus:ring-1 focus:ring-primary focus:bg-white focus:border-primary transition-all outline-none">
+                      <option value="All">All Colleges</option>
+                      <option value="College of Computer Studies">College of Computer Studies</option>
+                      <option value="College of Engineering">College of Engineering</option>
+                      <option value="College of Accounting">College of Accounting</option>
+                      <option value="College of Business">College of Business</option>
+                      <option value="College of Education">College of Education</option>
+                      <option value="Faculty">Faculty</option>
+                    </select>
+                  </div>
+
+                  <div class="border-t border-slate-100"></div>
+
+                  <!-- Date Range -->
+                  <div class="px-4 pt-3 pb-1 text-[10px] font-bold text-outline uppercase tracking-widest">Date Filed</div>
+                  <div class="px-4 pb-1 grid grid-cols-2 gap-2.5">
+                    <div>
+                      <label class="block text-[10.5px] font-semibold text-on-surface-variant mb-1">From</label>
+                      <input type="date" id="date-filter-from" onchange="applyDateRangeFilter()"
+                        class="w-full bg-slate-50 border border-slate-200 rounded-lg py-1.5 px-2 text-[12.5px] focus:ring-1 focus:ring-primary focus:bg-white focus:border-primary transition-all outline-none"/>
+                    </div>
+                    <div>
+                      <label class="block text-[10.5px] font-semibold text-on-surface-variant mb-1">To</label>
+                      <input type="date" id="date-filter-to" onchange="applyDateRangeFilter()"
+                        class="w-full bg-slate-50 border border-slate-200 rounded-lg py-1.5 px-2 text-[12.5px] focus:ring-1 focus:ring-primary focus:bg-white focus:border-primary transition-all outline-none"/>
+                    </div>
+                  </div>
+
+                  <div class="border-t border-slate-100 mt-3"></div>
+
+                  <div class="px-4 pt-3 flex items-center justify-between">
+                    <button onclick="clearAllFilters()"
+                      class="px-3 py-1.5 text-[12px] font-semibold text-on-surface-variant bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 hover:text-on-surface transition-colors">Clear All</button>
+                    <button onclick="document.getElementById('filter-menu').classList.add('hidden'); document.getElementById('filter-chevron').style.transform='';"
+                      class="px-4 py-1.5 text-[12px] font-semibold text-white bg-primary hover:bg-blue-700 rounded-lg transition-colors">Done</button>
+                  </div>
                 </div>
               </div>
               <div class="relative shrink-0" id="export-wrapper">
@@ -318,7 +351,7 @@
                   class="flex items-center justify-center w-9 h-9 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors">
                   <i class="ti ti-download" style="font-size:16px;"></i>
                 </button>
-                <div id="export-menu" class="hidden absolute right-0 mt-1 w-52 bg-white rounded-xl border border-slate-200 shadow-lg z-[200] py-1.5">
+                <div id="export-menu" class="absolute right-0 mt-1 w-52 bg-white rounded-xl border border-slate-200 shadow-lg z-[200] py-1.5 opacity-0 scale-95 -translate-y-1 pointer-events-none transition-all duration-150 ease-out origin-top-right">
                   <div class="px-3 py-1.5 text-[10px] font-bold text-outline uppercase tracking-widest">Export As</div>
                   <button onclick="closeExportMenu(); openExportModal();"
                     class="w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center gap-3 transition-colors">
@@ -329,6 +362,7 @@
                     class="w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center gap-3 transition-colors">
                     <i class="ti ti-file-spreadsheet text-emerald-600" style="font-size:16px;"></i>
                     <span>Excel Spreadsheet</span>
+
                   </button>
                 </div>
               </div>
@@ -980,6 +1014,8 @@
       let currentPage        = 1;
       let activeStatusFilter = 'All';
       let activeCollegeFilter = 'All';
+      let activeDateFrom = '';
+      let activeDateTo = '';
       let activeMongoId      = null;
       let activeSnapshot     = null;
       let isEditModeActive   = false;
@@ -1107,42 +1143,83 @@
         document.getElementById('stat-pending').textContent  = active.filter(r => !closedStatuses.includes(r.status)).length;
       }
 
-      /* ── FILTER DROPDOWN ── */
+      /* ── COMBINED FILTER DROPDOWN ── */
       function toggleFilterMenu() {
         const m = document.getElementById('filter-menu'); const c = document.getElementById('filter-chevron');
         const open = !m.classList.contains('hidden'); m.classList.toggle('hidden', open); c.style.transform = open ? '' : 'rotate(180deg)';
       }
+      function updateFilterBadge() {
+        let count = 0;
+        if (activeStatusFilter !== 'All') count++;
+        if (activeCollegeFilter !== 'All') count++;
+        if (activeDateFrom || activeDateTo) count++;
+        const badge = document.getElementById('filter-count-badge');
+        if (count > 0) { badge.textContent = count; badge.classList.remove('hidden'); badge.classList.add('flex'); }
+        else { badge.classList.add('hidden'); badge.classList.remove('flex'); }
+      }
       function applyStatusFilter(val) {
         activeStatusFilter = val;
-        document.querySelectorAll('.filter-val').forEach(b => b.querySelector('i').classList.toggle('hidden', b.dataset.val !== val));
-        document.getElementById('filter-label').textContent = val === 'All' ? 'All Status' : val;
-        document.getElementById('filter-menu').classList.add('hidden'); document.getElementById('filter-chevron').style.transform = '';
+        document.getElementById('status-filter-select').value = val;
+        updateFilterBadge();
         filterAndRender();
-      }
-      document.addEventListener('click', e => { const w = document.getElementById('filter-wrapper'); if (w && !w.contains(e.target)) document.getElementById('filter-menu').classList.add('hidden'); });
-      /* ── COLLEGE FILTER DROPDOWN ── */
-      function toggleCollegeFilterMenu() {
-        const m = document.getElementById('college-filter-menu'); const c = document.getElementById('college-filter-chevron');
-        const open = !m.classList.contains('hidden'); m.classList.toggle('hidden', open); c.style.transform = open ? '' : 'rotate(180deg)';
       }
       function applyCollegeFilter(val) {
         activeCollegeFilter = val;
-        document.querySelectorAll('.college-filter-val').forEach(b => b.querySelector('i').classList.toggle('hidden', b.dataset.val !== val));
-        document.getElementById('college-filter-label').textContent = val === 'All' ? 'All Colleges' : val;
-        document.getElementById('college-filter-menu').classList.add('hidden'); document.getElementById('college-filter-chevron').style.transform = '';
+        document.getElementById('college-filter-select').value = val;
+        updateFilterBadge();
         filterAndRender();
       }
-      document.addEventListener('click', e => { const w = document.getElementById('college-filter-wrapper'); if (w && !w.contains(e.target)) document.getElementById('college-filter-menu').classList.add('hidden'); });
+      function applyDateRangeFilter() {
+        activeDateFrom = document.getElementById('date-filter-from').value;
+        activeDateTo   = document.getElementById('date-filter-to').value;
+        updateFilterBadge();
+        filterAndRender();
+      }
+      function clearAllFilters() {
+        applyStatusFilter('All');
+        applyCollegeFilter('All');
+        document.getElementById('date-filter-from').value = '';
+        document.getElementById('date-filter-to').value = '';
+        activeDateFrom = ''; activeDateTo = '';
+        updateFilterBadge();
+        filterAndRender();
+      }
+      document.addEventListener('click', e => { const w = document.getElementById('filter-wrapper'); if (w && !w.contains(e.target)) { document.getElementById('filter-menu').classList.add('hidden'); document.getElementById('filter-chevron').style.transform=''; } });
+
 
       /* ── EXPORT DROPDOWN ── */
+      let _exportHoverTimeout = null;
+      function openExportMenuAnim() {
+        const m = document.getElementById('export-menu');
+        m.classList.remove('opacity-0', 'scale-95', '-translate-y-1', 'pointer-events-none');
+        m.classList.add('opacity-100', 'scale-100', 'translate-y-0');
+      }
+      function closeExportMenuAnim() {
+        const m = document.getElementById('export-menu');
+        m.classList.add('opacity-0', 'scale-95', '-translate-y-1', 'pointer-events-none');
+        m.classList.remove('opacity-100', 'scale-100', 'translate-y-0');
+      }
+      (function setupExportHover() {
+        const wrapper = document.getElementById('export-wrapper');
+        const menu = document.getElementById('export-menu');
+        if (!wrapper || !menu) return;
+        wrapper.addEventListener('mouseenter', () => {
+          clearTimeout(_exportHoverTimeout);
+          openExportMenuAnim();
+        });
+        wrapper.addEventListener('mouseleave', () => {
+          _exportHoverTimeout = setTimeout(closeExportMenuAnim, 150);
+        });
+      })();
+
       function toggleExportMenu() {
         const m = document.getElementById('export-menu');
-        m.classList.toggle('hidden');
+        if (m.classList.contains('opacity-100')) { closeExportMenuAnim(); } else { openExportMenuAnim(); }
       }
       function closeExportMenu() {
-        document.getElementById('export-menu').classList.add('hidden');
+        closeExportMenuAnim();
       }
-      document.addEventListener('click', e => { const w = document.getElementById('export-wrapper'); if (w && !w.contains(e.target)) { document.getElementById('export-menu').classList.add('hidden'); } });
+      document.addEventListener('click', e => { const w = document.getElementById('export-wrapper'); if (w && !w.contains(e.target)) { closeExportMenuAnim(); } });
 
       /* ── EXPORT TO EXCEL (ExcelJS) ── */
       async function exportToSheets() {
@@ -1429,12 +1506,25 @@
       filteredRecords = sortByDateDesc(activeRecords.filter(r => {
         const sOk = (activeStatusFilter === 'All' || r.status === activeStatusFilter);
         const cOk = (activeCollegeFilter === 'All' || (r.dept || '').toLowerCase().includes(activeCollegeFilter.toLowerCase()));
+        let dOk = true;
+        if (activeDateFrom || activeDateTo) {
+          if (!r.dateOfFiling) { dOk = false; }
+          else {
+            const raw = r.dateOfFiling.includes('T') ? r.dateOfFiling.split('T')[0] : r.dateOfFiling;
+            const d = new Date(raw + 'T00:00:00');
+            if (isNaN(d)) { dOk = false; }
+            else {
+              if (activeDateFrom && d < new Date(activeDateFrom + 'T00:00:00')) dOk = false;
+              if (activeDateTo   && d > new Date(activeDateTo   + 'T23:59:59')) dOk = false;
+            }
+          }
+        }
         const qOk = !q || (r.referenceNo || '').toLowerCase().includes(q)
                       || (r.title || '').toLowerCase().includes(q)
                       || (r.author || '').toLowerCase().includes(q)
                       || (r.dept || '').toLowerCase().includes(q)
                       || (r.status || '').toLowerCase().includes(q);
-        return sOk && cOk && qOk;
+        return sOk && cOk && dOk && qOk;
       }));
 
       currentPage = 1;

@@ -13,6 +13,7 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
 <script>
   tailwind.config = {
     theme: {
@@ -31,6 +32,10 @@
   }
 </script>
 <style>
+        #exp-preview-table th { background:#f8fafc; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#727785; padding:7px 10px; border-bottom:1px solid #e2e5ef; white-space:nowrap; }
+        #exp-preview-table td { font-size:11.5px; padding:7px 10px; border-bottom:1px solid #f1f5f9; color:#424754; }
+        #exp-preview-table tr:last-child td { border-bottom:none; }
+        #exp-preview-table tr:hover td { background:#f8fafc; }
   html, body { overflow-x: hidden; }
   ::-webkit-scrollbar { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -283,7 +288,7 @@
     </section>
 
     <!-- Table Section -->
-    <section class="bg-white rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
+    <section class="bg-white rounded-2xl border border-outline-variant shadow-sm" style="overflow:visible;">
       <div class="px-6 py-4 border-b border-outline-variant flex items-center gap-3">
         <div class="relative flex-1">
           <i class="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-outline" style="font-size:15px;"></i>
@@ -296,26 +301,93 @@
           <button id="filter-btn" onclick="toggleFilterMenu()"
             class="flex items-center gap-1.5 px-3 py-2 bg-slate-50 border border-slate-200 text-on-surface-variant rounded-lg text-[13px] font-medium hover:bg-slate-100 transition-colors whitespace-nowrap">
             <i class="ti ti-filter" style="font-size:14px;"></i>
-            <span id="filter-label">All Status</span>
+            <span id="filter-label">Filters</span>
+            <span id="filter-count-badge" class="hidden items-center justify-center min-w-[16px] h-[16px] px-1 rounded-full bg-primary text-white text-[10px] font-bold">0</span>
             <i class="ti ti-chevron-down text-outline" id="filter-chevron" style="font-size:12px; transition:transform 0.15s;"></i>
           </button>
-          <div id="filter-menu" class="hidden absolute right-0 mt-1 w-48 bg-white rounded-xl border border-slate-200 shadow-lg z-50 py-1.5 overflow-hidden">
-            <div class="px-3 py-1.5 text-[10px] font-bold text-outline uppercase tracking-widest">Filter by Status</div>
-            <button onclick="applyStatusFilter('All')"              class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="All">All<i class="ti ti-check text-primary" style="font-size:13px;"></i></button>
-            <button onclick="applyStatusFilter('Submitted to IPOPHL')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Submitted to IPOPHL">Submitted to IPOPHL<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
-            <button onclick="applyStatusFilter('Received E-SOA')"   class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Received E-SOA">Received E-SOA<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
-            <button onclick="applyStatusFilter('Paid')"             class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Paid">Paid<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
-            <button onclick="applyStatusFilter('Approved with Certificate')"         class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Approved with Certificate">Approved with Certificate<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
-            <button onclick="applyStatusFilter('Withdrawn')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center justify-between transition-colors" data-val="Withdrawn">Withdrawn<i class="ti ti-check text-primary hidden" style="font-size:13px;"></i></button>
-            <button onclick="applyStatusFilter('Disapproved')" class="filter-val w-full text-left px-4 py-2.5 text-[13px] text-red-700 hover:bg-red-50 flex items-center justify-between transition-colors" data-val="Disapproved">Disapproved<i class="ti ti-check text-red-700 hidden" style="font-size:13px;"></i></button>
+          <div id="filter-menu" class="hidden absolute right-0 mt-1.5 w-[min(17rem,calc(100vw-2.5rem))] max-h-[80vh] overflow-y-auto bg-white rounded-xl border border-slate-200 shadow-xl z-[200] py-3">
+
+            <!-- Status -->
+            <div class="px-4 pb-1 text-[10px] font-bold text-outline uppercase tracking-widest">Status</div>
+            <div class="px-4 pb-3">
+              <select id="status-filter-select" onchange="applyStatusFilter(this.value)"
+                class="w-full bg-slate-50 border border-slate-200 rounded-lg py-1.5 px-2 text-[12.5px] focus:ring-1 focus:ring-primary focus:bg-white focus:border-primary transition-all outline-none">
+                <option value="All">All</option>
+                <option value="Submitted to IPOPHL">Submitted to IPOPHL</option>
+                <option value="Received E-SOA">Received E-SOA</option>
+                <option value="Paid">Paid</option>
+                <option value="Approved with Certificate">Approved with Certificate</option>
+                <option value="Withdrawn">Withdrawn</option>
+                <option value="Disapproved">Disapproved</option>
+              </select>
+            </div>
+
+            <div class="border-t border-slate-100"></div>
+
+            <!-- College -->
+            <div class="px-4 pt-3 pb-1 text-[10px] font-bold text-outline uppercase tracking-widest">College</div>
+            <div class="px-4 pb-3">
+              <select id="college-filter-select" onchange="applyCollegeFilter(this.value)"
+                class="w-full bg-slate-50 border border-slate-200 rounded-lg py-1.5 px-2 text-[12.5px] focus:ring-1 focus:ring-primary focus:bg-white focus:border-primary transition-all outline-none">
+                <option value="All">All Colleges</option>
+                <option value="College of Computer Studies">College of Computer Studies</option>
+                <option value="College of Engineering">College of Engineering</option>
+                <option value="College of Accounting">College of Accounting</option>
+                <option value="College of Business">College of Business</option>
+                <option value="College of Education">College of Education</option>
+                <option value="Faculty">Faculty</option>
+              </select>
+            </div>
+
+            <div class="border-t border-slate-100"></div>
+
+            <!-- Date Range -->
+            <div class="px-4 pt-3 pb-1 text-[10px] font-bold text-outline uppercase tracking-widest">Date Applied</div>
+            <div class="px-4 pb-1 grid grid-cols-2 gap-2.5">
+              <div>
+                <label class="block text-[10.5px] font-semibold text-on-surface-variant mb-1">From</label>
+                <input type="date" id="date-filter-from" onchange="applyDateRangeFilter()"
+                  class="w-full bg-slate-50 border border-slate-200 rounded-lg py-1.5 px-2 text-[12.5px] focus:ring-1 focus:ring-primary focus:bg-white focus:border-primary transition-all outline-none"/>
+              </div>
+              <div>
+                <label class="block text-[10.5px] font-semibold text-on-surface-variant mb-1">To</label>
+                <input type="date" id="date-filter-to" onchange="applyDateRangeFilter()"
+                  class="w-full bg-slate-50 border border-slate-200 rounded-lg py-1.5 px-2 text-[12.5px] focus:ring-1 focus:ring-primary focus:bg-white focus:border-primary transition-all outline-none"/>
+              </div>
+            </div>
+
+            <div class="border-t border-slate-100 mt-3"></div>
+
+            <div class="px-4 pt-3 flex items-center justify-between">
+              <button onclick="clearAllFilters()"
+                class="px-3 py-1.5 text-[12px] font-semibold text-on-surface-variant bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 hover:text-on-surface transition-colors">Clear All</button>
+              <button onclick="document.getElementById('filter-menu').classList.add('hidden'); document.getElementById('filter-chevron').style.transform='';"
+                class="px-4 py-1.5 text-[12px] font-semibold text-white bg-primary hover:bg-blue-700 rounded-lg transition-colors">Done</button>
+            </div>
           </div>
         </div>
-        <button onclick="openExportModal()" title="Export to PDF" class="w-9 h-9 flex items-center justify-center bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors shrink-0">
-          <i class="ti ti-download" style="font-size:16px;"></i>
-        </button>
+        <div class="relative shrink-0" id="export-wrapper">
+          <button id="export-btn" onclick="toggleExportMenu()" title="Export"
+            class="flex items-center justify-center w-9 h-9 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <i class="ti ti-download" style="font-size:16px;"></i>
+          </button>
+          <div id="export-menu" class="absolute right-0 mt-1 w-52 bg-white rounded-xl border border-slate-200 shadow-lg z-[200] py-1.5 opacity-0 scale-95 -translate-y-1 pointer-events-none transition-all duration-150 ease-out origin-top-right">
+            <div class="px-3 py-1.5 text-[10px] font-bold text-outline uppercase tracking-widest">Export As</div>
+            <button onclick="closeExportMenu(); openExportModal();"
+              class="w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center gap-3 transition-colors">
+              <i class="ti ti-file-type-pdf text-red-500" style="font-size:16px;"></i>
+              <span>PDF Document</span>
+            </button>
+            <button onclick="closeExportMenu(); openExportPreviewModal();"
+              class="w-full text-left px-4 py-2.5 text-[13px] text-on-surface hover:bg-slate-50 flex items-center gap-3 transition-colors">
+              <i class="ti ti-file-spreadsheet text-emerald-600" style="font-size:16px;"></i>
+              <span>Excel Spreadsheet</span>
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div>
+      <div class="rounded-b-2xl overflow-hidden">
         <table class="w-full text-left border-collapse">
           <thead>
             <tr class="bg-slate-50">
@@ -344,6 +416,81 @@
     </section>
   </div>
 </main>
+
+<div id="export-preview-modal" class="fixed inset-0 z-[80] items-center justify-center p-4 bg-on-surface/50 backdrop-blur-sm" style="display:none;">
+  <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden flex flex-col" style="max-height:92vh;">
+
+    <div class="bg-blue-50 border-b border-blue-200 px-7 py-5 flex items-center justify-between shrink-0">
+      <div class="flex items-center gap-4">
+        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+          <i class="ti ti-file-spreadsheet text-blue-700" style="font-size:20px;"></i>
+        </div>
+        <div>
+          <h3 class="text-[16px] font-bold text-blue-900">Export Utility Model Records</h3>
+          <p class="text-[12px] text-blue-700 font-medium mt-0.5">Preview records before downloading</p>
+        </div>
+      </div>
+      <button onclick="closeExportPreviewModal()" class="p-2 hover:bg-blue-100 rounded-full transition-colors text-blue-700 ml-4 flex-shrink-0">
+        <i class="ti ti-x" style="font-size:18px;"></i>
+      </button>
+    </div>
+
+    <!-- Date Range Filter -->
+    <div class="px-7 py-4 border-b border-outline-variant bg-slate-50 shrink-0">
+      <p class="text-[11px] font-bold text-outline uppercase tracking-widest mb-3">Date Applied — Range</p>
+      <div class="flex items-center gap-3 flex-wrap">
+        <input id="exp-date-from" type="date"
+          class="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-[13px] focus:ring-1 focus:ring-primary focus:border-primary outline-none"
+          onchange="refreshExportPreview()" />
+        <span class="text-[13px] text-outline">to</span>
+        <input id="exp-date-to" type="date"
+          class="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-[13px] focus:ring-1 focus:ring-primary focus:border-primary outline-none"
+          onchange="refreshExportPreview()" />
+        <button onclick="document.getElementById('exp-date-from').value=''; document.getElementById('exp-date-to').value=''; refreshExportPreview();"
+          class="px-3 py-1.5 text-[12px] font-semibold text-on-surface-variant bg-white border border-slate-200 hover:border-slate-300 rounded-lg transition-all whitespace-nowrap">
+          All Records
+        </button>
+      </div>
+    </div>
+
+    <!-- Preview Table -->
+    <div class="flex-1 overflow-y-auto px-7 py-4">
+      <p class="text-[11px] font-bold text-outline uppercase tracking-widest mb-2">Preview (first 50 records shown)</p>
+      <div class="rounded-xl border border-slate-200 overflow-hidden">
+        <table id="exp-preview-table" class="w-full text-left border-collapse" style="table-layout:fixed;">
+          <thead>
+            <tr>
+              <th style="width:16%;">Ref No.</th>
+              <th style="width:30%;">Title</th>
+              <th style="width:20%;">Author(s)</th>
+              <th style="width:20%;">College/Dept</th>
+              <th style="width:14%;">Date Applied</th>
+            </tr>
+          </thead>
+          <tbody id="exp-preview-tbody">
+            <tr><td colspan="5" class="text-center py-6 text-[13px] text-outline">Loading preview…</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-start gap-2">
+        <i class="ti ti-info-circle text-amber-600 flex-shrink-0 mt-0.5" style="font-size:15px;"></i>
+        <p class="text-[11.5px] text-amber-800">The exported file will include all fields: <strong>Reference No., Title, Author(s), College/Department, Date of Application, and Status History</strong> — grouped per year in separate sheets.</p>
+      </div>
+    </div>
+
+    <div class="px-7 py-4 bg-slate-50 border-t border-outline-variant flex items-center justify-between gap-3 shrink-0">
+      <button onclick="closeExportPreviewModal()" class="px-5 py-2.5 text-[13px] font-semibold text-on-surface-variant bg-white border border-slate-200 hover:border-slate-300 rounded-xl transition-all">Cancel</button>
+      <div class="flex items-center gap-3">
+        <p id="exp-preview-count" class="text-[12px] font-semibold text-on-surface-variant"></p>
+        <button onclick="closeExportPreviewModal(); exportToSheets();"
+          class="flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-[13px] font-bold rounded-xl hover:bg-blue-700 transition-all hover:-translate-y-0.5">
+          <i class="ti ti-download" style="font-size:15px;"></i>
+          <span>Download Excel</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- EXPORT PREVIEW MODAL -->
 <div id="pdf-preview-modal" class="fixed inset-0 z-[60] flex items-center justify-center p-4"
@@ -807,6 +954,295 @@ document.addEventListener('click', e => {
   if (w && !w.contains(e.target)) document.getElementById('filter-menu').classList.add('hidden');
 });
 
+/* ── EXPORT DROPDOWN ── */
+let _exportHoverTimeout = null;
+function openExportMenuAnim() {
+  const m = document.getElementById('export-menu');
+  m.classList.remove('opacity-0', 'scale-95', '-translate-y-1', 'pointer-events-none');
+  m.classList.add('opacity-100', 'scale-100', 'translate-y-0');
+}
+function closeExportMenuAnim() {
+  const m = document.getElementById('export-menu');
+  m.classList.add('opacity-0', 'scale-95', '-translate-y-1', 'pointer-events-none');
+  m.classList.remove('opacity-100', 'scale-100', 'translate-y-0');
+}
+(function setupExportHover() {
+  const wrapper = document.getElementById('export-wrapper');
+  const menu = document.getElementById('export-menu');
+  if (!wrapper || !menu) return;
+  wrapper.addEventListener('mouseenter', () => {
+    clearTimeout(_exportHoverTimeout);
+    openExportMenuAnim();
+  });
+  wrapper.addEventListener('mouseleave', () => {
+    _exportHoverTimeout = setTimeout(closeExportMenuAnim, 150);
+  });
+})();
+
+function toggleExportMenu() {
+  const m = document.getElementById('export-menu');
+  if (m.classList.contains('opacity-100')) { closeExportMenuAnim(); } else { openExportMenuAnim(); }
+}
+function closeExportMenu() {
+  closeExportMenuAnim();
+}
+document.addEventListener('click', e => { const w = document.getElementById('export-wrapper'); if (w && !w.contains(e.target)) { closeExportMenuAnim(); } });
+
+/* ── EXPORT TO EXCEL (ExcelJS) ── */
+async function exportToSheets() {
+  const activeRecords = _exportPreviewRecords.length > 0 ? _exportPreviewRecords : ALL_RECORDS.filter(r => !r.archived);
+
+  // Group by year
+  const byYear = {};
+  activeRecords.forEach(r => {
+    const y = r.dateApplied ? new Date(r.dateApplied).getFullYear().toString() : 'Unknown';
+    if (!byYear[y]) byYear[y] = [];
+    byYear[y].push(r);
+  });
+
+  const years = Object.keys(byYear).sort((a, b) => b - a);
+  if (years.length === 0) { showToastMsg('No Records', 'Nothing to export.'); return; }
+
+  // ── Helpers ──
+  const STATUS_ORDER = [
+    'Submitted to IPOPHL', 'Received E-SOA', 'Paid',
+    'Approved with Certificate', 'Withdrawn', 'Disapproved',
+  ];
+  const LEGEND = [
+    { label: 'Submitted to IPOPHL',       bg: 'DBEAFE', fg: '1D4ED8', border: '3B82F6' },
+    { label: 'Received E-SOA',             bg: 'EDE9FE', fg: '4338CA', border: '7C3AED' },
+    { label: 'Paid',                       bg: 'D1FAE5', fg: '065F46', border: '059669' },
+    { label: 'Approved with Certificate',  bg: 'FEF3C7', fg: '92400E', border: 'D97706' },
+    { label: 'Withdrawn',                  bg: 'F1F5F9', fg: '475569', border: '94A3B8' },
+    { label: 'Disapproved',                bg: 'FEE2E2', fg: '991B1B', border: 'EF4444' },
+  ];
+  const STATUS_BG = Object.fromEntries(LEGEND.map(l => [l.label, l]));
+
+  function argb(hex) { return 'FF' + hex; }
+
+  function buildStatusHistory(r) {
+    const hist = Array.isArray(r.statusHistory) ? r.statusHistory : [];
+    if (hist.length === 0) return r.status || '';
+    return STATUS_ORDER
+      .map(s => hist.find(h => h.status === s))
+      .filter(Boolean)
+      .map(h => {
+        let line = `• ${h.status}`;
+        if (h.date) {
+          const d = new Date(h.date + 'T00:00:00');
+          if (!isNaN(d)) line += `  —  ${d.toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' })}`;
+        }
+        return line;
+      }).join('\n');
+  }
+
+  function currentStatus(r) {
+    const hist = Array.isArray(r.statusHistory) ? r.statusHistory : [];
+    for (let i = STATUS_ORDER.length - 1; i >= 0; i--) {
+      if (hist.some(h => h.status === STATUS_ORDER[i])) return STATUS_ORDER[i];
+    }
+    return r.status || 'Submitted to IPOPHL';
+  }
+
+  // ── Build workbook ──
+  const wb = new ExcelJS.Workbook();
+  wb.creator = 'QCU IPMS';
+  wb.created = new Date();
+
+  for (const yr of years) {
+    const records = byYear[yr].sort((a, b) => {
+      const da = a.dateApplied ? new Date(a.dateApplied) : new Date(0);
+      const db = b.dateApplied ? new Date(b.dateApplied) : new Date(0);
+      return db - da; // latest first
+    });
+
+    const ws = wb.addWorksheet(yr);
+
+    // Column widths
+    ws.columns = [
+      { width: 18  },  // A - Ref No
+      { width: 48  },  // B - Title
+      { width: 30  },  // C - Authors
+      { width: 32  },  // D - College/Dept
+      { width: 20  },  // E - Date
+      { width: 42  },  // F - Status History
+      { width: 3   },  // G - Gap
+      { width: 28  },  // H - Legend
+    ];
+
+    // ── Header row ──
+    const HDR_LABELS = ['Ref. No.', 'Utility Model Title', 'Author(s)', 'College/Department', 'Date of Application', 'Status History'];
+    const hdrRow = ws.getRow(1);
+    hdrRow.height = 20;
+    HDR_LABELS.forEach((label, i) => {
+      const c = hdrRow.getCell(i + 1);
+      c.value = label;
+      c.font  = { bold: true, size: 10, color: { argb: 'FFFFFFFF' }, name: 'Calibri' };
+      c.fill  = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E40AF' } };
+      c.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+      c.border = {
+        top:    { style: 'thin',   color: { argb: 'FF93C5FD' } },
+        bottom: { style: 'medium', color: { argb: 'FF93C5FD' } },
+        left:   { style: 'thin',   color: { argb: 'FF93C5FD' } },
+        right:  { style: 'thin',   color: { argb: 'FF93C5FD' } },
+      };
+    });
+
+    // ── Legend header (col H = index 8) ──
+    const legendHdr = hdrRow.getCell(8);
+    legendHdr.value = 'LEGEND';
+    legendHdr.font  = { bold: true, size: 10, color: { argb: 'FFFFFFFF' }, name: 'Calibri' };
+    legendHdr.fill  = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E3A8A' } };
+    legendHdr.alignment = { horizontal: 'center', vertical: 'middle' };
+
+    // ── Legend items (rows 2-7, col H) ──
+    LEGEND.forEach((leg, i) => {
+      const lRow = ws.getRow(2 + i);
+      if (lRow.height === undefined || lRow.height < 15) lRow.height = 15;
+      const c = lRow.getCell(8);
+      c.value = '  ' + leg.label;
+      c.font  = { bold: true, size: 9, color: { argb: argb(leg.fg) }, name: 'Calibri' };
+      c.fill  = { type: 'pattern', pattern: 'solid', fgColor: { argb: argb(leg.bg) } };
+      c.border = {
+        top: { style:'thin', color:{ argb: argb(leg.border) } },
+        bottom: { style:'thin', color:{ argb: argb(leg.border) } },
+        left: { style:'thin', color:{ argb: argb(leg.border) } },
+        right: { style:'thin', color:{ argb: argb(leg.border) } },
+      };
+      c.alignment = { horizontal: 'left', vertical: 'middle' };
+    });
+
+    // ── Data rows ──
+    records.forEach((r, idx) => {
+      const rowNum = idx + 2; // row 1 is header
+
+      const authors = (r.creator || '').split(/;\s*/).filter(Boolean).map(a => a.trim()).join('\n');
+      let collegeDept = r.dept || '';
+      if (r.dept && r.dept.includes(' — ')) {
+        const [col, dep] = r.dept.split(' — ');
+        collegeDept = `${col} - ${dep} Department`;
+      }
+      const dateApplied = r.dateApplied
+        ? new Date(r.dateApplied + 'T00:00:00').toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' })
+        : '';
+      const statusText = buildStatusHistory(r);
+      const curSt  = currentStatus(r);
+      const clr    = STATUS_BG[curSt] || { bg: 'FFFFFF', fg: '111827', border: 'D1D5DB' };
+
+      const statusLines = statusText.split('\n').length;
+      const authorLines = authors.split('\n').length;
+      const titleLines  = Math.ceil((r.title || '').length / 50);
+      const rowH = Math.max(statusLines, authorLines, titleLines, 1) * 12 + 4;
+
+      const dataRow = ws.getRow(rowNum);
+      dataRow.height = Math.max(rowH, 16);
+
+      const vals = [
+        r.referenceNo || String(idx + 1),
+        r.title || '',
+        authors,
+        collegeDept,
+        dateApplied,
+        statusText,
+      ];
+
+      vals.forEach((val, ci) => {
+        const cell = dataRow.getCell(ci + 1);
+        cell.value = val;
+        cell.font  = { size: 9, name: 'Calibri', color: { argb: 'FF111827' } };
+        cell.fill  = { type: 'pattern', pattern: 'solid', fgColor: { argb: argb(clr.bg) } };
+        cell.alignment = {
+          horizontal: ci === 0 ? 'center' : 'left',
+          vertical: 'top',
+          wrapText: true,
+        };
+        cell.border = {
+          top:    { style: 'thin', color: { argb: argb(clr.border) } },
+          bottom: { style: 'thin', color: { argb: argb(clr.border) } },
+          left:   { style: 'thin', color: { argb: argb(clr.border) } },
+          right:  { style: 'thin', color: { argb: argb(clr.border) } },
+        };
+      });
+    });
+
+    // Freeze header row
+    ws.views = [{ state: 'frozen', ySplit: 1, topLeftCell: 'A2' }];
+  }
+
+  const fname = `Utility_Model_Application_${new Date().toISOString().split('T')[0]}.xlsx`;
+  const buf  = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = fname; a.click();
+  URL.revokeObjectURL(url);
+  showToastMsg('Excel Downloaded', `${activeRecords.length} record${activeRecords.length !== 1 ? 's' : ''} exported across ${years.length} sheet${years.length !== 1 ? 's' : ''}.`);
+}
+
+/* ── EXPORT PREVIEW MODAL ── */
+let _exportPreviewRecords = [];
+
+function openExportPreviewModal() {
+  document.getElementById('exp-date-from').value = '';
+  document.getElementById('exp-date-to').value   = '';
+  refreshExportPreview();
+  document.getElementById('export-preview-modal').style.display = 'flex';
+}
+
+function closeExportPreviewModal() {
+  document.getElementById('export-preview-modal').style.display = 'none';
+}
+
+function refreshExportPreview() {
+  const from  = document.getElementById('exp-date-from').value;
+  const to    = document.getElementById('exp-date-to').value;
+  const fromD = from ? new Date(from + 'T00:00:00') : null;
+  const toD   = to   ? new Date(to   + 'T23:59:59') : null;
+
+  _exportPreviewRecords = ALL_RECORDS.filter(r => {
+    if (r.archived) return false;
+    if (!fromD && !toD) return true;
+    if (!r.dateApplied) return false;
+    const raw = r.dateApplied.includes('T') ? r.dateApplied.split('T')[0] : r.dateApplied;
+    const d = new Date(raw + 'T00:00:00');
+    if (isNaN(d)) return false;
+    if (fromD && d < fromD) return false;
+    if (toD   && d > toD)   return false;
+    return true;
+  });
+
+  const countEl = document.getElementById('exp-preview-count');
+  countEl.textContent = `${_exportPreviewRecords.length} record${_exportPreviewRecords.length !== 1 ? 's' : ''} will be included`;
+
+  const tbody = document.getElementById('exp-preview-tbody');
+  if (_exportPreviewRecords.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-6 text-[13px] text-outline">No records found in the selected date range.</td></tr>';
+    return;
+  }
+
+  const sorted = [..._exportPreviewRecords].sort((a, b) => {
+    const da = a.dateApplied ? new Date(a.dateApplied) : new Date(0);
+    const db = b.dateApplied ? new Date(b.dateApplied) : new Date(0);
+    return db - da;
+  });
+
+  tbody.innerHTML = sorted.slice(0, 50).map(r => {
+    const dept = r.dept ? (r.dept.includes(' — ') ? r.dept.split(' — ')[1] : r.dept) : '—';
+    const authors = (r.creator || '').split(/;\s*/).filter(Boolean).map(a => a.trim()).join(', ') || '—';
+    return `<tr>
+      <td class="truncate" style="max-width:80px;" title="${(r.referenceNo||'').replace(/"/g,'&quot;')}">${r.referenceNo||'—'}</td>
+      <td><div class="truncate" style="max-width:180px;" title="${(r.title||'').replace(/"/g,'&quot;')}">${r.title||'—'}</div></td>
+      <td><div class="truncate" style="max-width:120px;" title="${authors}">${authors}</div></td>
+      <td><div class="truncate" style="max-width:120px;">${dept}</div></td>
+      <td>${toShortDate(r.dateApplied)}</td>
+    </tr>`;
+  }).join('');
+
+  if (_exportPreviewRecords.length > 50) {
+    tbody.innerHTML += `<tr><td colspan="5" class="text-center py-2 text-[11px] text-outline italic">… and ${_exportPreviewRecords.length - 50} more records (all will be included in Excel)</td></tr>`;
+  }
+}
+
 /* SEARCH + FILTER */
 function filterAndRender() {
   const q = document.getElementById('search-input').value.toLowerCase().trim();
@@ -983,7 +1419,9 @@ async function fetchUtilityModels() {
     filterAndRender();
     checkAndHighlightResearch();
   } catch (err) {
-    console.error('Failed to fetch utility models:', err);
+    console.error('Fetch failed:', err);
+    document.getElementById('table-body').innerHTML =
+      `<tr><td colspan="7" class="text-center py-8 text-red-500 text-[13px] font-medium">Failed to load records. Make sure the API server is running.</td></tr>`;
   }
 }
 
@@ -1298,8 +1736,6 @@ const STATUS_STEPS = [
   'Received E-SOA',
   'Paid',
   'Approved with Certificate',
-  'Withdrawn',
-  'Disapproved',
 ];
 
 let _statusHistory = [];
